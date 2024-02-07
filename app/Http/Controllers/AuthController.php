@@ -190,11 +190,11 @@ class AuthController extends Controller
         if (!$user) {
             return response()->json(['error' => 'Email not found'], 401);
         } else {
-            $token = "http://192.168.10.3:5000/verified/";
-            $random = Str::random(40);
+
+            $random = Str::random(6);
             Mail::to($request->email)->send(new OtpMail($random));
-            $user->update(['verified_code' => $random]);
-            $user->update(['verified_email' => 0]);
+            $user->update(['otp' => $random]);
+            $user->update(['verify_email' => 0]);
             return response()->json(['message' => 'Please check your email for get the OTP']);
         }
     }
@@ -202,15 +202,15 @@ class AuthController extends Controller
     public function emailVerifiedForResetPass(Request $request)
     {
         $user = User::where('email', $request->email)
-            ->where('verified_code', $request->verified_code)
+            ->where('otp', $request->otp)
             ->first();
 
         if (!$user) {
 
             return response()->json(['error' => 'Your verified code does not matched '], 401);
         } else {
-            $user->update(['verified_email' => 1]);
-            $user->update(['verified_code' => 0]);
+            $user->update(['verify_email' => 1]);
+            $user->update(['otp' => 0]);
             return response()->json(['message' => 'Now your email is verified'], 200);
         }
     }
@@ -224,7 +224,7 @@ class AuthController extends Controller
                 "message" => "Your email is not exists"
             ], 401);
         }
-        if ($user->verified_email == 0) {
+        if ($user->verify_email == 0) {
             return response()->json([
                 "message" => "Your email is not verified"
             ], 401);
@@ -244,6 +244,7 @@ class AuthController extends Controller
     public function updatePassword(Request $request)
     {
         $user = $this->guard()->user();
+
 
         if ($user) {
 
@@ -266,4 +267,58 @@ class AuthController extends Controller
             return response()->json(['message' => 'You are not authorized!'], 401);
         }
     }
+
+
+
+    public function editProfile(Request $request, $id)
+    {
+
+
+        $user = $this->guard()->user();
+
+        if($user){
+            $validator = Validator::make($request->all(), [
+                'fullName' => 'required|string|min:2|max:100',
+            ]);
+
+            if ($validator->fails()) {
+                return response()->json($validator->errors(), 400);
+            }
+
+            $user->fullName=$request->fullName;
+            if ($request->hasFile('image')) {
+                $file = $request->file('image');
+                $destination = 'storage/image/' . $user->image;
+
+                if (File::exists($destination)) {
+                    File::delete($destination);
+                }
+
+                $timeStamp = time(); // Current timestamp
+                $fileName = $timeStamp . '.' . $file->getClientOriginalExtension();
+                $file->storeAs('image', $fileName, 'public');
+
+                $filePath = '/storage/image/' . $fileName;
+                $fileUrl = $filePath;
+                $user->image = $fileUrl;
+            }
+
+            $user->update();
+            return response()->json([
+                "message" => "Profile updated successfully"
+            ]);
+
+
+
+
+        }else{
+            return response()->json([
+                "message" => "You are not authorized!"
+            ], 401);
+        }
+
+
+    }
+
+
 }
