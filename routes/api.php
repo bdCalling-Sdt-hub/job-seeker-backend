@@ -1,5 +1,9 @@
 <?php
 
+use App\Http\Controllers\CategoryController;
+use App\Http\Controllers\PackageController;
+use App\Http\Controllers\StoryController;
+use App\Http\Controllers\SubscriptionController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
@@ -33,3 +37,20 @@ Route::group([
 
 //Route::post("/register", [AuthController::class, "register"]);
 
+
+//category
+Route::post('/add-category',[CategoryController::class,'addCategory']);
+
+//package
+Route::post('/add-package',[PackageController::class,'addPackage']);
+
+
+// Subscription
+Route::post('/user-subscription',[SubscriptionController::class,'userSubscription']);
+
+//add Story
+Route::post('/add-story',[StoryController::class,'addStory']);
+
+//show Story
+
+Route::get('/show-story',[Storycontroller::class,'showStory']);
