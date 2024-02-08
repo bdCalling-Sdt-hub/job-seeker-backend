@@ -272,8 +272,6 @@ class AuthController extends Controller
 
     public function editProfile(Request $request, $id)
     {
-
-
         $user = $this->guard()->user();
 
         if($user){
@@ -288,7 +286,7 @@ class AuthController extends Controller
             $user->fullName=$request->fullName;
             $user->mobile=$request->mobile?$request->mobile:$user->mobile;
             $user->address=$request->address?$request->address:$user->address;
-            
+
 
             if ($request->hasFile('image')) {
                 $file = $request->file('image');
@@ -311,9 +309,6 @@ class AuthController extends Controller
             return response()->json([
                 "message" => "Profile updated successfully"
             ]);
-
-
-
 
         }else{
             return response()->json([

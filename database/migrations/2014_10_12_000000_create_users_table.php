@@ -22,9 +22,9 @@ return new class extends Migration
             $table->string("image")->nullable();
             $table->string("otp");
             $table->boolean("verify_email");
-            $table->rememberToken()->nullable();;
+            $table->tinyInteger('user_status')->default(0);
+            $table->rememberToken()->nullable();
             $table->timestamps();
-
         });
     }
 
