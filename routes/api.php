@@ -21,4 +21,5 @@ Route::group([
 
 // Route::post("/register", [AuthController::class, "register"]);
 
-Route::post('/contact', [ContactController::class, 'contact']);
+  Route::post('/contact', [ContactController::class, 'contact']);
+
