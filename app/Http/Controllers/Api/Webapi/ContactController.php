@@ -21,7 +21,7 @@ class ContactController extends Controller
         if ($postContact) {
             return response()->json([
                 'status' => 'success',
-                'message' => ' Success submit your contact form'
+                'message' => ' Successfully submit your contact form'
             ], 200);
         } else {
             return response()->json([
