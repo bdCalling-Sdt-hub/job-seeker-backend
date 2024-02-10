@@ -54,3 +54,5 @@ Route::post('/add-story',[StoryController::class,'addStory']);
 //show Story
 
 Route::get('/show-story',[Storycontroller::class,'showStory']);
+
+Route::get('/test',[StoryController::class,'test']);
