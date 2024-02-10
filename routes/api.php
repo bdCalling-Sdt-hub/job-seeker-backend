@@ -39,15 +39,24 @@ Route::post('/user-subscription',[SubscriptionController::class,'userSubscriptio
 //add Story
 Route::post('/add-story',[StoryController::class,'addStory']);
 
+//Filter and search
+Route::get('/filter-story-by-category',[StoryController::class,'filterStoryByCategory']);
 
+//story details in app
+Route::get('/story-details',[StoryController::class,'storyDetails']);
 
+//my story
+Route::get('/my-story',[StoryController::class,'myStory']);
 
+//pending story
+Route::get('/pending-story',[StoryController::class,'pendingStory']);
 
+//delete story
+Route::get('/delete-story',[StoryController::class,'deleteStory']);
 
+//update story
+// repost api
+Route::post('/edit-story',[StoryController::class,'editStory']);
 
-//show Story
-
-Route::get('/show-story',[Storycontroller::class,'showStory']);
-
-
-Route::get('/test',[Storycontroller::class,'test']);
+//my subscription
+Route::get('/my-subscription',[SubscriptionController::class,'mySubscription']);

@@ -63,5 +63,23 @@ class SubscriptionController extends Controller
         }
     }
 
+    public function mySubscription(Request $request){
+        $auth_user_id = auth()->user()->id;
+        $my_subscription = Subscription::with('package')->where('user_id',$auth_user_id)->first();
+
+        if ($my_subscription){
+            return response()->json([
+                'message' => 'success',
+                'data' => $my_subscription
+            ]);
+        }else {
+            return response()->json([
+                'message' => 'success',
+                'data' => []
+            ]);
+        }
+
+    }
+
 
 }

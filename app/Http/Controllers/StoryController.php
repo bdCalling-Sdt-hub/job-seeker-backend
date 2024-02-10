@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Story;
 use App\Models\Subscription;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
 
 class StoryController extends Controller
@@ -92,16 +93,133 @@ class StoryController extends Controller
         ],200);
     }
 
-    public function showStory()
+    public function filterStoryByCategory(Request $request)
     {
-//        $stories = Story::all();
-//        return response()->json($stories);
-//        $story_list = [];
-//        foreach($stories as $story){
-//            $story_list = [
-//                ''
-//            ]
-//        }
+        $category_id = $request->category_id;
+        $category_name = $request->category_name;
+        $story_title = $request->story_title;
+        $username = $request->username;
+
+        $query = Story::query()->with('category');
+
+        if($category_id !== null) {
+            $query->where('category_id', $category_id);
+        }
+        if($category_name !== null) {
+            $query->whereHas('category', function($q) use ($category_name) {
+                $q->where('category_name', $category_name);
+            });
+        }
+        if($story_title !== null) {
+            $query->where('story_title', 'like', '%' . $story_title . '%');
+        }
+        if($username !== null) {
+            $query->whereHas('user', function($q) use ($username) {
+                $q->where('fullName', $username);
+            });
+        }
+
+        $story_list = $query->get();
+
+        $formatted_stories = $story_list->map(function($story) {
+            $story->story_image = json_decode($story->story_image);
+            return $story;
+        });
+
+        return response()->json([
+            'message' => 'success',
+            'data' => $formatted_stories
+        ]);
+    }
+
+    public function storyDetails(Request $request)
+    {
+        $story_id = $request->story_id;
+        $story_details = Story::with('category','user')->where('id',$story_id)->get();
+
+        $formatted_stories = $story_details->map(function($story){
+            $story->story_image = json_decode($story->story_image);
+            return $story;
+        });
+
+        return response()->json([
+            'message' => 'success',
+            'data' => $formatted_stories
+        ]);
+    }
+
+    public function myStory()
+    {
+        $auth_user_id = auth()->user()->id;
+        $story_details = Story::with('category','user')->where('id',$auth_user_id)->get();
+
+        $formatted_stories = $story_details->map(function($story){
+            $story->story_image = json_decode($story->story_image);
+            return $story;
+        });
+
+        return response()->json([
+            'message' => 'success',
+            'data' => $formatted_stories
+        ]);
+    }
+
+    public function pendingStory()
+    {
+        $auth_user_id = auth()->user()->id;
+        $story_details = Story::where('user_id',$auth_user_id)->where('story_status',0)->get();
+
+        $formatted_stories = $story_details->map(function($story){
+            $story->story_image = json_decode($story->story_image);
+            return $story;
+        });
+
+        return response()->json([
+            'message' => 'success',
+            'data' => $formatted_stories
+        ]);
+    }
+
+    public function deleteStory(Request $request){
+
+        $story_id = $request->story_id;
+
+        $story = Story::find($story_id);
+        if ($story) {
+            $story_music = json_decode($story->music);
+            $story_images = json_decode($story->story_image);
+
+
+            foreach ($story_music as $musicPath) {
+                $absoluteMusicPath = public_path($musicPath);
+
+                if (file_exists($absoluteMusicPath)) {
+                    unlink($absoluteMusicPath);
+                }
+            }
+
+            // Delete each image file associated with the story
+            foreach ($story_images as $imagePath) {
+                $absoluteImagePath = public_path($imagePath);
+
+                if (file_exists($absoluteImagePath)) {
+                    unlink($absoluteImagePath);
+                }
+            }
+            $story->delete();
+
+            return response()->json([
+                'message' => 'Story and associated files deleted successfully!'
+            ],200);
+        } else {
+            return response()->json([
+                'message' => 'Story Not Found'
+            ],404);
+        }
+    }
+
+    public function editStory(Request $request){
 
     }
+
 }
