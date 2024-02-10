@@ -1,7 +1,9 @@
 <?php
 
+use App\Http\Controllers\Api\Addmin\UserController;
 use App\Http\Controllers\Api\Webapi\ContactController;
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\StoryController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -19,7 +21,17 @@ Route::group([
     Route::put('/profile/edit/{id}', [AuthController::class, 'editProfile']);
 });
 
-// Route::post("/register", [AuthController::class, "register"]);
+// ================ WEB API ================== //
 
-  Route::post('/contact', [ContactController::class, 'contact']);
+Route::post('/contact', [ContactController::class, 'contact']);
+Route::get('/recent/story', [ContactController::class, 'recentStory']);
+Route::get('/all/story', [ContactController::class, 'allStory']);
+Route::get('/story/details/{id}', [ContactController::class, 'storyDetails']);
+Route::get('/about', [ContactController::class, 'about']);
+Route::get('/pricing', [ContactController::class, 'priceing']);
+Route::get('/terms/condition', [ContactController::class, 'terms_condition']);
+Route::get('/privacy/policy', [ContactController::class, 'privacy']);
 
+// ================== Admin Api ====================//
+
+Route::get('/user/list', [UserController::class, 'userList']);
