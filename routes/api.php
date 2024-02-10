@@ -3,7 +3,12 @@
 use App\Http\Controllers\Api\Addmin\UserController;
 use App\Http\Controllers\Api\Webapi\ContactController;
 use App\Http\Controllers\AuthController;
+
+use App\Http\Controllers\CategoryController;
+use App\Http\Controllers\PackageController;
 use App\Http\Controllers\StoryController;
+use App\Http\Controllers\SubscriptionController;
+
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -24,6 +29,7 @@ Route::group([
 // ================ WEB API ================== //
 
 Route::post('/contact', [ContactController::class, 'contact']);
+
 Route::get('/recent/story', [ContactController::class, 'recentStory']);
 Route::get('/all/story', [ContactController::class, 'allStory']);
 Route::get('/story/details/{id}', [ContactController::class, 'storyDetails']);
@@ -35,3 +41,30 @@ Route::get('/privacy/policy', [ContactController::class, 'privacy']);
 // ================== Admin Api ====================//
 
 Route::get('/user/list', [UserController::class, 'userList']);
+=======
+
+//category
+Route::post('/add-category',[CategoryController::class,'addCategory']);
+
+//package
+Route::post('/add-package',[PackageController::class,'addPackage']);
+
+// Subscription
+Route::post('/user-subscription',[SubscriptionController::class,'userSubscription']);
+
+//add Story
+Route::post('/add-story',[StoryController::class,'addStory']);
+
+
+
+
+
+
+
+//show Story
+
+Route::get('/show-story',[Storycontroller::class,'showStory']);
+
+
+Route::get('/test',[Storycontroller::class,'test']);
+
