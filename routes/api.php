@@ -23,3 +23,7 @@ Route::group([
 
   Route::post('/contact', [ContactController::class, 'contact']);
 
+
+Route::get('/show-story',[Storycontroller::class,'showStory']);
+
+Route::get('/test',[StoryController::class,'test']);
