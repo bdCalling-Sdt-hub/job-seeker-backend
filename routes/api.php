@@ -38,6 +38,46 @@ Route::group([
 //Route::post("/register", [AuthController::class, "register"]);
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 //category
 Route::post('/add-category',[CategoryController::class,'addCategory']);
 
