@@ -7,14 +7,34 @@ use App\Models\Package;
 use App\Models\Subscription;
 use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class UserController extends Controller
 {
-    public function userList()
+    public function package()
     {
+        $pakege = Package::get();
+
+        if ($pakege) {
+            return response()->json([
+                'status' => 'success',
+                'data' => $pakege
+            ]);
+        } else {
+            return response()->json([
+                'status' => false,
+                'data' => []
+            ]);
+        }
+    }
+
+    public function userList(Request $request)
+    {
+        $package_id = $request->id;
+
         // Basic user//
 
-        $basic_pakege = Package::where('package_name', 'Qarator Page')->first();
+        $basic_pakege = Package::where('package_name', 'Quater Page')->first();
         $basic_pakage_id = $basic_pakege->id;
         $basic_subcription = Subscription::where('package_id', $basic_pakage_id)->count();
 
@@ -34,6 +54,64 @@ class UserController extends Controller
 
         $total_user = User::count();
 
-        $user_list = User::where('user_status', 1)->get();
+        if ($package_id == 0) {
+            $subscribe_user = Subscription::with('user', 'package')->orderBy('id', 'desc')->paginate(10);
+        } else {
+            $subscribe_user = Subscription::where('package_id', $package_id)->with('user', 'package')->orderBy('id', 'desc')->paginate(10);
+        }
+
+        if ($subscribe_user) {
+            return response()->json([
+                'status' => 'success',
+                'total_user' => $total_user,
+                'quater_page' => $basic_subcription,
+                'half_page' => $premium_subcription,
+                'full_page' => $gold_subcription,
+                'data' => $subscribe_user
+            ], 200);
+        } else {
+            return response()->json([
+                'status' => false,
+                'data' => []
+            ], 200);
+        }
+    }
+
+    public function userDetails($id)
+    {
+        $user_details = Subscription::where('id', $id)->with('user', 'package')->first();
+
+        if ($user_details) {
+            return response()->json([
+                'status' => 'success',
+                'data' => $user_details,
+            ], 200);
+        } else {
+            return response()->json([
+                'status' => false,
+                'data' => []
+            ], 200);
+        }
+    }
+
+    public function search_subscriber(Request $request)
+    {
+        $search = Subscription::with('user', 'package')
+            ->whereHas('user', function ($query) use ($request) {
+                $query->where('fullName', 'like', '%' . $request->name . '%');
+            })
+            ->get();
+
+        if ($search) {
+            return response()->json([
+                'status' => 'success',
+                'data' => $search
+            ]);
+        } else {
+            return response()->json([
+                'status' => false,
+                'data' => []
+            ]);
+        }
     }
 }
