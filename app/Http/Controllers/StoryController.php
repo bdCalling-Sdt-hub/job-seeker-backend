@@ -13,6 +13,7 @@ class StoryController extends Controller
 {
     //
 
+<<<<<<< HEAD
 //    public function guard()
 //    {
 //        return Auth::guard('api');
@@ -38,6 +39,15 @@ class StoryController extends Controller
             'category_id' => 'required',
             'subscription_id' => 'required',
             'story_title' => 'required',
+=======
+    public function addStory(Request $request)
+    {
+        $validator = Validator::make($request->all(), [
+            'user_id' => '',
+            'category_id' => '',
+            'subscription_id' => '',
+            'story_title' => '',
+>>>>>>> 16bb6a890d5928aa98318b5fdabe808ff2308f6e
             'story_image.*' => 'required|mimes:jpeg,png,jpg,gif,svg',
             'music' => '',
             'music_type' => '',
@@ -45,10 +55,10 @@ class StoryController extends Controller
             'story_status' => '',
         ]);
         if ($validator->fails()) {
-            return response()->json($validator->errors(),400);
+            return response()->json($validator->errors(), 400);
         }
         $subscription_id = $request->subscription_id;
-        $subscription_details = Subscription::with('package')->where('id',$subscription_id)->first();
+        $subscription_details = Subscription::with('package')->where('id', $subscription_id)->first();
         $package_id = $subscription_details['package']['id'];
         $amount = $subscription_details['package']['amount'];
         $word_limit = $subscription_details['package']['word_limit'];
@@ -83,7 +93,7 @@ class StoryController extends Controller
         $story->music_type = $request->music_type;
         $story->description = $request->description;
         $story_music = array();
-        if($request->hasFile('music')) {
+        if ($request->hasFile('music')) {
             foreach ($request->file('music') as $music) {
                 $musicName = time() . '.' . $music->getClientOriginalExtension();
                 $music->move(public_path('music'), $musicName);
@@ -101,18 +111,19 @@ class StoryController extends Controller
             }
         }
         $story->music = json_encode($story_music);
-        $story->story_image = json_encode($story_image,true);
+        $story->story_image = json_encode($story_image, true);
         $story->save();
         return response()->json([
             'message' => 'Story add successfully',
             'data' => $story,
             'music' => json_decode($story['music']),
             'image' => json_decode($story['story_image'])
-        ],200);
+        ], 200);
     }
 
     public function filterStoryByCategory(Request $request)
     {
+<<<<<<< HEAD
         $category_id = $request->category_id;
         $category_name = $request->category_name;
         $story_title = $request->story_title;
@@ -238,6 +249,16 @@ class StoryController extends Controller
 
     public function editStory(Request $request){
 
+=======
+        //        $stories = Story::all();
+        //        return response()->json($stories);
+        //        $story_list = [];
+        //        foreach($stories as $story){
+        //            $story_list = [
+        //                ''
+        //            ]
+        //        }
+>>>>>>> 16bb6a890d5928aa98318b5fdabe808ff2308f6e
     }
 
 }

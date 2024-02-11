@@ -3,6 +3,7 @@
 namespace App\Models;
 
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
+use App\Models\Subscription;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
@@ -23,16 +24,15 @@ class User extends Authenticatable implements JWTSubject
         'fullName',
         'email',
         'password',
-        "userType",
-        "otp",
-        "verify_email"
+        'userType',
+        'otp',
+        'verify_email'
     ];
 
     public function getJWTIdentifier()
     {
         return $this->getKey();
     }
-
 
     public function getJWTCustomClaims()
     {
@@ -59,11 +59,15 @@ class User extends Authenticatable implements JWTSubject
         'password' => 'hashed',
     ];
 
+<<<<<<< HEAD
     public function story():HasMany
     {
         return $this->hasMany(Story::class);
     }
     public function subscription():HasMany
+=======
+    public function subscrib_user(): HasMany
+>>>>>>> 16bb6a890d5928aa98318b5fdabe808ff2308f6e
     {
         return $this->hasMany(Subscription::class);
     }
