@@ -4,9 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-return new class extends Migration
-{
-
+return new class extends Migration {
     public function up(): void
     {
         Schema::create('packages', function (Blueprint $table) {
@@ -16,7 +14,7 @@ return new class extends Migration
             $table->tinyInteger('duration');
             $table->integer('word_limit');
             $table->integer('image_limit');
-            $table->string('feature');
+            $table->json('feature');
             $table->timestamps();
         });
     }

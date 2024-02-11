@@ -57,9 +57,4 @@ class User extends Authenticatable implements JWTSubject
         'email_verified_at' => 'datetime',
         'password' => 'hashed',
     ];
-
-    public function subscrib_user(): HasMany
-    {
-        return $this->hasMany(Subscription::class);
-    }
 }
