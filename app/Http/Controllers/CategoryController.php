@@ -24,4 +24,20 @@ class CategoryController extends Controller
             'data' => $category
         ]);
     }
+
+    public function show_category()
+    {
+        $show_category = Category::get();
+        if ($show_category) {
+            return response()->json([
+                'status' => 'success',
+                'data' => $show_category
+            ], 200);
+        } else {
+            return response()->json([
+                'status' => 'success',
+                'data' => []
+            ], 200);
+        }
+    }
 }

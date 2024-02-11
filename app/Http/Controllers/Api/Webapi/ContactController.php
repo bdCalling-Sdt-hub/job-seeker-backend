@@ -102,17 +102,24 @@ class ContactController extends Controller
 
     public function priceing()
     {
+        $priceing_decode = [];
         $priceing = Package::orderBy('id', 'desc')->get();
-        if ($priceing) {
+
+        foreach ($priceing as $price) {
+            $price['feature'] = json_decode($price['feature'], true);
+            $priceing_decode[] = $price;
+        }
+
+        if ($priceing_decode) {
             return response()->json([
                 'status' => 'success',
-                'data' => $priceing
+                'data' => $priceing_decode
             ], 200);
         } else {
             return response()->json([
                 'status' => 'false',
                 'data' => []
-            ], 402);
+            ], 200);
         }
     }
 

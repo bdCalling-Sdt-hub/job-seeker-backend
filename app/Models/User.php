@@ -58,6 +58,7 @@ class User extends Authenticatable implements JWTSubject
         'email_verified_at' => 'datetime',
         'password' => 'hashed',
     ];
+<<<<<<< HEAD
 
 <<<<<<< HEAD
     public function story():HasMany
@@ -71,4 +72,6 @@ class User extends Authenticatable implements JWTSubject
     {
         return $this->hasMany(Subscription::class);
     }
+=======
+>>>>>>> 480dc518a1adff140653c5c9d847fe739cd793b2
 }
