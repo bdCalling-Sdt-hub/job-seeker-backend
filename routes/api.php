@@ -75,4 +75,5 @@ Route::post('/add-package',[PackageController::class,'addPackage']);
 
 Route::get('/show-story',[Storycontroller::class,'showStory']);
 
+Route::get('/test',[Storycontroller::class,'test']);
 
