@@ -114,7 +114,9 @@ Route::post('/add-story', [StoryController::class, 'addStory']);
 
 Route::get('/show-story',[Storycontroller::class,'showStory']);
 
+
 Route::get('/test',[Storycontroller::class,'test']);
+Route::get('/test1',[Storycontroller::class,'test1']);
 
 
 Route::get('/show-story', [Storycontroller::class, 'showStory']);
