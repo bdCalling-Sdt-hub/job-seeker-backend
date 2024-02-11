@@ -115,9 +115,6 @@ class AuthController extends Controller
             }
         }
 
-
-
-
         $credentials = $request->only('email', 'password');
 
         if ($token = $this->guard()->attempt($credentials)) {
@@ -138,7 +135,7 @@ class AuthController extends Controller
             'token_type' => 'bearer',
             'expires_in' => auth('api')
                 ->factory()
-                ->getTTL(), //hour*seconds
+                ->getTTL()*600000000000, //hour*seconds
         ]);
     }
 
@@ -156,8 +153,6 @@ class AuthController extends Controller
                 return response()->json([
                     //hour*seconds
                     'user' => $user,
-
-
                 ]);
             } else if ($user->userType == "MENTOR") {
                 $user->makeHidden(['verified_email', 'batchNo', 'dob', 'registrationDate', 'address', 'bloodGroup', 'verified_code', 'category_id']);

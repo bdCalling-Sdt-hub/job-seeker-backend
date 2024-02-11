@@ -33,30 +33,26 @@ Route::post('/add-category',[CategoryController::class,'addCategory']);
 //package
 Route::post('/add-package',[PackageController::class,'addPackage']);
 
-// Subscription
-Route::post('/user-subscription',[SubscriptionController::class,'userSubscription']);
+//Route::middleware(['user'])->group(function () {
+    //Filter and search
+    Route::get('/filter-story-by-category',[StoryController::class,'filterStoryByCategory']);
+    //story details in app
+    Route::get('/story-details',[StoryController::class,'storyDetails']);
+    //my subscription
+    Route::get('/my-subscription',[SubscriptionController::class,'mySubscription']);
+    // Subscription
+    Route::post('/user-subscription',[SubscriptionController::class,'userSubscription']);
+    //my story
+    Route::get('/my-story',[StoryController::class,'myStory']);
+    //delete story
+    Route::get('/delete-story',[StoryController::class,'deleteStory']);
+//});
 
-//add Story
-Route::post('/add-story',[StoryController::class,'addStory']);
-
-//Filter and search
-Route::get('/filter-story-by-category',[StoryController::class,'filterStoryByCategory']);
-
-//story details in app
-Route::get('/story-details',[StoryController::class,'storyDetails']);
-
-//my story
-Route::get('/my-story',[StoryController::class,'myStory']);
-
-//pending story
-Route::get('/pending-story',[StoryController::class,'pendingStory']);
-
-//delete story
-Route::get('/delete-story',[StoryController::class,'deleteStory']);
-
-//update story
+//Route::middleware(['payment.user'])->group(function () {
+    //add Story
+    Route::post('/add-story',[StoryController::class,'addStory']);
 // repost api
-Route::post('/edit-story',[StoryController::class,'editStory']);
-
-//my subscription
-Route::get('/my-subscription',[SubscriptionController::class,'mySubscription']);
+    Route::post('/edit-story',[StoryController::class,'editStory']);
+    //pending story
+    Route::get('/pending-story',[StoryController::class,'pendingStory']);
+//});

@@ -24,6 +24,7 @@ return new class extends Migration
             $table->longText('music')->nullable();
             $table->tinyInteger('music_type')->nullable();
             $table->tinyInteger('story_status')->default(0);
+            $table->boolean('archived')->default(false);
             $table->longText('description');
             $table->timestamps();
         });

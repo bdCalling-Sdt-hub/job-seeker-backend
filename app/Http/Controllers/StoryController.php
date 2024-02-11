@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Story;
 use App\Models\Subscription;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
 
@@ -12,17 +13,35 @@ class StoryController extends Controller
 {
     //
 
+//    public function guard()
+//    {
+//        return Auth::guard('api');
+//    }
+
     public function addStory(Request $request){
 
+        $check_user = $this->guard()->user();
+        return $check_user;
+
+        $inappropriateWords = ['word1', 'word2', 'word3'];
+        Validator::extend('no_inappropriate_words', function ($attribute, $value) use ($inappropriateWords) {
+            foreach ($inappropriateWords as $word) {
+                if (stripos($value, $word) !== false) {
+                    return false; // If any inappropriate word is found, return false
+                }
+            }
+            return true; // If no inappropriate words are found, return true
+        });
+
         $validator = Validator::make($request->all(),[
-            'user_id' => '',
-            'category_id' => '',
-            'subscription_id' => '',
-            'story_title' => '',
+            'user_id' => 'required',
+            'category_id' => 'required',
+            'subscription_id' => 'required',
+            'story_title' => 'required',
             'story_image.*' => 'required|mimes:jpeg,png,jpg,gif,svg',
             'music' => '',
             'music_type' => '',
-            'description' => '',
+            'description' => 'no_inappropriate_words',
             'story_status' => '',
         ]);
         if ($validator->fails()) {
@@ -72,7 +91,6 @@ class StoryController extends Controller
                 $story_music[] = $path;
             }
         }
-
         $story_image = array();
         if ($request->hasFile('story_image')) {
             foreach ($request->file('story_image') as $image) {
