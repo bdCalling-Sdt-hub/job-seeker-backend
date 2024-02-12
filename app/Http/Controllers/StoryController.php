@@ -13,12 +13,6 @@ class StoryController extends Controller
 {
     //
 
-
-//    public function guard()
-//    {
-//        return Auth::guard('api');
-//    }
-
     public function addStory(Request $request)
     {
         $inappropriateWords = ['word1', 'word2', 'word3'];
@@ -233,16 +227,19 @@ class StoryController extends Controller
         }
     }
 
-    public function editStory(Request $request){
-
-        //        $stories = Story::all();
-        //        return response()->json($stories);
-        //        $story_list = [];
-        //        foreach($stories as $story){
-        //            $story_list = [
-        //                ''
-        //            ]
-        //        }
+    public function archiveStory(){
+        $check_user = auth()->user()->id;
+        if ($check_user){
+            $archive_story = Story::where('user_id',$check_user)->get();
+            $formatted_stories = $archive_story->map(function($story){
+                $story->story_image = json_decode($story->story_image);
+                return $story;
+            });
+            return response()->json([
+                'message' => 'Archive Story',
+                'data' => $formatted_stories
+            ]);
+        }
     }
 
 }
