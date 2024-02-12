@@ -16,7 +16,6 @@ class Subscription extends Model
     }
 
     // Abdur Rahman //
-
     public function user(): BelongsTo
     {
         return $this->belongsTo(User::class);

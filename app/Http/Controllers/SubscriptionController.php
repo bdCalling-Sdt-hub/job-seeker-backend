@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\subscription;
 use App\Models\User;
 use Illuminate\Http\Request;
+use Carbon\Carbon;
 
 class SubscriptionController extends Controller
 {
@@ -36,9 +37,15 @@ class SubscriptionController extends Controller
             $subscription->save();
             if ($subscription) {
                 $user = User::find($auth_user);
+                $subscriptions = Subscription::where('user_id',$auth_user)->first();
                 if ($user) {
                     $user->user_status = 1;
                     $user->save();
+                }
+                if ($subscriptions){
+                    $newEndDate = Carbon::parse($subscription->created_at)->addMonth();
+                    $subscription->end_date = $newEndDate;
+                    $subscription->update();
                 }
                 return response()->json([
                     'status' => 'success',
@@ -61,6 +68,24 @@ class SubscriptionController extends Controller
                 'message' => 'Your transaction has been failed'
             ]);
         }
+    }
+
+    public function mySubscription(Request $request){
+        $auth_user_id = auth()->user()->id;
+        $my_subscription = Subscription::with('package')->where('user_id',$auth_user_id)->first();
+
+        if ($my_subscription){
+            return response()->json([
+                'message' => 'success',
+                'data' => $my_subscription
+            ]);
+        }else {
+            return response()->json([
+                'message' => 'success',
+                'data' => []
+            ]);
+        }
+
     }
 
 

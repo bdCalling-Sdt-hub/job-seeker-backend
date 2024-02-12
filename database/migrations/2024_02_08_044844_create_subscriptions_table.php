@@ -24,6 +24,7 @@ return new class extends Migration
             $table->text('currency');
             $table->text('tx_ref');
             $table->string('status');
+            $table->dateTime('end_date')->nullable();
             $table->timestamps();
         });
     }
