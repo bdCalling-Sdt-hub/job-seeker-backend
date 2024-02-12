@@ -5,7 +5,6 @@ namespace App\Console\Commands;
 use App\Models\Story;
 use App\Models\Subscription;
 use Illuminate\Console\Command;
-use Carbon\Carbon;
 
 class ArchiveExpiredStories extends Command
 {

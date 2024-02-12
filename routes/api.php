@@ -81,7 +81,7 @@ Route::get('/show/category', [CategoryController::class, 'show_category']);
 Route::post('/add-package', [PackageController::class, 'addPackage']);
 
 
-Route::middleware(['user'])->group(function () {
+Route::middleware(['user','auth:api'])->group(function () {
     //Filter and search
     Route::get('/filter-story-by-category',[StoryController::class,'filterStoryByCategory']);
     //story details in app
@@ -94,17 +94,13 @@ Route::middleware(['user'])->group(function () {
     Route::get('/my-story',[StoryController::class,'myStory']);
     //delete story
     Route::get('/delete-story',[StoryController::class,'deleteStory']);
+    //archive story
+    Route::get('/archive-story',[StoryController::class,'archiveStory']);
 });
 // Subscription
 Route::post('/user-subscription', [SubscriptionController::class, 'userSubscription']);
 
-// add Story
-Route::post('/add-story', [StoryController::class, 'addStory']);
-
-
-// show Story
-
-Route::middleware(['payment.user'])->group(function () {
+Route::middleware(['payment.user','auth:api'])->group(function () {
     //add Story
     Route::post('/add-story',[StoryController::class,'addStory']);
 // repost api
