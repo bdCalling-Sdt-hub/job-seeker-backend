@@ -6,11 +6,11 @@ use App\Http\Controllers\Controller;
 use App\Models\Story;
 use Illuminate\Http\Request;
 
-class StoryController extends Controller
+class AdminStoryController extends Controller
 {
     public function user_story(Request $request)
     {
-        return $category = $request->catId;
+        $category = $request->catId;
         if ($category) {
             $user_story = Story::where('category_id', $category)->where('story_status', 1)->orderBy('id', 'desc')->paginate(10);
         } else {

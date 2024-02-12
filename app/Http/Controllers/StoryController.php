@@ -13,17 +13,14 @@ class StoryController extends Controller
 {
     //
 
-<<<<<<< HEAD
+
 //    public function guard()
 //    {
 //        return Auth::guard('api');
 //    }
 
-    public function addStory(Request $request){
-
-        $check_user = $this->guard()->user();
-        return $check_user;
-
+    public function addStory(Request $request)
+    {
         $inappropriateWords = ['word1', 'word2', 'word3'];
         Validator::extend('no_inappropriate_words', function ($attribute, $value) use ($inappropriateWords) {
             foreach ($inappropriateWords as $word) {
@@ -33,21 +30,11 @@ class StoryController extends Controller
             }
             return true; // If no inappropriate words are found, return true
         });
-
-        $validator = Validator::make($request->all(),[
-            'user_id' => 'required',
-            'category_id' => 'required',
-            'subscription_id' => 'required',
-            'story_title' => 'required',
-=======
-    public function addStory(Request $request)
-    {
         $validator = Validator::make($request->all(), [
             'user_id' => '',
             'category_id' => '',
             'subscription_id' => '',
             'story_title' => '',
->>>>>>> 16bb6a890d5928aa98318b5fdabe808ff2308f6e
             'story_image.*' => 'required|mimes:jpeg,png,jpg,gif,svg',
             'music' => '',
             'music_type' => '',
@@ -123,7 +110,6 @@ class StoryController extends Controller
 
     public function filterStoryByCategory(Request $request)
     {
-<<<<<<< HEAD
         $category_id = $request->category_id;
         $category_name = $request->category_name;
         $story_title = $request->story_title;
@@ -249,7 +235,6 @@ class StoryController extends Controller
 
     public function editStory(Request $request){
 
-=======
         //        $stories = Story::all();
         //        return response()->json($stories);
         //        $story_list = [];
@@ -258,7 +243,6 @@ class StoryController extends Controller
         //                ''
         //            ]
         //        }
->>>>>>> 16bb6a890d5928aa98318b5fdabe808ff2308f6e
     }
 
 }

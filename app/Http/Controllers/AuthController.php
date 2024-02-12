@@ -313,7 +313,7 @@ class AuthController extends Controller
 
 
     }
-    
+
 
 
 }

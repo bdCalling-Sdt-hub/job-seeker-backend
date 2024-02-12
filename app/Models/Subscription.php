@@ -14,12 +14,8 @@ class Subscription extends Model
     {
         return $this->belongsTo(Package::class);
     }
-<<<<<<< HEAD
-=======
 
     // Abdur Rahman //
-
->>>>>>> 480dc518a1adff140653c5c9d847fe739cd793b2
     public function user(): BelongsTo
     {
         return $this->belongsTo(User::class);
