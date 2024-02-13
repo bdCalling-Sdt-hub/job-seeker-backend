@@ -72,4 +72,23 @@ class AdminStoryController extends Controller
             ], 402);
         }
     }
+
+    public function story_details($id)
+    {
+        $story_details = Story::where('id', $id)->with('category')->first();
+        if ($story_details) {
+            $story_details['story_image'] = json_decode($story_details['story_image'], true);
+        }
+        if ($story_details) {
+            return response()->json([
+                'status' => 'success',
+                'data' => $story_details
+            ]);
+        } else {
+            return response()->json([
+                'status' => 'success',
+                'data' => []
+            ]);
+        }
+    }
 }

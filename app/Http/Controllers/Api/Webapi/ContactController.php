@@ -86,6 +86,9 @@ class ContactController extends Controller
     {
         $storyDetails = Story::where('id', $id)->first();
         if ($storyDetails) {
+            $storyDetails['story_image'] = json_decode($storyDetails['story_image']);
+        }
+        if ($storyDetails) {
             return response()->json([
                 'status' => 'success',
                 'data' => $storyDetails
