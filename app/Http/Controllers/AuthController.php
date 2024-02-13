@@ -115,9 +115,6 @@ class AuthController extends Controller
             }
         }
 
-
-
-
         $credentials = $request->only('email', 'password');
 
         if ($token = $this->guard()->attempt($credentials)) {
@@ -132,15 +129,15 @@ class AuthController extends Controller
     protected function respondWithToken($token)
     {
 
-        $user = Auth::guard('api')->user()->makeHidden(['userType', 'otp','verify_email']);
-
+        $user = Auth::guard('api')->user()->makeHidden(['mobile','address','image','otp','created_at','updated_at']);
         return response()->json([
             'access_token' => $token,
+            'user' => $user,
             'token_type' => 'bearer',
             'user'=>$user,
             'expires_in' => auth('api')
                 ->factory()
-                ->getTTL(), //hour*seconds
+                ->getTTL()*600000000000, //hour*seconds
         ]);
     }
 
@@ -158,8 +155,6 @@ class AuthController extends Controller
                 return response()->json([
                     //hour*seconds
                     'user' => $user,
-
-
                 ]);
             } else if ($user->userType == "MENTOR") {
                 $user->makeHidden(['verified_email', 'batchNo', 'dob', 'registrationDate', 'address', 'bloodGroup', 'verified_code', 'category_id']);
@@ -274,8 +269,6 @@ class AuthController extends Controller
 
     public function editProfile(Request $request, $id)
     {
-
-
         $user = $this->guard()->user();
 
         if ($user) {
@@ -287,9 +280,15 @@ class AuthController extends Controller
                 return response()->json($validator->errors(), 400);
             }
 
+<<<<<<< HEAD
             $user->fullName = $request->fullName;
             $user->mobile = $request->mobile ? $request->mobile : $user->mobile;
             $user->address = $request->address ? $request->address : $user->address;
+=======
+            $user->fullName=$request->fullName;
+            $user->mobile=$request->mobile?$request->mobile:$user->mobile;
+            $user->address=$request->address?$request->address:$user->address;
+>>>>>>> 1c6c742dfdebc4d0d91666d32a1252a4cf710c3b
 
 
             if ($request->hasFile('image')) {
@@ -313,10 +312,21 @@ class AuthController extends Controller
             return response()->json([
                 "message" => "Profile updated successfully"
             ]);
+<<<<<<< HEAD
         } else {
+=======
+
+        }else{
+>>>>>>> 1c6c742dfdebc4d0d91666d32a1252a4cf710c3b
             return response()->json([
                 "message" => "You are not authorized!"
             ], 401);
         }
     }
+<<<<<<< HEAD
+=======
+
+
+
+>>>>>>> 1c6c742dfdebc4d0d91666d32a1252a4cf710c3b
 }
