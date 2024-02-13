@@ -34,6 +34,8 @@ class StoryController extends Controller
             'music_type' => '',
             'description' => 'no_inappropriate_words',
             'story_status' => '',
+            'birth_date' => 'required',
+            'death_date' =>'required',
         ]);
         if ($validator->fails()) {
             return response()->json($validator->errors(), 400);
@@ -73,6 +75,8 @@ class StoryController extends Controller
         $story->story_title = $request->story_title;
         $story->music_type = $request->music_type;
         $story->description = $request->description;
+        $story->birth_date = $request->birth_date;
+        $story->death_date = $request->death_date;
         $story_music = array();
         if ($request->hasFile('music')) {
             foreach ($request->file('music') as $music) {
