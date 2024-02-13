@@ -105,9 +105,10 @@ Route::middleware(['user','auth:api'])->group(function () {
     Route::get('/delete-story',[StoryController::class,'deleteStory']);
     //archive story
     Route::get('/archive-story',[StoryController::class,'archiveStory']);
+    // Subscription
+    Route::post('/user-subscription', [SubscriptionController::class, 'userSubscription']);
 });
-// Subscription
-Route::post('/user-subscription', [SubscriptionController::class, 'userSubscription']);
+
 
 Route::middleware(['payment.user','auth:api'])->group(function () {
     //add Story
@@ -117,7 +118,3 @@ Route::middleware(['payment.user','auth:api'])->group(function () {
     //pending story
     Route::get('/pending-story',[StoryController::class,'pendingStory']);
 });
-
-Route::get('/show-story', [Storycontroller::class, 'showStory']);
-
-Route::get('/show-story', [Storycontroller::class, 'showStory']);

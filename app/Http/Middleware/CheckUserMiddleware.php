@@ -37,6 +37,4 @@ class CheckUserMiddleware
             ], 401);
         }
     }
-
-
 }

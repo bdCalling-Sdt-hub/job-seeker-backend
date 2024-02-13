@@ -129,9 +129,10 @@ class AuthController extends Controller
     protected function respondWithToken($token)
     {
 
-        $user = Auth::user();
+        $user = Auth::guard('api')->user()->makeHidden(['mobile','address','image','otp','created_at','updated_at']);
         return response()->json([
             'access_token' => $token,
+            'user' => $user,
             'token_type' => 'bearer',
             'expires_in' => auth('api')
                 ->factory()

@@ -26,6 +26,8 @@ return new class extends Migration
             $table->tinyInteger('story_status')->default(0);
             $table->boolean('archived')->default(false);
             $table->longText('description');
+            $table->date('birth_date');
+            $table->date('death_date');
             $table->timestamps();
         });
     }
