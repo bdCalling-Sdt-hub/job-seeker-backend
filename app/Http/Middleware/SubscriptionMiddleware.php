@@ -9,19 +9,13 @@ use Symfony\Component\HttpFoundation\Response;
 
 class SubscriptionMiddleware
 {
-    public function guard()
-    {
-        return Auth::guard('api');
-    }
-
     public function handle(Request $request, Closure $next): Response
     {
-
-        if ($this->guard()->user()->userType == 'USER' && $this->guard()->user()->user_status == 1 ){
+        if (auth()->check() && auth()->user()->userType == 'USER' && auth()->user()->user_status == 1 ){
             return $next($request);
         }
         return response()->json([
-            'message' => 'Subscription is not complete yet',
+            'message' => 'Subscription is not complete yet'
         ],402);
     }
 }
