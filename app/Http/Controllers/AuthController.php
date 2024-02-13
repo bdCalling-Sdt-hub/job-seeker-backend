@@ -18,7 +18,7 @@ class AuthController extends Controller
     public function register(Request $request)
 
     {
-            $user = User::where('email', $request->email)
+        $user = User::where('email', $request->email)
             ->where('verify_email', 0)
             ->first();
 
@@ -40,22 +40,22 @@ class AuthController extends Controller
                 'email' => 'required|string|email|max:60|unique:users|contains_dot',
                 'password' => 'required|string|min:6|confirmed',
                 'userType' => ['required', Rule::in(['USER', 'ADMIN', 'SUPER ADMIN'])],
-             ], [
+            ], [
                 'email.contains_dot' => 'without (.) Your email is invalid',
             ]);
             if ($validator->fails()) {
-                return response()->json(["errors"=>$validator->errors()], 400);
+                return response()->json(["message" => $validator->errors()], 400);
             }
 
 
-           $userData = [
+            $userData = [
                 'fullName' => $request->fullName,
                 'email' => $request->email,
                 'password' => Hash::make($request->password),
                 'userType' => $request->userType,
                 'otp' =>  Str::random(6),
-                'verify_email'=>0
-           ];
+                'verify_email' => 0
+            ];
 
             $user = User::create($userData);
 
@@ -110,7 +110,7 @@ class AuthController extends Controller
         $userData = User::where("email", $request->email)->first();
         //return gettype($userData->otp);
         if ($userData && Hash::check($request->password, $userData->password)) {
-            if ($userData->verify_email == 0){
+            if ($userData->verify_email == 0) {
                 return response()->json(['message' => 'Your email is not verified'], 401);
             }
         }
@@ -132,10 +132,12 @@ class AuthController extends Controller
     protected function respondWithToken($token)
     {
 
-        $user = Auth::user();
+        $user = Auth::guard('api')->user()->makeHidden(['userType', 'otp','verify_email']);
+
         return response()->json([
             'access_token' => $token,
             'token_type' => 'bearer',
+            'user'=>$user,
             'expires_in' => auth('api')
                 ->factory()
                 ->getTTL(), //hour*seconds
@@ -276,7 +278,7 @@ class AuthController extends Controller
 
         $user = $this->guard()->user();
 
-        if($user){
+        if ($user) {
             $validator = Validator::make($request->all(), [
                 'fullName' => 'required|string|min:2|max:100',
             ]);
@@ -285,10 +287,10 @@ class AuthController extends Controller
                 return response()->json($validator->errors(), 400);
             }
 
-            $user->fullName=$request->fullName;
-            $user->mobile=$request->mobile?$request->mobile:$user->mobile;
-            $user->address=$request->address?$request->address:$user->address;
-            
+            $user->fullName = $request->fullName;
+            $user->mobile = $request->mobile ? $request->mobile : $user->mobile;
+            $user->address = $request->address ? $request->address : $user->address;
+
 
             if ($request->hasFile('image')) {
                 $file = $request->file('image');
@@ -311,18 +313,10 @@ class AuthController extends Controller
             return response()->json([
                 "message" => "Profile updated successfully"
             ]);
-
-
-
-
-        }else{
+        } else {
             return response()->json([
                 "message" => "You are not authorized!"
             ], 401);
         }
-
-
     }
-
-
 }
