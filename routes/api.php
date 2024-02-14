@@ -9,6 +9,7 @@ use App\Http\Controllers\Api\Webapi\ContactController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\PackageController;
+use App\Http\Controllers\PaymentController;
 use App\Http\Controllers\StoryController;
 use App\Http\Controllers\SubscriptionController;
 use Illuminate\Http\Request;
@@ -39,6 +40,8 @@ Route::get('/about', [ContactController::class, 'about']);
 Route::get('/pricing', [ContactController::class, 'priceing']);
 Route::get('/terms/condition', [ContactController::class, 'terms_condition']);
 Route::get('/privacy/policy', [ContactController::class, 'privacy']);
+
+Route::get('/show-package',[PackageController::class,'showPackage']);
 
 // ================== Admin Api ====================//
 
@@ -88,7 +91,7 @@ Route::get('/income', [DashboardController::class, 'income']);
 Route::post('/add-category', [CategoryController::class, 'addCategory']);
 Route::get('/show/category', [CategoryController::class, 'show_category']);
 // package
-Route::post('/add-package', [PackageController::class, 'addPackage'])
+Route::post('/add-package', [PackageController::class, 'addPackage']);
 
 Route::middleware(['user','auth:api'])->group(function () {
     //Filter and search
@@ -107,7 +110,12 @@ Route::middleware(['user','auth:api'])->group(function () {
     Route::get('/archive-story',[StoryController::class,'archiveStory']);
     // Subscription
     Route::post('/user-subscription', [SubscriptionController::class, 'userSubscription']);
+
 });
+
+
+//payment
+Route::post('/paypal-payment',[PaymentController::class,'paypalPayment']);
 
 
 Route::middleware(['payment.user','auth:api'])->group(function () {

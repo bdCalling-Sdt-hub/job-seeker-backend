@@ -132,7 +132,9 @@ class StoryController extends Controller
             });
         }
 
-        $story_list = $query->get();
+        $perPage = 2;
+        $story_list = $query->paginate($perPage);
+//        $story_list = $query->get();
 
         $formatted_stories = $story_list->map(function($story) {
             $story->story_image = json_decode($story->story_image);

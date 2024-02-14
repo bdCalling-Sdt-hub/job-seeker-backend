@@ -41,4 +41,18 @@ class PackageController extends Controller
         ],402);
 
     }
+
+    public function showPackage(){
+        $package_list = Package::get();
+
+        $formatted_package = $package_list->map(function($package){
+            $package->feature = json_decode($package->feature);
+            return $package;
+        });
+
+        return response()->json([
+            'message' => 'success',
+            'data' => $formatted_package
+        ]);
+    }
 }
