@@ -126,14 +126,136 @@ class DashboardController extends Controller
         $yearlySumAmount = Subscription::whereYear('created_at', Carbon::now()->year)
             ->sum('amount');
 
-        
-
         return response()->json([
             'total_income' => $total_income,
             'daily_income' => $dailyEarning,
             'weekly_income' => $weeklyTotalSum,
             'monthly_income' => $monthlySumAmount,
-            'yearly_income' => $yearlySumAmount
+            'yearly_income' => $yearlySumAmount,
+        ]);
+    }
+
+    public function daily_income(Request $request)
+    {
+        $packageId = $request->packagId;
+
+        if ($packageId) {
+            $transetion = Subscription::where('package_id', $packageId)->whereDate('created_at', Carbon::today())->with('user', 'package')->paginate(10);
+        } else {
+            $transetion = Subscription::whereDate('created_at', Carbon::today())->with('user', 'package')->paginate(10);
+        }
+        return response()->json([
+            'daily_transection' => $transetion
+        ]);
+    }
+
+    public function daily_income_details($id)
+    {
+        $daily_income = Subscription::where('id', $id)->with('user', 'package')->first();
+        if ($daily_income) {
+            return response()->json([
+                'status' => 'success',
+                'data' => $daily_income
+            ]);
+        } else {
+            return response()->json([
+                'status' => false,
+                'data' => []
+            ]);
+        }
+    }
+
+    // public function weekly_income(Request $request)
+    // {
+    //     $packageId = $request->packagId;
+
+    //     if ($packageId) {
+    //         $weeklyTotalSum = Subscription::select(
+    //             DB::raw('(SUM(amount, user_id)) as weekly_income')
+    //         )
+    //             ->whereYear('created_at', Carbon::now()->year)
+    //             ->get()
+    //             ->sum('weekly_income');
+
+    //         // $week_transetion = Subscription::where('package_id', $packageId)->whereDate('created_at', Carbon::today())->with('user', 'package')->paginate(10);
+    //     } else {
+    //         // $transetion = Subscription::whereDate('created_at', Carbon::today())->with('user', 'package')->paginate(10);
+    //         $weeklyTotalSum = Subscription::select(
+    //             DB::raw('(SUM(amount)) as weekly_income')
+    //         )
+    //             ->whereYear('created_at', Carbon::now()->year)
+    //             ->get()
+    //             ->sum('weekly_income');
+    //     }
+    //     return response()->json([
+    //         'wekly_transection' => $weeklyTotalSum
+    //     ]);
+    // }
+
+    public function weekly_income(Request $request)
+    {
+        $packageId = $request->packageId;
+
+        // Initialize an array to store weekly data
+        $weeklyData = [];
+
+        // Start of the current week
+        $startOfWeek = Carbon::today();
+        $endOfWeek = Carbon::now()->endOfWeek();
+
+        // Iterate through each week starting from the current week and going back in time
+        for ($i = 0; $i < 5; $i++) {  // Assuming you want data for the past 5 weeks
+            // Calculate start and end of the current week
+            $startOfWeek = Carbon::today()->subWeeks($i);  // Use current date as start of the period
+            $endOfWeek = Carbon::now()->endOfWeek()->subWeeks($i);
+
+            // Query to get weekly sums
+            $query = Subscription::select(
+                DB::raw('SUM(amount) as weekly_amount'),
+                DB::raw('COUNT(user_id) as total_users')
+            )
+                ->whereBetween('created_at', [$startOfWeek, $endOfWeek]);
+
+            // If packageId is provided, add package_id condition to the query
+            if ($packageId) {
+                $query->where('package_id', $packageId);
+            }
+
+            // Execute the query
+            $weeklySum = $query->first();
+
+            // Store weekly data
+            $weeklyData[] = [
+                'week_serial' => $i + 1,
+                'start_of_week' => $startOfWeek->toDateString(),
+                'end_of_week' => $endOfWeek->toDateString(),
+                'weekly_amount' => $weeklySum->weekly_amount ?? 0,
+                'total_users' => $weeklySum->total_users ?? 0
+            ];
+        }
+
+        return response()->json($weeklyData);
+    }
+
+    public function monthIncome()
+    {
+        $monthIncom = Subscription::select(
+            DB::raw('(SUM(amount)) as count'),
+            DB::raw('MONTHNAME(created_at) as month_name')
+        )
+            ->whereYear('created_at', date('Y'))
+            ->groupBy('month_name')
+            ->get()
+            ->toArray();
+
+        return response()->json([
+            'status' => 'success',
+            'monthly_income' => $monthIncom,
+        ]);
+
+        return response()->json([
+            'status' => 'success',
+            'data' => $monthIncom
         ]);
     }
 }
