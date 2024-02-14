@@ -59,9 +59,6 @@ class AuthController extends Controller
 
             $user = User::create($userData);
 
-
-
-
             Mail::to($request->email)->send(new OtpMail($user->otp));
             return response()->json([
                 'message' => 'Please check your email to valid your email',
@@ -122,7 +119,7 @@ class AuthController extends Controller
             return $this->respondWithToken($token);
         }
 
-        return response()->json(['error' => 'Your credential is wrong'], 401);
+        return response()->json(['message' => 'Your credential is wrong'], 402);
     }
 
 
@@ -161,8 +158,6 @@ class AuthController extends Controller
                 return response()->json([
 
                     'user' => $user
-
-
                 ]);
             } else {
                 $user->makeHidden(['verified_email', 'verified_code', 'batchNo', 'dob', 'registrationDate', 'address', 'expert', 'category_id']);
