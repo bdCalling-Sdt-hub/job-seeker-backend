@@ -275,15 +275,9 @@ class AuthController extends Controller
                 return response()->json($validator->errors(), 400);
             }
 
-<<<<<<< HEAD
             $user->fullName = $request->fullName;
             $user->mobile = $request->mobile ? $request->mobile : $user->mobile;
             $user->address = $request->address ? $request->address : $user->address;
-=======
-            $user->fullName=$request->fullName;
-            $user->mobile=$request->mobile?$request->mobile:$user->mobile;
-            $user->address=$request->address?$request->address:$user->address;
->>>>>>> 1c6c742dfdebc4d0d91666d32a1252a4cf710c3b
 
 
             if ($request->hasFile('image')) {
@@ -307,21 +301,45 @@ class AuthController extends Controller
             return response()->json([
                 "message" => "Profile updated successfully"
             ]);
-<<<<<<< HEAD
         } else {
-=======
 
-        }else{
->>>>>>> 1c6c742dfdebc4d0d91666d32a1252a4cf710c3b
             return response()->json([
                 "message" => "You are not authorized!"
             ], 401);
         }
     }
-<<<<<<< HEAD
-=======
 
+    //jusef
+    public function resendOtp(Request $request)
+    {
+        $user = User::where('email', $request->email)
+            ->where('verify_email', 0)
+            ->first();
 
+        if (!$user) {
+            return response()->json(['message' => 'User not found or email already verified'], 404);
+        }
 
->>>>>>> 1c6c742dfdebc4d0d91666d32a1252a4cf710c3b
+        // Check if OTP resend is allowed (based on time expiration)
+        $currentTime = now();
+        $lastResentAt = $user->last_otp_sent_at; // Assuming you have a column in your users table to track the last OTP sent time
+
+        // Define your expiration time (e.g., 5 minutes)
+        $expirationTime = 5; // in minutes
+
+        if ($lastResentAt && $lastResentAt->addMinutes($expirationTime)->isFuture()) {
+            // Resend not allowed yet
+            return response()->json(['message' => 'You can only resend OTP once every ' . $expirationTime . ' minutes'], 400);
+        }
+
+        // Generate new OTP
+        $newOtp = Str::random(6);
+        Mail::to($user->email)->send(new OtpMail($newOtp));
+
+        // Update user data
+        $user->update(['otp' => $newOtp]);
+        $user->update(['last_otp_sent_at' => $currentTime]);
+
+        return response()->json(['message' => 'OTP resent successfully']);
+    }
 }

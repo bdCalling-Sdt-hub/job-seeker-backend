@@ -15,6 +15,7 @@ use App\Http\Controllers\SubscriptionController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
+
 Route::group([
     ['middleware' => 'auth:api']
 ], function ($router) {
@@ -27,6 +28,7 @@ Route::group([
     Route::post('/reset-pass', [AuthController::class, 'resetPassword']);
     Route::post('/update-pass', [AuthController::class, 'updatePassword']);
     Route::put('/profile/edit/{id}', [AuthController::class, 'editProfile']);
+    Route::post('/resend-otp',[AuthController::class,'resendOtp']);
 });
 
 // ================ WEB API ================== //
@@ -42,8 +44,46 @@ Route::get('/terms/condition', [ContactController::class, 'terms_condition']);
 Route::get('/privacy/policy', [ContactController::class, 'privacy']);
 
 Route::get('/show-package',[PackageController::class,'showPackage']);
+// category
+Route::post('/add-category', [CategoryController::class, 'addCategory']);
+Route::get('/show/category', [CategoryController::class, 'show_category']);
+// package
+Route::post('/add-package', [PackageController::class, 'addPackage']);
 
-// ================== Admin Api ====================//
+Route::middleware(['user','auth:api'])->group(function () {
+    //Filter and search
+    Route::get('/filter-story-by-category',[StoryController::class,'filterStoryByCategory']);
+    //story details in app
+    Route::get('/story-details',[StoryController::class,'storyDetails']);
+    //my subscription
+    Route::get('/my-subscription',[SubscriptionController::class,'mySubscription']);
+    // Subscription
+    Route::post('/user-subscription', [SubscriptionController::class, 'userSubscription']);
+    // my story
+    Route::get('/my-story', [StoryController::class, 'myStory']);
+    // delete story
+    Route::get('/delete-story', [StoryController::class, 'deleteStory']);
+    // archive story
+    Route::get('/archive-story', [StoryController::class, 'archiveStory']);
+    // Subscription
+    Route::post('/user-subscription', [SubscriptionController::class, 'userSubscription']);
+
+});
+
+//payment
+Route::post('/paypal-payment',[PaymentController::class,'paypalPayment']);
+Route::middleware(['payment.user','auth:api'])->group(function () {
+    //add Story
+    Route::post('/add-story',[StoryController::class,'addStory']);
+// repost api
+    Route::post('/edit-story',[StoryController::class,'editStory']);
+    //pending story
+    Route::get('/pending-story',[StoryController::class,'pendingStory']);
+});
+
+Route::middleware(['admin','auth:api'])->group(function () {
+   
+  // ================== Admin Api ====================//
 
 Route::get('/user/list', [UserController::class, 'userList']);
 
@@ -90,42 +130,4 @@ Route::get('/daily/income', [DashboardController::class, 'daily_income']);
 Route::get('/daily/income/details/{id}', [DashboardController::class, 'daily_income_details']);
 Route::get('/weekly/income', [DashboardController::class, 'weekly_income']);
 Route::get('/month/income', [DashboardController::class, 'monthIncome']);
-
-// category
-Route::post('/add-category', [CategoryController::class, 'addCategory']);
-Route::get('/show/category', [CategoryController::class, 'show_category']);
-// package
-Route::post('/add-package', [PackageController::class, 'addPackage']);
-
-Route::middleware(['user','auth:api'])->group(function () {
-    //Filter and search
-    Route::get('/filter-story-by-category',[StoryController::class,'filterStoryByCategory']);
-    //story details in app
-    Route::get('/story-details',[StoryController::class,'storyDetails']);
-    //my subscription
-    Route::get('/my-subscription',[SubscriptionController::class,'mySubscription']);
-    // Subscription
-    Route::post('/user-subscription', [SubscriptionController::class, 'userSubscription']);
-    // my story
-    Route::get('/my-story', [StoryController::class, 'myStory']);
-    // delete story
-    Route::get('/delete-story', [StoryController::class, 'deleteStory']);
-    // archive story
-    Route::get('/archive-story', [StoryController::class, 'archiveStory']);
-    // Subscription
-    Route::post('/user-subscription', [SubscriptionController::class, 'userSubscription']);
-
-});
-
-//payment
-Route::post('/paypal-payment',[PaymentController::class,'paypalPayment']);
-
-
-Route::middleware(['payment.user','auth:api'])->group(function () {
-    //add Story
-    Route::post('/add-story',[StoryController::class,'addStory']);
-// repost api
-    Route::post('/edit-story',[StoryController::class,'editStory']);
-    //pending story
-    Route::get('/pending-story',[StoryController::class,'pendingStory']);
 });
