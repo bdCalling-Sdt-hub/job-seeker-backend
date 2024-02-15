@@ -82,10 +82,14 @@ Route::get('/details/story/{id}', [AdminStoryController::class, 'story_details']
 Route::get('/dashboard', [DashboardController::class, 'count_category_story']);
 Route::get('/recent/transection', [DashboardController::class, 'recent_transection']);
 Route::get('/transection/details/{id}', [DashboardController::class, 'transetion_details']);
-
+Route::get('/month/income/ratio', [DashboardController::class, 'monthIncome_ratio']);
 // =================== INCOME ============================//
 
 Route::get('/income', [DashboardController::class, 'income']);
+Route::get('/daily/income', [DashboardController::class, 'daily_income']);
+Route::get('/daily/income/details/{id}', [DashboardController::class, 'daily_income_details']);
+Route::get('/weekly/income', [DashboardController::class, 'weekly_income']);
+Route::get('/month/income', [DashboardController::class, 'monthIncome']);
 
 // category
 Route::post('/add-category', [CategoryController::class, 'addCategory']);
@@ -101,18 +105,17 @@ Route::middleware(['user','auth:api'])->group(function () {
     //my subscription
     Route::get('/my-subscription',[SubscriptionController::class,'mySubscription']);
     // Subscription
-    Route::post('/user-subscription',[SubscriptionController::class,'userSubscription']);
-    //my story
-    Route::get('/my-story',[StoryController::class,'myStory']);
-    //delete story
-    Route::get('/delete-story',[StoryController::class,'deleteStory']);
-    //archive story
-    Route::get('/archive-story',[StoryController::class,'archiveStory']);
+    Route::post('/user-subscription', [SubscriptionController::class, 'userSubscription']);
+    // my story
+    Route::get('/my-story', [StoryController::class, 'myStory']);
+    // delete story
+    Route::get('/delete-story', [StoryController::class, 'deleteStory']);
+    // archive story
+    Route::get('/archive-story', [StoryController::class, 'archiveStory']);
     // Subscription
     Route::post('/user-subscription', [SubscriptionController::class, 'userSubscription']);
 
 });
-
 
 //payment
 Route::post('/paypal-payment',[PaymentController::class,'paypalPayment']);
