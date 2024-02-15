@@ -44,8 +44,6 @@ Route::get('/terms/condition', [ContactController::class, 'terms_condition']);
 Route::get('/privacy/policy', [ContactController::class, 'privacy']);
 
 Route::get('/show-package',[PackageController::class,'showPackage']);
-
-
 // category
 Route::post('/add-category', [CategoryController::class, 'addCategory']);
 Route::get('/show/category', [CategoryController::class, 'show_category']);
@@ -60,18 +58,17 @@ Route::middleware(['user','auth:api'])->group(function () {
     //my subscription
     Route::get('/my-subscription',[SubscriptionController::class,'mySubscription']);
     // Subscription
-    Route::post('/user-subscription',[SubscriptionController::class,'userSubscription']);
-    //my story
-    Route::get('/my-story',[StoryController::class,'myStory']);
-    //delete story
-    Route::get('/delete-story',[StoryController::class,'deleteStory']);
-    //archive story
-    Route::get('/archive-story',[StoryController::class,'archiveStory']);
+    Route::post('/user-subscription', [SubscriptionController::class, 'userSubscription']);
+    // my story
+    Route::get('/my-story', [StoryController::class, 'myStory']);
+    // delete story
+    Route::get('/delete-story', [StoryController::class, 'deleteStory']);
+    // archive story
+    Route::get('/archive-story', [StoryController::class, 'archiveStory']);
     // Subscription
     Route::post('/user-subscription', [SubscriptionController::class, 'userSubscription']);
 
 });
-
 
 //payment
 Route::post('/paypal-payment',[PaymentController::class,'paypalPayment']);
@@ -85,47 +82,52 @@ Route::middleware(['payment.user','auth:api'])->group(function () {
 });
 
 Route::middleware(['admin','auth:api'])->group(function () {
-    // ================== Admin Api ====================//
+   
+  // ================== Admin Api ====================//
 
-    Route::get('/user/list', [UserController::class, 'userList']);
+Route::get('/user/list', [UserController::class, 'userList']);
 
-    Route::get('/package/show', [UserController::class, 'package']);
-    Route::get('/package/details/{id}', [UserController::class, 'userDetails']);
-    Route::get('/search/subscrib/user', [UserController::class, 'search_subscriber']);
+Route::get('/package/show', [UserController::class, 'package']);
+Route::get('/package/details/{id}', [UserController::class, 'userDetails']);
+Route::get('/search/subscrib/user', [UserController::class, 'search_subscriber']);
 
 // =================== SUBSCRIBE  ===================//
 
-    Route::get('/edit/subscription/{id}', [SubscribController::class, 'edit_subscribe_package']);
-    Route::post('/update/subscription', [SubscribController::class, 'update_package']);
-    Route::delete('/package/delete/{id}', [SubscribController::class, 'deletePackage']);
+Route::get('/edit/subscription/{id}', [SubscribController::class, 'edit_subscribe_package']);
+Route::post('/update/subscription', [SubscribController::class, 'update_package']);
+Route::delete('/package/delete/{id}', [SubscribController::class, 'deletePackage']);
 
 // ===================== SETTING ================//
 
-    Route::get('/setting', [AboutController::class, 'settings']);
+Route::get('/setting', [AboutController::class, 'settings']);
 
-    Route::get('/edit/privacy/{id}', [AboutController::class, 'edit_privacy']);
-    Route::post('/update/privacy', [AboutController::class, 'update_privacy']);
+Route::get('/edit/privacy/{id}', [AboutController::class, 'edit_privacy']);
+Route::post('/update/privacy', [AboutController::class, 'update_privacy']);
 
-    Route::get('/edit/terms/{id}', [AboutController::class, 'edit_terms']);
-    Route::post('/update/terms', [AboutController::class, 'update_terms']);
+Route::get('/edit/terms/{id}', [AboutController::class, 'edit_terms']);
+Route::post('/update/terms', [AboutController::class, 'update_terms']);
 
-    Route::get('/edit/about/{id}', [AboutController::class, 'edit_about']);
-    Route::post('/update/about', [AboutController::class, 'update_about']);
+Route::get('/edit/about/{id}', [AboutController::class, 'edit_about']);
+Route::post('/update/about', [AboutController::class, 'update_about']);
 
 // =================== STORY ==========================//
 
-    Route::get('/user/story', [AdminStoryController::class, 'user_story']);
-    Route::get('/story/request', [AdminStoryController::class, 'userRequest']);
-    Route::post('/story/status', [AdminStoryController::class, 'story_status']);
-    Route::get('/details/story/{id}', [AdminStoryController::class, 'story_details']);
+Route::get('/user/story', [AdminStoryController::class, 'user_story']);
+Route::get('/story/request', [AdminStoryController::class, 'userRequest']);
+Route::post('/story/status', [AdminStoryController::class, 'story_status']);
+Route::get('/details/story/{id}', [AdminStoryController::class, 'story_details']);
 
 // ============ DASH BOARD ====================//
 
-    Route::get('/dashboard', [DashboardController::class, 'count_category_story']);
-    Route::get('/recent/transection', [DashboardController::class, 'recent_transection']);
-    Route::get('/transection/details/{id}', [DashboardController::class, 'transetion_details']);
-
+Route::get('/dashboard', [DashboardController::class, 'count_category_story']);
+Route::get('/recent/transection', [DashboardController::class, 'recent_transection']);
+Route::get('/transection/details/{id}', [DashboardController::class, 'transetion_details']);
+Route::get('/month/income/ratio', [DashboardController::class, 'monthIncome_ratio']);
 // =================== INCOME ============================//
 
-    Route::get('/income', [DashboardController::class, 'income']);
+Route::get('/income', [DashboardController::class, 'income']);
+Route::get('/daily/income', [DashboardController::class, 'daily_income']);
+Route::get('/daily/income/details/{id}', [DashboardController::class, 'daily_income_details']);
+Route::get('/weekly/income', [DashboardController::class, 'weekly_income']);
+Route::get('/month/income', [DashboardController::class, 'monthIncome']);
 });

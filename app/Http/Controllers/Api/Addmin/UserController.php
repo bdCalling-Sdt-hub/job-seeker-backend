@@ -28,31 +28,31 @@ class UserController extends Controller
         }
     }
 
+    public function count_package_subscriber()
+    {
+        $package = Package::get();
+        $totalSubscribers = 0;
+        $package_data = [];
+
+        foreach ($package as $pack) {
+            $subCount = Subscription::where('package_id', $pack->id)->count();
+            $totalSubscribers += $subCount;
+            $package_data[] = [
+                'package_name' => $pack->package_name,
+                'story_count' => $subCount
+            ];
+        }
+
+        $package_data[] = [
+            'total_subscribers' => $totalSubscribers
+        ];
+
+        return response()->json($package_data);
+    }
+
     public function userList(Request $request)
     {
         $package_id = $request->id;
-
-        // Basic user//
-
-        $basic_pakege = Package::where('package_name', 'Quater Page')->first();
-        $basic_pakage_id = $basic_pakege->id;
-        $basic_subcription = Subscription::where('package_id', $basic_pakage_id)->count();
-
-        // Premium user //
-
-        $premium_pakege = Package::where('package_name', 'Half Page')->first();
-        $premium_pakage_id = $premium_pakege->id;
-        $premium_subcription = Subscription::where('package_id', $premium_pakage_id)->count();
-
-        // Gold user//
-
-        $gold_pakege = Package::where('package_name', 'Half Page')->first();
-        $gold_pakage_id = $gold_pakege->id;
-        $gold_subcription = Subscription::where('package_id', $premium_pakage_id)->count();
-
-        // Total user //
-
-        $total_user = User::count();
 
         if ($package_id == 0) {
             $subscribe_user = Subscription::with('user', 'package')->orderBy('id', 'desc')->paginate(10);
@@ -63,10 +63,8 @@ class UserController extends Controller
         if ($subscribe_user) {
             return response()->json([
                 'status' => 'success',
-                'total_user' => $total_user,
-                'quater_page' => $basic_subcription,
-                'half_page' => $premium_subcription,
-                'full_page' => $gold_subcription,
+                // 'total_user' => $total_user,
+                'subscribe_packag' => $this->count_package_subscriber(),
                 'data' => $subscribe_user
             ], 200);
         } else {
