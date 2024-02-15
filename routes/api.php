@@ -15,6 +15,7 @@ use App\Http\Controllers\SubscriptionController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
+
 Route::group([
     ['middleware' => 'auth:api']
 ], function ($router) {
@@ -27,6 +28,7 @@ Route::group([
     Route::post('/reset-pass', [AuthController::class, 'resetPassword']);
     Route::post('/update-pass', [AuthController::class, 'updatePassword']);
     Route::put('/profile/edit/{id}', [AuthController::class, 'editProfile']);
+    Route::post('/resend-otp',[AuthController::class,'resendOtp']);
 });
 
 // ================ WEB API ================== //
@@ -43,49 +45,6 @@ Route::get('/privacy/policy', [ContactController::class, 'privacy']);
 
 Route::get('/show-package',[PackageController::class,'showPackage']);
 
-// ================== Admin Api ====================//
-
-Route::get('/user/list', [UserController::class, 'userList']);
-
-Route::get('/package/show', [UserController::class, 'package']);
-Route::get('/package/details/{id}', [UserController::class, 'userDetails']);
-Route::get('/search/subscrib/user', [UserController::class, 'search_subscriber']);
-
-// =================== SUBSCRIBE  ===================//
-
-Route::get('/edit/subscription/{id}', [SubscribController::class, 'edit_subscribe_package']);
-Route::post('/update/subscription', [SubscribController::class, 'update_package']);
-Route::delete('/package/delete/{id}', [SubscribController::class, 'deletePackage']);
-
-// ===================== SETTING ================//
-
-Route::get('/setting', [AboutController::class, 'settings']);
-
-Route::get('/edit/privacy/{id}', [AboutController::class, 'edit_privacy']);
-Route::post('/update/privacy', [AboutController::class, 'update_privacy']);
-
-Route::get('/edit/terms/{id}', [AboutController::class, 'edit_terms']);
-Route::post('/update/terms', [AboutController::class, 'update_terms']);
-
-Route::get('/edit/about/{id}', [AboutController::class, 'edit_about']);
-Route::post('/update/about', [AboutController::class, 'update_about']);
-
-// =================== STORY ==========================//
-
-Route::get('/user/story', [AdminStoryController::class, 'user_story']);
-Route::get('/story/request', [AdminStoryController::class, 'userRequest']);
-Route::post('/story/status', [AdminStoryController::class, 'story_status']);
-Route::get('/details/story/{id}', [AdminStoryController::class, 'story_details']);
-
-// ============ DASH BOARD ====================//
-
-Route::get('/dashboard', [DashboardController::class, 'count_category_story']);
-Route::get('/recent/transection', [DashboardController::class, 'recent_transection']);
-Route::get('/transection/details/{id}', [DashboardController::class, 'transetion_details']);
-
-// =================== INCOME ============================//
-
-Route::get('/income', [DashboardController::class, 'income']);
 
 // category
 Route::post('/add-category', [CategoryController::class, 'addCategory']);
@@ -116,8 +75,6 @@ Route::middleware(['user','auth:api'])->group(function () {
 
 //payment
 Route::post('/paypal-payment',[PaymentController::class,'paypalPayment']);
-
-
 Route::middleware(['payment.user','auth:api'])->group(function () {
     //add Story
     Route::post('/add-story',[StoryController::class,'addStory']);
@@ -125,4 +82,50 @@ Route::middleware(['payment.user','auth:api'])->group(function () {
     Route::post('/edit-story',[StoryController::class,'editStory']);
     //pending story
     Route::get('/pending-story',[StoryController::class,'pendingStory']);
+});
+
+Route::middleware(['admin','auth:api'])->group(function () {
+    // ================== Admin Api ====================//
+
+    Route::get('/user/list', [UserController::class, 'userList']);
+
+    Route::get('/package/show', [UserController::class, 'package']);
+    Route::get('/package/details/{id}', [UserController::class, 'userDetails']);
+    Route::get('/search/subscrib/user', [UserController::class, 'search_subscriber']);
+
+// =================== SUBSCRIBE  ===================//
+
+    Route::get('/edit/subscription/{id}', [SubscribController::class, 'edit_subscribe_package']);
+    Route::post('/update/subscription', [SubscribController::class, 'update_package']);
+    Route::delete('/package/delete/{id}', [SubscribController::class, 'deletePackage']);
+
+// ===================== SETTING ================//
+
+    Route::get('/setting', [AboutController::class, 'settings']);
+
+    Route::get('/edit/privacy/{id}', [AboutController::class, 'edit_privacy']);
+    Route::post('/update/privacy', [AboutController::class, 'update_privacy']);
+
+    Route::get('/edit/terms/{id}', [AboutController::class, 'edit_terms']);
+    Route::post('/update/terms', [AboutController::class, 'update_terms']);
+
+    Route::get('/edit/about/{id}', [AboutController::class, 'edit_about']);
+    Route::post('/update/about', [AboutController::class, 'update_about']);
+
+// =================== STORY ==========================//
+
+    Route::get('/user/story', [AdminStoryController::class, 'user_story']);
+    Route::get('/story/request', [AdminStoryController::class, 'userRequest']);
+    Route::post('/story/status', [AdminStoryController::class, 'story_status']);
+    Route::get('/details/story/{id}', [AdminStoryController::class, 'story_details']);
+
+// ============ DASH BOARD ====================//
+
+    Route::get('/dashboard', [DashboardController::class, 'count_category_story']);
+    Route::get('/recent/transection', [DashboardController::class, 'recent_transection']);
+    Route::get('/transection/details/{id}', [DashboardController::class, 'transetion_details']);
+
+// =================== INCOME ============================//
+
+    Route::get('/income', [DashboardController::class, 'income']);
 });
