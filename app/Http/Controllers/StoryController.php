@@ -113,7 +113,7 @@ class StoryController extends Controller
         $story_title = $request->story_title;
         $username = $request->username;
 
-        $query = Story::query()->with('category');
+        $query = Story::query()->with('category')->where('story_status',1);
 
         if($category_id !== null) {
             $query->where('category_id', $category_id);
@@ -140,7 +140,6 @@ class StoryController extends Controller
             $story->story_image = json_decode($story->story_image);
             return $story;
         });
-
         return response()->json([
             'message' => 'success',
             'data' => $formatted_stories
@@ -203,8 +202,6 @@ class StoryController extends Controller
         if ($story) {
             $story_music = json_decode($story->music);
             $story_images = json_decode($story->story_image);
-
-
             foreach ($story_music as $musicPath) {
                 $absoluteMusicPath = public_path($musicPath);
 

@@ -10,6 +10,7 @@ use App\Http\Controllers\AuthController;
 use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\PackageController;
 use App\Http\Controllers\PaymentController;
+use App\Http\Controllers\RulesRegulationController;
 use App\Http\Controllers\StoryController;
 use App\Http\Controllers\SubscriptionController;
 use Illuminate\Http\Request;
@@ -68,10 +69,16 @@ Route::middleware(['user','auth:api'])->group(function () {
     // Subscription
     Route::post('/user-subscription', [SubscriptionController::class, 'userSubscription']);
 
+    Route::get('/terms-condition', [RulesRegulationController::class, 'termsCondition']);
+    Route::get('/privacy-policy', [RulesRegulationController::class, 'privacyPolicy']);
+    Route::get('/about-us', [RulesRegulationController::class, 'aboutUs']);
+
 });
 
 //payment
 Route::post('/paypal-payment',[PaymentController::class,'paypalPayment']);
+Route::post('/success',[PaymentController::class,'paypalSuccess']);
+
 Route::middleware(['payment.user','auth:api'])->group(function () {
     //add Story
     Route::post('/add-story',[StoryController::class,'addStory']);
@@ -82,7 +89,7 @@ Route::middleware(['payment.user','auth:api'])->group(function () {
 });
 
 Route::middleware(['admin','auth:api'])->group(function () {
-   
+
   // ================== Admin Api ====================//
 
 Route::get('/user/list', [UserController::class, 'userList']);

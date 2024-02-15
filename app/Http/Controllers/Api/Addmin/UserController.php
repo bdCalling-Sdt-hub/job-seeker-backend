@@ -44,7 +44,8 @@ class UserController extends Controller
         }
 
         $package_data[] = [
-            'total_subscribers' => $totalSubscribers
+            'package_name' => 'total user',
+            'total_subscribers' => $totalSubscribers,
         ];
 
         return response()->json($package_data);
