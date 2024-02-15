@@ -165,33 +165,6 @@ class DashboardController extends Controller
         }
     }
 
-    // public function weekly_income(Request $request)
-    // {
-    //     $packageId = $request->packagId;
-
-    //     if ($packageId) {
-    //         $weeklyTotalSum = Subscription::select(
-    //             DB::raw('(SUM(amount, user_id)) as weekly_income')
-    //         )
-    //             ->whereYear('created_at', Carbon::now()->year)
-    //             ->get()
-    //             ->sum('weekly_income');
-
-    //         // $week_transetion = Subscription::where('package_id', $packageId)->whereDate('created_at', Carbon::today())->with('user', 'package')->paginate(10);
-    //     } else {
-    //         // $transetion = Subscription::whereDate('created_at', Carbon::today())->with('user', 'package')->paginate(10);
-    //         $weeklyTotalSum = Subscription::select(
-    //             DB::raw('(SUM(amount)) as weekly_income')
-    //         )
-    //             ->whereYear('created_at', Carbon::now()->year)
-    //             ->get()
-    //             ->sum('weekly_income');
-    //     }
-    //     return response()->json([
-    //         'wekly_transection' => $weeklyTotalSum
-    //     ]);
-    // }
-
     public function weekly_income(Request $request)
     {
         $packageId = $request->packageId;
@@ -256,6 +229,25 @@ class DashboardController extends Controller
         return response()->json([
             'status' => 'success',
             'data' => $monthIncom
+        ]);
+    }
+
+    public function monthIncome_ratio(Request $request)
+    {
+        $monthIncom = Subscription::select(
+            DB::raw('(SUM(amount)) as count'),
+            DB::raw('MONTHNAME(created_at) as month_name'),
+            DB::raw('MONTH(created_at) as month_number')
+        )
+            ->whereYear('created_at', $request->year)
+            ->groupBy('month_name', 'month_number')
+            ->orderBy('month_number')
+            ->get()
+            ->toArray();
+
+        return response()->json([
+            'status' => 'success',
+            'monthly_income' => $monthIncom,
         ]);
     }
 }

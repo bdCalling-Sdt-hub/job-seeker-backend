@@ -79,7 +79,7 @@ Route::get('/details/story/{id}', [AdminStoryController::class, 'story_details']
 Route::get('/dashboard', [DashboardController::class, 'count_category_story']);
 Route::get('/recent/transection', [DashboardController::class, 'recent_transection']);
 Route::get('/transection/details/{id}', [DashboardController::class, 'transetion_details']);
-
+Route::get('/month/income/ratio', [DashboardController::class, 'monthIncome_ratio']);
 // =================== INCOME ============================//
 
 Route::get('/income', [DashboardController::class, 'income']);
