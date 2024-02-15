@@ -18,7 +18,7 @@ class AuthController extends Controller
     public function register(Request $request)
 
     {
-            $user = User::where('email', $request->email)
+        $user = User::where('email', $request->email)
             ->where('verify_email', 0)
             ->first();
 
@@ -40,27 +40,24 @@ class AuthController extends Controller
                 'email' => 'required|string|email|max:60|unique:users|contains_dot',
                 'password' => 'required|string|min:6|confirmed',
                 'userType' => ['required', Rule::in(['USER', 'ADMIN', 'SUPER ADMIN'])],
-             ], [
+            ], [
                 'email.contains_dot' => 'without (.) Your email is invalid',
             ]);
             if ($validator->fails()) {
-                return response()->json(["errors"=>$validator->errors()], 400);
+                return response()->json(["message" => $validator->errors()], 400);
             }
 
 
-           $userData = [
+            $userData = [
                 'fullName' => $request->fullName,
                 'email' => $request->email,
                 'password' => Hash::make($request->password),
                 'userType' => $request->userType,
                 'otp' =>  Str::random(6),
-                'verify_email'=>0
-           ];
+                'verify_email' => 0
+            ];
 
             $user = User::create($userData);
-
-
-
 
             Mail::to($request->email)->send(new OtpMail($user->otp));
             return response()->json([
@@ -110,7 +107,7 @@ class AuthController extends Controller
         $userData = User::where("email", $request->email)->first();
         //return gettype($userData->otp);
         if ($userData && Hash::check($request->password, $userData->password)) {
-            if ($userData->verify_email == 0){
+            if ($userData->verify_email == 0) {
                 return response()->json(['message' => 'Your email is not verified'], 401);
             }
         }
@@ -122,7 +119,7 @@ class AuthController extends Controller
             return $this->respondWithToken($token);
         }
 
-        return response()->json(['error' => 'Your credential is wrong'], 401);
+        return response()->json(['message' => 'Your credential is wrong'], 402);
     }
 
 
@@ -134,6 +131,7 @@ class AuthController extends Controller
             'access_token' => $token,
             'user' => $user,
             'token_type' => 'bearer',
+            'user'=>$user,
             'expires_in' => auth('api')
                 ->factory()
                 ->getTTL()*600000000000, //hour*seconds
@@ -160,8 +158,6 @@ class AuthController extends Controller
                 return response()->json([
 
                     'user' => $user
-
-
                 ]);
             } else {
                 $user->makeHidden(['verified_email', 'verified_code', 'batchNo', 'dob', 'registrationDate', 'address', 'expert', 'category_id']);
@@ -270,7 +266,7 @@ class AuthController extends Controller
     {
         $user = $this->guard()->user();
 
-        if($user){
+        if ($user) {
             $validator = Validator::make($request->all(), [
                 'fullName' => 'required|string|min:2|max:100',
             ]);
@@ -279,9 +275,15 @@ class AuthController extends Controller
                 return response()->json($validator->errors(), 400);
             }
 
+<<<<<<< HEAD
+            $user->fullName = $request->fullName;
+            $user->mobile = $request->mobile ? $request->mobile : $user->mobile;
+            $user->address = $request->address ? $request->address : $user->address;
+=======
             $user->fullName=$request->fullName;
             $user->mobile=$request->mobile?$request->mobile:$user->mobile;
             $user->address=$request->address?$request->address:$user->address;
+>>>>>>> 1c6c742dfdebc4d0d91666d32a1252a4cf710c3b
 
 
             if ($request->hasFile('image')) {
@@ -305,16 +307,21 @@ class AuthController extends Controller
             return response()->json([
                 "message" => "Profile updated successfully"
             ]);
+<<<<<<< HEAD
+        } else {
+=======
 
         }else{
+>>>>>>> 1c6c742dfdebc4d0d91666d32a1252a4cf710c3b
             return response()->json([
                 "message" => "You are not authorized!"
             ], 401);
         }
-
-
     }
+<<<<<<< HEAD
+=======
 
 
 
+>>>>>>> 1c6c742dfdebc4d0d91666d32a1252a4cf710c3b
 }

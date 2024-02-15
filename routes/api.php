@@ -9,6 +9,7 @@ use App\Http\Controllers\Api\Webapi\ContactController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\PackageController;
+use App\Http\Controllers\PaymentController;
 use App\Http\Controllers\StoryController;
 use App\Http\Controllers\SubscriptionController;
 use Illuminate\Http\Request;
@@ -39,6 +40,8 @@ Route::get('/about', [ContactController::class, 'about']);
 Route::get('/pricing', [ContactController::class, 'priceing']);
 Route::get('/terms/condition', [ContactController::class, 'terms_condition']);
 Route::get('/privacy/policy', [ContactController::class, 'privacy']);
+
+Route::get('/show-package',[PackageController::class,'showPackage']);
 
 // ================== Admin Api ====================//
 
@@ -94,13 +97,13 @@ Route::get('/show/category', [CategoryController::class, 'show_category']);
 // package
 Route::post('/add-package', [PackageController::class, 'addPackage']);
 
-Route::middleware(['user', 'auth:api'])->group(function () {
-    // Filter and search
-    Route::get('/filter-story-by-category', [StoryController::class, 'filterStoryByCategory']);
-    // story details in app
-    Route::get('/story-details', [StoryController::class, 'storyDetails']);
-    // my subscription
-    Route::get('/my-subscription', [SubscriptionController::class, 'mySubscription']);
+Route::middleware(['user','auth:api'])->group(function () {
+    //Filter and search
+    Route::get('/filter-story-by-category',[StoryController::class,'filterStoryByCategory']);
+    //story details in app
+    Route::get('/story-details',[StoryController::class,'storyDetails']);
+    //my subscription
+    Route::get('/my-subscription',[SubscriptionController::class,'mySubscription']);
     // Subscription
     Route::post('/user-subscription', [SubscriptionController::class, 'userSubscription']);
     // my story
@@ -111,13 +114,18 @@ Route::middleware(['user', 'auth:api'])->group(function () {
     Route::get('/archive-story', [StoryController::class, 'archiveStory']);
     // Subscription
     Route::post('/user-subscription', [SubscriptionController::class, 'userSubscription']);
+
 });
 
-Route::middleware(['payment.user', 'auth:api'])->group(function () {
-    // add Story
-    Route::post('/add-story', [StoryController::class, 'addStory']);
-    // repost api
-    Route::post('/edit-story', [StoryController::class, 'editStory']);
-    // pending story
-    Route::get('/pending-story', [StoryController::class, 'pendingStory']);
+//payment
+Route::post('/paypal-payment',[PaymentController::class,'paypalPayment']);
+
+
+Route::middleware(['payment.user','auth:api'])->group(function () {
+    //add Story
+    Route::post('/add-story',[StoryController::class,'addStory']);
+// repost api
+    Route::post('/edit-story',[StoryController::class,'editStory']);
+    //pending story
+    Route::get('/pending-story',[StoryController::class,'pendingStory']);
 });
