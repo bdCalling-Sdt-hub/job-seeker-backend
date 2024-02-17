@@ -313,7 +313,7 @@ class AuthController extends Controller
     public function resendOtp(Request $request)
     {
         $user = User::where('email', $request->email)
-            ->where('verify_email', 0)
+//            ->where('verify_email', 0)
             ->first();
 
         if (!$user) {

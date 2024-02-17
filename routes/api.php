@@ -9,6 +9,8 @@ use App\Http\Controllers\Api\Webapi\ContactController;
 use App\Http\Controllers\AuthAdminController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\CategoryController;
+use App\Http\Controllers\DeleteUserController;
+use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\PackageController;
 use App\Http\Controllers\PaymentController;
 use App\Http\Controllers\RulesRegulationController;
@@ -77,6 +79,12 @@ Route::middleware(['user','auth:api'])->group(function () {
     Route::get('/privacy-policy', [RulesRegulationController::class, 'privacyPolicy']);
     Route::get('/about-us', [RulesRegulationController::class, 'aboutUs']);
 
+    //delete user
+    Route::post('delete-user',[DeleteUserController::class,'deleteUser']);
+
+    //notification
+    Route::get('user-notification',[NotificationController::class,'testNotification']);
+
 });
 
 //payment
@@ -92,7 +100,7 @@ Route::middleware(['payment.user','auth:api'])->group(function () {
     Route::get('/pending-story',[StoryController::class,'pendingStory']);
 });
 
-Route::middleware(['admin','auth:api','super.admin'])->group(function () {
+Route::middleware(['admin','auth:api'])->group(function () {
 
   // ================== Admin Api ====================//
 

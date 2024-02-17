@@ -14,11 +14,27 @@ class CheckAdminMiddleware
      *
      * @param  \Closure(\Illuminate\Http\Request): (\Symfony\Component\HttpFoundation\Response)  $next
      */
+//    public function handle(Request $request, Closure $next): Response
+//    {
+//        try {
+//            $user = auth()->userOrFail();
+//            if ($user->userType == 'ADMIN') {
+//                return $next($request);
+//            }
+//            return response()->json([
+//                'message' => 'Unauthorized user'
+//            ], 401);
+//        } catch (AuthenticationException $exception) {
+//            return response()->json([
+//                'message' => 'Unauthorized: ' . $exception->getMessage()
+//            ], 401);
+//        }
+//    }
     public function handle(Request $request, Closure $next): Response
     {
         try {
             $user = auth()->userOrFail();
-            if ($user->userType == 'ADMIN') {
+            if ($user->userType == 'ADMIN' || $user->userType == 'SUPER ADMIN') {
                 return $next($request);
             }
             return response()->json([
@@ -30,4 +46,5 @@ class CheckAdminMiddleware
             ], 401);
         }
     }
+
 }

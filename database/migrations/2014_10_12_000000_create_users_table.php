@@ -24,6 +24,7 @@ return new class extends Migration
             $table->boolean("verify_email");
             $table->tinyInteger('user_status')->default(0);
             $table->rememberToken()->nullable();
+            $table->softDeletes();
             $table->timestamps();
         });
     }

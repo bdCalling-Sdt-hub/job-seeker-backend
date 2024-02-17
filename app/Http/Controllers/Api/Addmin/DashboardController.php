@@ -30,7 +30,7 @@ class DashboardController extends Controller
 
     public function recent_transection()
     {
-        $subscrition = Subscription::where('status', 1)->with('user', 'package')->orderBy('id', 'desc')->paginate(8);
+        $subscrition = Subscription::with('user', 'package')->orderBy('id', 'desc')->paginate(8);
         if ($subscrition) {
             return response()->json([
                 'status' => 'success',
@@ -46,7 +46,7 @@ class DashboardController extends Controller
 
     public function transetion_details($id)
     {
-        $subscrition = Subscription::where('status', 1)->where('id', $id)->with('user', 'package')->first();
+        $subscrition = Subscription::where('id', $id)->with('user', 'package')->first();
         if ($subscrition) {
             return response()->json([
                 'status' => 'success',
@@ -218,7 +218,8 @@ class DashboardController extends Controller
     {
         $monthIncom = Subscription::select(
             DB::raw('(SUM(amount)) as count'),
-            DB::raw('MONTHNAME(created_at) as month_name')
+            DB::raw('MONTHNAME(created_at) as month_name'),
+            DB::raw('COUNT(user_id) as total_users')
         )
             ->whereYear('created_at', date('Y'))
             ->groupBy('month_name')
@@ -228,11 +229,6 @@ class DashboardController extends Controller
         return response()->json([
             'status' => 'success',
             'monthly_income' => $monthIncom,
-        ]);
-
-        return response()->json([
-            'status' => 'success',
-            'data' => $monthIncom
         ]);
     }
 
