@@ -6,11 +6,13 @@ use App\Http\Controllers\Api\Addmin\DashboardController;
 use App\Http\Controllers\Api\Addmin\SubscribController;
 use App\Http\Controllers\Api\Addmin\UserController;
 use App\Http\Controllers\Api\Webapi\ContactController;
+use App\Http\Controllers\AuthAdminController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\PackageController;
 use App\Http\Controllers\PaymentController;
 use App\Http\Controllers\RulesRegulationController;
+use App\Http\Controllers\SocialLoginController;
 use App\Http\Controllers\StoryController;
 use App\Http\Controllers\SubscriptionController;
 use Illuminate\Http\Request;
@@ -30,6 +32,8 @@ Route::group([
     Route::post('/update-pass', [AuthController::class, 'updatePassword']);
     Route::put('/profile/edit/{id}', [AuthController::class, 'editProfile']);
     Route::post('/resend-otp',[AuthController::class,'resendOtp']);
+
+    Route::post('/social-login',[SocialLoginCOntroller::class,'socialLogin']);
 });
 
 // ================ WEB API ================== //
@@ -88,7 +92,7 @@ Route::middleware(['payment.user','auth:api'])->group(function () {
     Route::get('/pending-story',[StoryController::class,'pendingStory']);
 });
 
-Route::middleware(['admin','auth:api'])->group(function () {
+Route::middleware(['admin','auth:api','super.admin'])->group(function () {
 
   // ================== Admin Api ====================//
 
@@ -137,4 +141,11 @@ Route::get('/daily/income', [DashboardController::class, 'daily_income']);
 Route::get('/daily/income/details/{id}', [DashboardController::class, 'daily_income_details']);
 Route::get('/weekly/income', [DashboardController::class, 'weekly_income']);
 Route::get('/month/income', [DashboardController::class, 'monthIncome']);
+});
+
+
+
+Route::middleware(['super.admin','auth:api'])->group(function () {
+    //super admin
+    Route::post('/add-admin', [AuthAdminController::class, 'addAdmin']);
 });

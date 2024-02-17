@@ -126,12 +126,16 @@ class DashboardController extends Controller
         $yearlySumAmount = Subscription::whereYear('created_at', Carbon::now()->year)
             ->sum('amount');
 
-        return response()->json([
+        $result = [
             'total_income' => $total_income,
             'daily_income' => $dailyEarning,
             'weekly_income' => $weeklyTotalSum,
             'monthly_income' => $monthlySumAmount,
             'yearly_income' => $yearlySumAmount,
+        ];
+
+        return response()->json([
+          'data' => $result
         ]);
     }
 
