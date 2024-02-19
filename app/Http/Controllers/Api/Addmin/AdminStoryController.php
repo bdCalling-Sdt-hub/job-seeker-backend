@@ -61,14 +61,23 @@ class AdminStoryController extends Controller
         $update_status->story_status = $request->status;
         $update_status->save();
         if ($update_status) {
-            return response()->json([
-                'status' => 'success',
-                'message' => 'story update success',
-            ], 200);
+            if ($request->status == 1){
+                $result = app('App\Http\Controllers\NotificationController')->sendNotification('Your story has been approved',$update_status->created_at,$update_status);
+                return response()->json([
+                    'status' => 'success',
+                    'message' => 'User story has been approved',
+                    'notification' => $result
+                ], 200);
+            }elseif ($request->status == 2){
+                return response()->json([
+                    'status' => 'success',
+                    'message' => 'User story has been reject',
+                ], 200);
+            }
         } else {
             return response()->json([
                 'status' => false,
-                'message' => 'story update faile',
+                'message' => 'story update failed',
             ], 402);
         }
     }

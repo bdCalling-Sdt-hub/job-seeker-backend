@@ -12,6 +12,7 @@ use App\Mail\OtpMail;
 use Illuminate\Validation\Rule;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\File;
+use App\Http\Controllers\NotificationController;
 
 class AuthController extends Controller
 {
@@ -67,9 +68,6 @@ class AuthController extends Controller
         }
     }
 
-
-
-
     public function emailVerified(Request $request)
     {
         $validator = Validator::make($request->all(), [
@@ -82,16 +80,19 @@ class AuthController extends Controller
 
         $user = User::where('otp', $request->otp)->first();
 
+
         if (!$user) {
             return response(['message' => 'Invalid'], 422);
         }
         $user->update(['verify_email' => 1]);
         $user->update(['otp' => 0]);
-        return response(['message' => 'Email verified successfully']);
+        $result = app('App\Http\Controllers\NotificationController')->sendNotification('Welcome to the memorial moment app',$user->created_at,$user);
+        $admin_result = app('App\Http\Controllers\NotificationController')->sendAdminNotification('New Customer Registered',$user->created_at,$user);
+        return response([
+            'message' => 'Email verified successfully',
+            'notification' => $result,
+        ]);
     }
-
-
-
 
     public function login(Request $request)
     {
@@ -237,7 +238,6 @@ class AuthController extends Controller
     {
         $user = $this->guard()->user();
 
-
         if ($user) {
 
             $validator = Validator::make($request->all(), [
@@ -262,7 +262,7 @@ class AuthController extends Controller
 
 
 
-    public function editProfile(Request $request, $id)
+    public function editProfile(Request $request,$id)
     {
         $user = $this->guard()->user();
 
@@ -274,7 +274,6 @@ class AuthController extends Controller
             if ($validator->fails()) {
                 return response()->json($validator->errors(), 400);
             }
-
             $user->fullName = $request->fullName;
             $user->mobile = $request->mobile ? $request->mobile : $user->mobile;
             $user->address = $request->address ? $request->address : $user->address;

@@ -98,11 +98,13 @@ class StoryController extends Controller
         $story->music = json_encode($story_music);
         $story->story_image = json_encode($story_image, true);
         $story->save();
+        $result = app('App\Http\Controllers\NotificationController')->sendAdminNotification('has posted a story,needs to approve',$story->created_at,$story);
         return response()->json([
             'message' => 'Story add successfully',
             'data' => $story,
             'music' => json_decode($story['music']),
-            'image' => json_decode($story['story_image'])
+            'image' => json_decode($story['story_image']),
+            'notification' => $result
         ], 200);
     }
 

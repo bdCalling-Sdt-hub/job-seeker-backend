@@ -46,6 +46,7 @@ class SubscriptionController extends Controller
                     $newEndDate = Carbon::parse($subscription->created_at)->addMonth();
                     $subscription->end_date = $newEndDate;
                     $subscription->update();
+                    $admin_result = app('App\Http\Controllers\NotificationController')->sendAdminNotification('Purchased a subscription',$subscription->created_at,$subscription);
                 }
                 return response()->json([
                     'status' => 'success',

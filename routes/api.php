@@ -36,6 +36,13 @@ Route::group([
     Route::post('/resend-otp',[AuthController::class,'resendOtp']);
 
     Route::post('/social-login',[SocialLoginCOntroller::class,'socialLogin']);
+
+//notification
+    Route::get('/notification', [NotificationController::class, 'markRead']);
+
+    Route::get('/read-at/notification', [NotificationController::class, 'readNotification']);
+
+
 });
 
 // ================ WEB API ================== //
@@ -82,9 +89,6 @@ Route::middleware(['user','auth:api'])->group(function () {
     //delete user
     Route::post('delete-user',[DeleteUserController::class,'deleteUser']);
 
-    //notification
-    Route::get('user-notification',[NotificationController::class,'testNotification']);
-
 });
 
 //payment
@@ -101,54 +105,57 @@ Route::middleware(['payment.user','auth:api'])->group(function () {
 });
 
 Route::middleware(['admin','auth:api'])->group(function () {
+    //notification
+
+    Route::get('/admin-notification',[NotificationController::class,'adminNotification']);
 
   // ================== Admin Api ====================//
 
-Route::get('/user/list', [UserController::class, 'userList']);
+    Route::get('/user/list', [UserController::class, 'userList']);
 
-Route::get('/package/show', [UserController::class, 'package']);
-Route::get('/package/details/{id}', [UserController::class, 'userDetails']);
-Route::get('/search/subscrib/user', [UserController::class, 'search_subscriber']);
+    Route::get('/package/show', [UserController::class, 'package']);
+    Route::get('/package/details/{id}', [UserController::class, 'userDetails']);
+    Route::get('/search/subscrib/user', [UserController::class, 'search_subscriber']);
 
-// =================== SUBSCRIBE  ===================//
+    // =================== SUBSCRIBE  ===================//
 
-Route::get('/edit/subscription/{id}', [SubscribController::class, 'edit_subscribe_package']);
-Route::post('/update/subscription', [SubscribController::class, 'update_package']);
-Route::delete('/package/delete/{id}', [SubscribController::class, 'deletePackage']);
+    Route::get('/edit/subscription/{id}', [SubscribController::class, 'edit_subscribe_package']);
+    Route::post('/update/subscription', [SubscribController::class, 'update_package']);
+    Route::delete('/package/delete/{id}', [SubscribController::class, 'deletePackage']);
 
-// ===================== SETTING ================//
+    // ===================== SETTING ================//
 
-Route::get('/setting', [AboutController::class, 'settings']);
+    Route::get('/setting', [AboutController::class, 'settings']);
 
-Route::get('/edit/privacy/{id}', [AboutController::class, 'edit_privacy']);
-Route::post('/update/privacy', [AboutController::class, 'update_privacy']);
+    Route::get('/edit/privacy/{id}', [AboutController::class, 'edit_privacy']);
+    Route::post('/update/privacy', [AboutController::class, 'update_privacy']);
 
-Route::get('/edit/terms/{id}', [AboutController::class, 'edit_terms']);
-Route::post('/update/terms', [AboutController::class, 'update_terms']);
+    Route::get('/edit/terms/{id}', [AboutController::class, 'edit_terms']);
+    Route::post('/update/terms', [AboutController::class, 'update_terms']);
 
-Route::get('/edit/about/{id}', [AboutController::class, 'edit_about']);
-Route::post('/update/about', [AboutController::class, 'update_about']);
+    Route::get('/edit/about/{id}', [AboutController::class, 'edit_about']);
+    Route::post('/update/about', [AboutController::class, 'update_about']);
 
-// =================== STORY ==========================//
+    // =================== STORY ==========================//
 
-Route::get('/user/story', [AdminStoryController::class, 'user_story']);
-Route::get('/story/request', [AdminStoryController::class, 'userRequest']);
-Route::post('/story/status', [AdminStoryController::class, 'story_status']);
-Route::get('/details/story/{id}', [AdminStoryController::class, 'story_details']);
+    Route::get('/user/story', [AdminStoryController::class, 'user_story']);
+    Route::get('/story/request', [AdminStoryController::class, 'userRequest']);
+    Route::post('/story/status', [AdminStoryController::class, 'story_status']);
+    Route::get('/details/story/{id}', [AdminStoryController::class, 'story_details']);
 
-// ============ DASH BOARD ====================//
+    // ============ DASH BOARD ====================//
 
-Route::get('/dashboard', [DashboardController::class, 'count_category_story']);
-Route::get('/recent/transection', [DashboardController::class, 'recent_transection']);
-Route::get('/transection/details/{id}', [DashboardController::class, 'transetion_details']);
-Route::get('/month/income/ratio', [DashboardController::class, 'monthIncome_ratio']);
-// =================== INCOME ============================//
+    Route::get('/dashboard', [DashboardController::class, 'count_category_story']);
+    Route::get('/recent/transection', [DashboardController::class, 'recent_transection']);
+    Route::get('/transection/details/{id}', [DashboardController::class, 'transetion_details']);
+    Route::get('/month/income/ratio', [DashboardController::class, 'monthIncome_ratio']);
+    // =================== INCOME ============================//
 
-Route::get('/income', [DashboardController::class, 'income']);
-Route::get('/daily/income', [DashboardController::class, 'daily_income']);
-Route::get('/daily/income/details/{id}', [DashboardController::class, 'daily_income_details']);
-Route::get('/weekly/income', [DashboardController::class, 'weekly_income']);
-Route::get('/month/income', [DashboardController::class, 'monthIncome']);
+    Route::get('/income', [DashboardController::class, 'income']);
+    Route::get('/daily/income', [DashboardController::class, 'daily_income']);
+    Route::get('/daily/income/details/{id}', [DashboardController::class, 'daily_income_details']);
+    Route::get('/weekly/income', [DashboardController::class, 'weekly_income']);
+    Route::get('/month/income', [DashboardController::class, 'monthIncome']);
 });
 
 
@@ -157,3 +164,5 @@ Route::middleware(['super.admin','auth:api'])->group(function () {
     //super admin
     Route::post('/add-admin', [AuthAdminController::class, 'addAdmin']);
 });
+
+
