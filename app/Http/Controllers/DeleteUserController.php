@@ -22,12 +22,10 @@ class DeleteUserController extends Controller
         }
         $auth_email = auth()->user();
         if ($auth_email){
-
             $user = User::where('email', $auth_email->email)->first();
-
             // Check if user exists and password is correct
             if ($user && Hash::check($request->password, $user->password)) {
-            $user->delete();
+                $user->delete();
                 return response()->json(['message' => 'User deleted successfully'], 200);
             } else {
                 // Incorrect credentials

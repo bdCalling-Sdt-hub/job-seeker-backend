@@ -36,14 +36,14 @@ Route::group([
     Route::post('/resend-otp',[AuthController::class,'resendOtp']);
 
     Route::post('/social-login',[SocialLoginCOntroller::class,'socialLogin']);
-
 //notification
-    Route::get('/notification', [NotificationController::class, 'markRead']);
+    Route::get('/notification', [NotificationController::class, 'notification']);
 
     Route::get('/read-at/notification', [NotificationController::class, 'readNotification']);
 
-
 });
+
+
 
 // ================ WEB API ================== //
 
@@ -89,6 +89,10 @@ Route::middleware(['user','auth:api'])->group(function () {
     //delete user
     Route::post('delete-user',[DeleteUserController::class,'deleteUser']);
 
+    //notification
+
+    Route::get('/read-unread',[NotificationController::class,'markRead']);
+
 });
 
 //payment
@@ -108,6 +112,10 @@ Route::middleware(['admin','auth:api'])->group(function () {
     //notification
 
     Route::get('/admin-notification',[NotificationController::class,'adminNotification']);
+    Route::get('/read-notification',[NotificationController::class,'readNotificationById']);
+
+    Route::get('/admin-unread-notification',[NotificationController::class,'adminUnreadNotification']);
+
 
   // ================== Admin Api ====================//
 

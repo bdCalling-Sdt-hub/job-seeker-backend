@@ -4,18 +4,23 @@ namespace App\Http\Controllers;
 
 use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
 
 class SocialLoginController extends Controller
 {
-    //
+
+    public function guard()
+    {
+        return Auth::guard('api');
+    }
 
     public function socialLogin(Request $request)
     {
         $validator = Validator::make($request->all(), [
-            'name' => 'required|min:2',
+            'fullName' => 'required|min:2',
             'email' => 'email|required|max:100',
-            'user_type' => 'string',
+            'userType' => 'string',
         ]);
 
         if ($validator->fails()) {
@@ -25,7 +30,7 @@ class SocialLoginController extends Controller
         // Check if a user with this email exists without Google or Facebook ID
         $manual_user = User::where('email', $request->email)
             ->whereNull('google_id')
-            ->whereNull('facebook_id')
+            ->whereNull('apple_id')
             ->first();
 
         if ($manual_user) {
@@ -38,33 +43,33 @@ class SocialLoginController extends Controller
                 ->where(function ($query) {
                     $query
                         ->whereNotNull('google_id')
-                        ->orWhereNotNull('facebook_id');
+                        ->orWhereNotNull('apple_id');
                 })
                 ->first();
 
             if ($user) {
-                if ($token = auth()->login($user)) {
+                if ($token = $this->guard()->login($user)) {
                     return $this->responseWithToken($token);
                 }
                 return response()->json([
                     'message' => 'User unauthorized'
                 ], 401);
             } else {
-                $avatar = 'dummyImg/default.jpg';
+//                $avatar = 'dummyImg/default.jpg';
                 // Create a new user
                 $user = new User();
-                $user->name = $request->name;
+                $user->fullName = $request->fullName;
                 $user->email = $request->email;
-                $user->user_type = $request->user_type;
+                $user->userType = $request->userType;
                 $user->google_id = $request->google_id ?? null;
-                $user->facebook_id = $request->facebook_id ?? null;
-                $user->latitude = $request->latitude ?? null;
-                $user->longitude = $request->latitude ?? null;
-                $user->is_verified = 1;
-                $user->image = $avatar;
+                $user->apple_id = $request->apple_id ?? null;
+                $user->verify_email = 1;
+                $user->otp=0;
+                $user->image = $request->image ?? null;
                 $user->save();
+
                 // Generate token for the new user
-                if ($token = auth()->login($user)) {
+                if ($token = $this->guard()->login($user)) {
                     return $this->responseWithToken($token);
                 }
                 return response()->json([
@@ -72,5 +77,18 @@ class SocialLoginController extends Controller
                 ], 401);
             }
         }
+    }
+
+
+    protected function responseWithToken($token)
+    {
+        return response()->json([
+            'access_token' => $token,
+            'user_id' => $this->guard()->user()->id,
+            'user_type' =>$this->guard()->user()->userType,
+            'google_id' =>$this->guard()->user()->google_id,
+            'apple_id' =>$this->guard()->user()->apple_id,
+            'expires_in' => $this->guard()->factory()->getTTL() * 6000000000000000
+        ], 200);
     }
 }

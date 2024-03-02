@@ -71,23 +71,57 @@ class SubscriptionController extends Controller
         }
     }
 
+//    public function mySubscription(Request $request){
+//        $auth_user_id = auth()->user()->id;
+//        $my_subscription = Subscription::with('package')->where('user_id',$auth_user_id)->get();
+//
+//        $formated_subscription = $my_subscription->map(function ($subscription){
+//            $subscription->package->feature = json_decode($subscription->package->feature);
+////            return json_decode($subscription->package->feature);
+//            return $subscription;
+//        });
+//        if ($my_subscription){
+//            return response()->json([
+//                'message' => 'success',
+//                'data' => $formated_subscription
+//            ]);
+//        }else {
+//            return response()->json([
+//                'message' => 'success',
+//                'data' => []
+//            ]);
+//        }
+//
+//    }
     public function mySubscription(Request $request){
         $auth_user_id = auth()->user()->id;
         $my_subscription = Subscription::with('package')->where('user_id',$auth_user_id)->first();
 
         if ($my_subscription){
+            if(is_string($my_subscription->package->feature)) {
+                $features = [];
+                $features[] = ['feature' => $my_subscription->package->word_limit . ' Word Limit'];
+                $features[] = ['feature' => $my_subscription->package->image_limit . ' Image Limit'];
+                // You can add more dynamic features here if needed
+
+                // Merge dynamic features with existing features
+                $my_subscription->package->feature = array_merge(json_decode($my_subscription->package->feature, true), $features);
+//                $my_subscription->package->feature = json_decode($my_subscription->package->feature);
+            }
+        }
+        if ($my_subscription){
             return response()->json([
                 'message' => 'success',
                 'data' => $my_subscription
             ]);
-        }else {
+        } else {
             return response()->json([
                 'message' => 'success',
                 'data' => []
             ]);
         }
-
     }
+
 
 
 }

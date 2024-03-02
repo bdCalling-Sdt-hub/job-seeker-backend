@@ -42,11 +42,32 @@ class PackageController extends Controller
 
     }
 
+//    public function showPackage(){
+//        $package_list = Package::get();
+//
+//        $formatted_package = $package_list->map(function($package){
+//            $package->feature = json_decode($package->feature);
+//            return $package;
+//        });
+//
+//        return response()->json([
+//            'message' => 'success',
+//            'data' => $formatted_package
+//        ]);
+//    }
+
     public function showPackage(){
         $package_list = Package::get();
 
         $formatted_package = $package_list->map(function($package){
-            $package->feature = json_decode($package->feature);
+            $features = [];
+            $features[] = ['feature' => $package->word_limit . ' Word Limit'];
+            $features[] = ['feature' => $package->image_limit . ' Image Limit'];
+            // You can add more dynamic features here if needed
+
+            // Merge dynamic features with existing features
+            $package->feature = array_merge(json_decode($package->feature, true), $features);
+
             return $package;
         });
 
@@ -55,4 +76,5 @@ class PackageController extends Controller
             'data' => $formatted_package
         ]);
     }
+
 }

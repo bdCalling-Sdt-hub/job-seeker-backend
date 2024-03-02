@@ -34,8 +34,10 @@ class AdminStoryController extends Controller
         }
     }
 
-    public function userRequest()
+    public function userRequest(Request $request)
     {
+        $category_id = $request->id;
+
         $user_story = Story::where('story_status', 0)->orderBy('id', 'desc')->paginate(10);
 
         if ($user_story->count() > 0) {

@@ -115,7 +115,7 @@ class StoryController extends Controller
         $story_title = $request->story_title;
         $username = $request->username;
 
-        $query = Story::query()->with('category')->where('story_status',1);
+        $query = Story::query()->with('category','user')->where('story_status',1)->where('archived',0);
 
         if($category_id !== null) {
             $query->where('category_id', $category_id);
@@ -140,6 +140,7 @@ class StoryController extends Controller
 
         $formatted_stories = $story_list->map(function($story) {
             $story->story_image = json_decode($story->story_image);
+            $story->music = json_decode($story->music);
             return $story;
         });
         return response()->json([
@@ -155,6 +156,7 @@ class StoryController extends Controller
 
         $formatted_stories = $story_details->map(function($story){
             $story->story_image = json_decode($story->story_image);
+            $story->music = json_decode($story->music);
             return $story;
         });
 
@@ -167,10 +169,15 @@ class StoryController extends Controller
     public function myStory()
     {
         $auth_user_id = auth()->user()->id;
-        $story_details = Story::with('category','user')->where('id',$auth_user_id)->get();
+        $story_details = Story::with('category','user')->where([
+            'user_id' => $auth_user_id,
+            'story_status' => 1,
+            'archived' => 0,
+        ])->get();
 
         $formatted_stories = $story_details->map(function($story){
             $story->story_image = json_decode($story->story_image);
+            $story->music = json_decode($story->music);
             return $story;
         });
 
@@ -183,10 +190,11 @@ class StoryController extends Controller
     public function pendingStory()
     {
         $auth_user_id = auth()->user()->id;
-        $story_details = Story::where('user_id',$auth_user_id)->where('story_status',0)->get();
+        $story_details = Story::with('category','user')->where('user_id',$auth_user_id)->where('story_status',0)->get();
 
         $formatted_stories = $story_details->map(function($story){
             $story->story_image = json_decode($story->story_image);
+            $story->music = json_decode($story->music);
             return $story;
         });
 
@@ -235,9 +243,10 @@ class StoryController extends Controller
     public function archiveStory(){
         $check_user = auth()->user()->id;
         if ($check_user){
-            $archive_story = Story::where('user_id',$check_user)->get();
+            $archive_story = Story::with('category','user')->where('user_id',$check_user)->where('archived',1)->get();
             $formatted_stories = $archive_story->map(function($story){
                 $story->story_image = json_decode($story->story_image);
+                $story->music = json_decode($story->music);
                 return $story;
             });
             return response()->json([

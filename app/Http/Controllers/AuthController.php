@@ -148,29 +148,11 @@ class AuthController extends Controller
     {
         if ($this->guard()->user()) {
             $user = $this->guard()->user();
-            if ($user->userType == "STUDENT") {
-                $user->makeHidden(['verified_email', 'verified_code']);
-                return response()->json([
-                    //hour*seconds
-                    'user' => $user,
-                ]);
-            } else if ($user->userType == "MENTOR") {
-                $user->makeHidden(['verified_email', 'batchNo', 'dob', 'registrationDate', 'address', 'bloodGroup', 'verified_code', 'category_id']);
-                return response()->json([
-
-                    'user' => $user
-                ]);
-            } else {
-                $user->makeHidden(['verified_email', 'verified_code', 'batchNo', 'dob', 'registrationDate', 'address', 'expert', 'category_id']);
-                return response()->json([
-
-                    'user' => $user
 
 
-                ]);
-            }
-
-            return response()->json($user);
+            return response()->json([
+                "user"=>$user
+            ]);
         } else {
             return response()->json(['message' => 'You are unauthorized']);
         }
@@ -278,7 +260,6 @@ class AuthController extends Controller
             $user->mobile = $request->mobile ? $request->mobile : $user->mobile;
             $user->address = $request->address ? $request->address : $user->address;
 
-
             if ($request->hasFile('image')) {
                 $file = $request->file('image');
                 $destination = 'storage/image/' . $user->image;
@@ -298,10 +279,10 @@ class AuthController extends Controller
 
             $user->update();
             return response()->json([
-                "message" => "Profile updated successfully"
+                "message" => "Profile updated successfully",
+                'data' => $user,
             ]);
         } else {
-
             return response()->json([
                 "message" => "You are not authorized!"
             ], 401);
@@ -340,5 +321,69 @@ class AuthController extends Controller
         $user->update(['last_otp_sent_at' => $currentTime]);
 
         return response()->json(['message' => 'OTP resent successfully']);
+    }
+
+    public function socialLogin(Request $request)
+    {
+        $validator = Validator::make($request->all(), [
+            'fullName' => 'required|min:2',
+            'email' => 'email|required|max:100',
+            'userType' => 'string',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json($validator->errors(), 400);
+        }
+
+        // Check if a user with this email exists without Google or Facebook ID
+        $manual_user = User::where('email', $request->email)
+            ->whereNull('google_id')
+            ->whereNull('apple_id')
+            ->first();
+
+        if ($manual_user) {
+            return response()->json([
+                'message' => 'User already exists. Sign in manually.',
+            ], 422);
+        } else {
+            // Check if a user with this email exists with Google or Facebook ID
+            $user = User::where('email', $request->email)
+                ->where(function ($query) {
+                    $query
+                        ->whereNotNull('google_id')
+                        ->orWhereNotNull('apple_id');
+                })
+                ->first();
+
+            if ($user) {
+                if ($token = $this->guard()->login($user)) {
+                    return $this->responseWithToken($token);
+                }
+                return response()->json([
+                    'message' => 'User unauthorized'
+                ], 401);
+            } else {
+//                $avatar = 'dummyImg/default.jpg';
+                // Create a new user
+                $user = new User();
+                $user->fullName = $request->fullName;
+                $user->email = $request->email;
+                $user->userType = $request->userType;
+                $user->google_id = $request->google_id ?? null;
+                $user->apple_id = $request->apple_id ?? null;
+                $user->verify_email = 1;
+                $user->otp=0;
+                $user->image = $request->image ?? null;
+                $user->save();
+
+                // Generate token for the new user
+                if ($token = $this->guard()->login($user)) {
+                    return $this->responseWithToken($token);
+                }
+                return response()->json([
+                    'message' => 'User unauthorized'
+                ], 401);
+            }
+        }
     }
 }
