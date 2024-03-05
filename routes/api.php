@@ -38,11 +38,11 @@ Route::group([
     Route::post('/social-login',[SocialLoginCOntroller::class,'socialLogin']);
 //notification
     Route::get('/notification', [NotificationController::class, 'notification']);
+    Route::get('/test-notification', [NotificationController::class, 'testNotification']);
 
     Route::get('/read-at/notification', [NotificationController::class, 'readNotification']);
 
 });
-
 
 
 // ================ WEB API ================== //
@@ -174,3 +174,4 @@ Route::middleware(['super.admin','auth:api'])->group(function () {
 });
 
 
+Route::get('/notification-event',[NotificationController::class,'notificationEvent']);

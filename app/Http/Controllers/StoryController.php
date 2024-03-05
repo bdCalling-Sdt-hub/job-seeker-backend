@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Events\SendNotificationEvent;
 use App\Models\Story;
 use App\Models\Subscription;
 use Illuminate\Http\Request;
@@ -89,7 +90,7 @@ class StoryController extends Controller
         $story_image = array();
         if ($request->hasFile('story_image')) {
             foreach ($request->file('story_image') as $image) {
-                $imageName = time() . '.' . $image->getClientOriginalExtension();
+                $imageName = uniqid() . '_' . $image->getClientOriginalName(); // Use a combination of uniqueid() and original filename for better uniqueness
                 $image->move(public_path('story-image'), $imageName);
                 $path = '/story-image/' . $imageName;
                 $story_image[] = $path;
@@ -99,12 +100,13 @@ class StoryController extends Controller
         $story->story_image = json_encode($story_image, true);
         $story->save();
         $result = app('App\Http\Controllers\NotificationController')->sendAdminNotification('has posted a story,needs to approve',$story->created_at,$story);
+        event(new SendNotificationEvent('has posted a story,needs to approve',$story->created_at,auth()->user()));
         return response()->json([
             'message' => 'Story add successfully',
             'data' => $story,
             'music' => json_decode($story['music']),
             'image' => json_decode($story['story_image']),
-            'notification' => $result
+            'notification' => $result,
         ], 200);
     }
 

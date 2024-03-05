@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Events\SendNotificationEvent;
 use Illuminate\Http\Request;
 use App\Models\User;
 use Illuminate\Support\Facades\Mail;
@@ -88,6 +89,7 @@ class AuthController extends Controller
         $user->update(['otp' => 0]);
         $result = app('App\Http\Controllers\NotificationController')->sendNotification('Welcome to the memorial moment app',$user->created_at,$user);
         $admin_result = app('App\Http\Controllers\NotificationController')->sendAdminNotification('New Customer Registered',$user->created_at,$user);
+        event(new SendNotificationEvent('New Customer Registered',$user->created_at,$user));
         return response([
             'message' => 'Email verified successfully',
             'notification' => $result,
@@ -96,7 +98,6 @@ class AuthController extends Controller
 
     public function login(Request $request)
     {
-
         $validator = Validator::make($request->all(), [
             'email' => 'required|string|email',
             'password' => 'required|string|min:6',
@@ -104,7 +105,6 @@ class AuthController extends Controller
         if ($validator->fails()) {
             return response()->json($validator->errors(), 400);
         }
-
         $userData = User::where("email", $request->email)->first();
         //return gettype($userData->otp);
         if ($userData && Hash::check($request->password, $userData->password)) {

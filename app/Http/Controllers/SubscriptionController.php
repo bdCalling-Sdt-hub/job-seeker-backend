@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Events\SendNotificationEvent;
 use App\Models\subscription;
 use App\Models\User;
 use Illuminate\Http\Request;
@@ -43,10 +44,11 @@ class SubscriptionController extends Controller
                     $user->save();
                 }
                 if ($subscriptions){
-                    $newEndDate = Carbon::parse($subscription->created_at)->addMonth();
+                    $newEndDate = Carbon::parse($subscription->end_date)->addMonth();
                     $subscription->end_date = $newEndDate;
                     $subscription->update();
-                    $admin_result = app('App\Http\Controllers\NotificationController')->sendAdminNotification('Purchased a subscription',$subscription->created_at,$subscription);
+                    $admin_result = app('App\Http\Controllers\NotificationController')->sendAdminNotification('Purchase a subscription',$subscription->created_at,$subscription);
+                    event(new SendNotificationEvent('Purchase a subscription',$subscription->created_at,auth()->user()));
                 }
                 return response()->json([
                     'status' => 'success',
