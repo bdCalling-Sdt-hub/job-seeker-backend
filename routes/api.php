@@ -71,6 +71,7 @@ Route::middleware(['user','auth:api'])->group(function () {
     Route::get('/story-details',[StoryController::class,'storyDetails']);
     //my subscription
     Route::get('/my-subscription',[SubscriptionController::class,'mySubscription']);
+    Route::get('/upgrade-subscription',[SubscriptionController::class,'upgradeSubscription']);
     // Subscription
     Route::post('/user-subscription', [SubscriptionController::class, 'userSubscription']);
     // my story
@@ -106,9 +107,14 @@ Route::middleware(['payment.user','auth:api'])->group(function () {
     Route::post('/edit-story',[StoryController::class,'editStory']);
     //pending story
     Route::get('/pending-story',[StoryController::class,'pendingStory']);
+    // re post story
+    Route::post('/re-post-story',[StoryController::class,'rePostStory']);
 });
 
 Route::middleware(['admin','auth:api'])->group(function () {
+
+    //update category
+    Route::post('/update-category/{id}',[CategoryController::class,'updateCategory']);
     //notification
 
     Route::get('/admin-notification',[NotificationController::class,'adminNotification']);
@@ -171,6 +177,7 @@ Route::middleware(['admin','auth:api'])->group(function () {
 Route::middleware(['super.admin','auth:api'])->group(function () {
     //super admin
     Route::post('/add-admin', [AuthAdminController::class, 'addAdmin']);
+    Route::post('/show-admin', [AuthAdminController::class, 'showAdmin']);
 });
 
 

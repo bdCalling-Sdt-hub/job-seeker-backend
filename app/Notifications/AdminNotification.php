@@ -13,12 +13,14 @@ class AdminNotification extends Notification
 
     protected $message;
     protected $time;
+    protected $name;
     protected $user;
-    public function __construct($message,$time,$user)
+    public function __construct($message,$time,$name,$user)
     {
         //
         $this->message = $message;
         $this->time = $time;
+        $this->name = $name;
         $this->user = $user;
     }
 
@@ -41,6 +43,7 @@ class AdminNotification extends Notification
         return [
             'message' => $this->message,
             'time' => $this->time,
+            'name'=>$this->name,
             'user' => $this->user,
         ];
     }

@@ -19,9 +19,9 @@ class SubscriptionController extends Controller
         if ($status == 'successful') {
 
             $auth_user = $request->user_id;
-            $user = Subscription::where('user_id', $auth_user)->first();
+            $user = Subscription::where('user_id', $auth_user)->latest()->first();
 
-            if (!$user) {
+            if (!$user || $user->package_id != $request->package_id) {
                 $subscription = new Subscription();
             } else {
                 $subscription = $user;
@@ -47,7 +47,7 @@ class SubscriptionController extends Controller
                     $newEndDate = Carbon::parse($subscription->end_date)->addMonth();
                     $subscription->end_date = $newEndDate;
                     $subscription->update();
-                    $admin_result = app('App\Http\Controllers\NotificationController')->sendAdminNotification('Purchase a subscription',$subscription->created_at,$subscription);
+                    $admin_result = app('App\Http\Controllers\NotificationController')->sendAdminNotification('Purchase a subscription',$subscription->created_at,$subscription->name,$subscription);
                     event(new SendNotificationEvent('Purchase a subscription',$subscription->created_at,auth()->user()));
                 }
                 return response()->json([
@@ -73,31 +73,13 @@ class SubscriptionController extends Controller
         }
     }
 
-//    public function mySubscription(Request $request){
-//        $auth_user_id = auth()->user()->id;
-//        $my_subscription = Subscription::with('package')->where('user_id',$auth_user_id)->get();
-//
-//        $formated_subscription = $my_subscription->map(function ($subscription){
-//            $subscription->package->feature = json_decode($subscription->package->feature);
-////            return json_decode($subscription->package->feature);
-//            return $subscription;
-//        });
-//        if ($my_subscription){
-//            return response()->json([
-//                'message' => 'success',
-//                'data' => $formated_subscription
-//            ]);
-//        }else {
-//            return response()->json([
-//                'message' => 'success',
-//                'data' => []
-//            ]);
-//        }
-//
-//    }
     public function mySubscription(Request $request){
         $auth_user_id = auth()->user()->id;
-        $my_subscription = Subscription::with('package')->where('user_id',$auth_user_id)->first();
+        $my_subscription = Subscription::with('package')
+            ->where('user_id', $auth_user_id)
+            ->orderBy('created_at', 'desc') // Assuming 'created_at' is the column storing subscription creation timestamp
+            ->first();
+
 
         if ($my_subscription){
             if(is_string($my_subscription->package->feature)) {
@@ -122,6 +104,11 @@ class SubscriptionController extends Controller
                 'data' => []
             ]);
         }
+    }
+
+
+    public function upgradeSubscription(Request $request){
+
     }
 
 

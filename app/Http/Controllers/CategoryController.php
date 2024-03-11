@@ -11,7 +11,7 @@ class CategoryController extends Controller
     public function addCategory(Request $request)
     {
         $validator = Validator::make($request->all(), [
-            'category_name' => 'required|string|min:2|max:15|unique:categories',
+            'category_name' => 'required|string|min:2',
         ]);
         if ($validator->fails()) {
             return response()->json($validator->errors(), 400);
@@ -40,4 +40,32 @@ class CategoryController extends Controller
             ], 200);
         }
     }
+
+    public function updateCategory(Request $request, $id)
+    {
+        $validator = Validator::make($request->all(), [
+            'category_name' => 'required|string',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json($validator->errors(), 400);
+        }
+
+        $category = Category::find($id);
+
+        if (!$category) {
+            return response()->json([
+                'message' => 'Category not found'
+            ], 404);
+        }
+
+        $category->category_name = $request->category_name;
+        $category->update();
+
+        return response()->json([
+            'message' => 'Category updated successfully',
+            'data' => $category
+        ]);
+    }
+
 }

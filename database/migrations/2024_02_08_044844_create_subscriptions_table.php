@@ -13,10 +13,12 @@ return new class extends Migration
     {
         Schema::create('subscriptions', function (Blueprint $table) {
             $table->id();
-            $table->unsignedBigInteger('user_id');
-            $table->foreign('user_id')->references('id')->on('users');
-            $table->unsignedBigInteger('package_id');
-            $table->foreign('package_id')->references('id')->on('packages');
+//            $table->unsignedBigInteger('user_id');
+//            $table->foreign('user_id')->references('id')->on('users');
+//            $table->unsignedBigInteger('package_id');
+//            $table->foreign('package_id')->references('id')->on('packages');
+            $table->foreignId('user_id')->constrained()->onDelete('cascade');
+            $table->foreignId('package_id')->constrained()->onDelete('cascade');
             $table->text('payment_type');
             $table->string('amount');
             $table->string('email');

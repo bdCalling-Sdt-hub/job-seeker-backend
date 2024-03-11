@@ -13,12 +13,15 @@ return new class extends Migration
     {
         Schema::create('stories', function (Blueprint $table) {
             $table->id();
-            $table->unsignedBigInteger('user_id');
-            $table->foreign('user_id')->references('id')->on('users');
-            $table->unsignedBigInteger('category_id');
-            $table->foreign('category_id')->references('id')->on('categories');
-            $table->unsignedBigInteger('subscription_id');
-            $table->foreign('subscription_id')->references('id')->on('subscriptions');
+//            $table->unsignedBigInteger('user_id');
+//            $table->foreign('user_id')->references('id')->on('users');
+//            $table->unsignedBigInteger('category_id');
+//            $table->foreign('category_id')->references('id')->on('categories');
+//            $table->unsignedBigInteger('subscription_id');
+//            $table->foreign('subscription_id')->references('id')->on('subscriptions');
+            $table->foreignId('user_id')->constrained()->onDelete('cascade');
+            $table->foreignId('category_id')->constrained()->onDelete('cascade');
+            $table->foreignId('subscription_id')->constrained()->onDelete('cascade');
             $table->string('story_title');
             $table->json('story_image');
             $table->longText('music')->nullable();

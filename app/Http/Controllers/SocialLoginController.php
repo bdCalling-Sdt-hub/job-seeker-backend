@@ -87,6 +87,7 @@ class SocialLoginController extends Controller
             'user_id' => $this->guard()->user()->id,
             'user_type' =>$this->guard()->user()->userType,
             'google_id' =>$this->guard()->user()->google_id,
+            'user_status' =>$this->guard()->user()->user_status,
             'apple_id' =>$this->guard()->user()->apple_id,
             'expires_in' => $this->guard()->factory()->getTTL() * 6000000000000000
         ], 200);

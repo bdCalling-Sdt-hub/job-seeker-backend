@@ -13,19 +13,37 @@ class UserController extends Controller
 {
     public function package()
     {
-        $pakege = Package::get();
+//        $pakege = Package::get();
+//
+//        if ($pakege) {
+//            return response()->json([
+//                'status' => 'success',
+//                'data' => $pakege
+//            ]);
+//        } else {
+//            return response()->json([
+//                'status' => false,
+//                'data' => []
+//            ]);
+//        }
+        $package_list = Package::get();
 
-        if ($pakege) {
-            return response()->json([
-                'status' => 'success',
-                'data' => $pakege
-            ]);
-        } else {
-            return response()->json([
-                'status' => false,
-                'data' => []
-            ]);
-        }
+        $formatted_package = $package_list->map(function($package){
+            $features = [];
+            $features[] = ['feature' => $package->word_limit . ' Character Limit'];
+            $features[] = ['feature' => $package->image_limit . ' Image Limit'];
+            // You can add more dynamic features here if needed
+
+            // Merge dynamic features with existing features
+            $package->feature = array_merge(json_decode($package->feature, true), $features);
+
+            return $package;
+        });
+
+        return response()->json([
+            'status' => 'success',
+            'data' => $formatted_package
+        ]);
     }
 
     public function count_package_subscriber()

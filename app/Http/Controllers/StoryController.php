@@ -36,7 +36,7 @@ class StoryController extends Controller
             'description' => 'no_inappropriate_words',
             'story_status' => '',
             'birth_date' => 'required',
-            'death_date' =>'required',
+            'death_date' => 'required',
         ]);
         if ($validator->fails()) {
             return response()->json($validator->errors(), 400);
@@ -59,11 +59,11 @@ class StoryController extends Controller
             $imageLimit = $image_limit;
         }
         // Validate description length based on word limit
-        $descriptionLength = str_word_count($request->description);
+//        $descriptionLength = str_word_count($request->description);
+        $descriptionLength = strlen($request->description);
         if ($descriptionLength > $wordLimit) {
             return response()->json(['message' => 'Description exceeds word limit for this subscription.'], 400);
         }
-
         // Validate image count based on image limit
         if (count($request->file('story_image')) > $imageLimit) {
             return response()->json(['message' => 'Number of images exceeds limit for this subscription.'], 400);
@@ -99,8 +99,8 @@ class StoryController extends Controller
         $story->music = json_encode($story_music);
         $story->story_image = json_encode($story_image, true);
         $story->save();
-        $result = app('App\Http\Controllers\NotificationController')->sendAdminNotification('has posted a story,needs to approve',$story->created_at,$story);
-        event(new SendNotificationEvent('has posted a story,needs to approve',$story->created_at,auth()->user()));
+        $result = app('App\Http\Controllers\NotificationController')->sendAdminNotification('has posted a story,needs to approve', $story->created_at,auth()->user()->fullName, $story);
+        event(new SendNotificationEvent('has posted a story,needs to approve', $story->created_at, auth()->user()));
         return response()->json([
             'message' => 'Story add successfully',
             'data' => $story,
@@ -117,30 +117,30 @@ class StoryController extends Controller
         $story_title = $request->story_title;
         $username = $request->username;
 
-        $query = Story::query()->with('category','user')->where('story_status',1)->where('archived',0);
+        $query = Story::query()->with('category', 'user')->where('story_status', 1)->where('archived', 0);
 
-        if($category_id !== null) {
+        if ($category_id !== null) {
             $query->where('category_id', $category_id);
         }
-        if($category_name !== null) {
-            $query->whereHas('category', function($q) use ($category_name) {
+        if ($category_name !== null) {
+            $query->whereHas('category', function ($q) use ($category_name) {
                 $q->where('category_name', $category_name);
             });
         }
-        if($story_title !== null) {
+        if ($story_title !== null) {
             $query->where('story_title', 'like', '%' . $story_title . '%');
         }
-        if($username !== null) {
-            $query->whereHas('user', function($q) use ($username) {
+        if ($username !== null) {
+            $query->whereHas('user', function ($q) use ($username) {
                 $q->where('fullName', $username);
             });
         }
 
-        $perPage = 2;
+        $perPage = 10;
         $story_list = $query->paginate($perPage);
 //        $story_list = $query->get();
 
-        $formatted_stories = $story_list->map(function($story) {
+        $formatted_stories = $story_list->map(function ($story) {
             $story->story_image = json_decode($story->story_image);
             $story->music = json_decode($story->music);
             return $story;
@@ -154,9 +154,9 @@ class StoryController extends Controller
     public function storyDetails(Request $request)
     {
         $story_id = $request->story_id;
-        $story_details = Story::with('category','user')->where('id',$story_id)->get();
+        $story_details = Story::with('category', 'user')->where('id', $story_id)->get();
 
-        $formatted_stories = $story_details->map(function($story){
+        $formatted_stories = $story_details->map(function ($story) {
             $story->story_image = json_decode($story->story_image);
             $story->music = json_decode($story->music);
             return $story;
@@ -171,13 +171,13 @@ class StoryController extends Controller
     public function myStory()
     {
         $auth_user_id = auth()->user()->id;
-        $story_details = Story::with('category','user')->where([
+        $story_details = Story::with('category', 'user')->where([
             'user_id' => $auth_user_id,
             'story_status' => 1,
             'archived' => 0,
         ])->get();
 
-        $formatted_stories = $story_details->map(function($story){
+        $formatted_stories = $story_details->map(function ($story) {
             $story->story_image = json_decode($story->story_image);
             $story->music = json_decode($story->music);
             return $story;
@@ -192,9 +192,9 @@ class StoryController extends Controller
     public function pendingStory()
     {
         $auth_user_id = auth()->user()->id;
-        $story_details = Story::with('category','user')->where('user_id',$auth_user_id)->where('story_status',0)->get();
+        $story_details = Story::with('category', 'user')->where('user_id', $auth_user_id)->where('story_status', 0)->get();
 
-        $formatted_stories = $story_details->map(function($story){
+        $formatted_stories = $story_details->map(function ($story) {
             $story->story_image = json_decode($story->story_image);
             $story->music = json_decode($story->music);
             return $story;
@@ -206,7 +206,8 @@ class StoryController extends Controller
         ]);
     }
 
-    public function deleteStory(Request $request){
+    public function deleteStory(Request $request)
+    {
 
         $story_id = $request->story_id;
 
@@ -234,19 +235,20 @@ class StoryController extends Controller
 
             return response()->json([
                 'message' => 'Story and associated files deleted successfully!'
-            ],200);
+            ], 200);
         } else {
             return response()->json([
                 'message' => 'Story Not Found'
-            ],404);
+            ], 404);
         }
     }
 
-    public function archiveStory(){
+    public function archiveStory()
+    {
         $check_user = auth()->user()->id;
-        if ($check_user){
-            $archive_story = Story::with('category','user')->where('user_id',$check_user)->where('archived',1)->get();
-            $formatted_stories = $archive_story->map(function($story){
+        if ($check_user) {
+            $archive_story = Story::with('category', 'user')->where('user_id', $check_user)->where('archived', 1)->get();
+            $formatted_stories = $archive_story->map(function ($story) {
                 $story->story_image = json_decode($story->story_image);
                 $story->music = json_decode($story->music);
                 return $story;
@@ -257,5 +259,76 @@ class StoryController extends Controller
             ]);
         }
     }
+
+    public function rePostStory(Request $request)
+    {
+        $story_id = $request->id;
+        $auth_user_id = auth()->user()->id;
+        $story = Story::where('id',$story_id)->where('user_id',$auth_user_id)->where('archived',1)->first();
+        if ($story){
+            $story->archived = 0;
+            $story->story_status = 1;
+            $story->update();
+            return response()->json([
+                'message' => 'story updated successfully',
+                'data' => $story,
+            ]);
+        }else{
+            return response()->json([
+                'message' => 'story is not found',
+                'data' => []
+            ]);
+        }
+    }
+
+//    public function rePostStory(Request $request)
+//    {
+//        $auth_user = auth()->user();
+//        $auth_user_id = $auth_user->id;
+//
+//        // Check if the user has a subscription for story reposting
+//        $latest_subscription = $auth_user->subscription()->latest()->first();
+//
+//        // If the latest subscription exists and it allows story reposting
+//        if ($latest_subscription) {
+//
+//            // Check if the user has already reposted a story
+//            $reposted_story = Story::where('user_id', $auth_user_id)->where('story_status',1)->where('archived', 1)->first();
+//
+//            if (!$reposted_story) {
+//                return 'hi';
+//                // Proceed with reposting the story
+//                $story_id = $request->id;
+//                $story = Story::where('id', $story_id)->where('user_id', $auth_user_id)->where('archived', 1)->first();
+//
+//                if ($story) {
+//                    $story->archived = 0;
+//                    $story->story_status = 1;
+//                    $story->reposted = 1; // Marking the story as reposted
+//                    $story->update();
+//
+//                    return response()->json([
+//                        'message' => 'Story reposted successfully',
+//                        'data' => $story,
+//                    ]);
+//                } else {
+//                    return response()->json([
+//                        'message' => 'Story not found or not eligible for reposting',
+//                        'data' => [],
+//                    ]);
+//                }
+//            } else {
+//                return response()->json([
+//                    'message' => 'You have already reposted a story',
+//                    'data' => [],
+//                ]);
+//            }
+//        } else {
+//            return response()->json([
+//                'message' => 'You don\'t have a subscription for story reposting',
+//                'data' => [],
+//            ]);
+//        }
+//    }
 
 }

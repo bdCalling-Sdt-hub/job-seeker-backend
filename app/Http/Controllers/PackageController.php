@@ -61,7 +61,7 @@ class PackageController extends Controller
 
         $formatted_package = $package_list->map(function($package){
             $features = [];
-            $features[] = ['feature' => $package->word_limit . ' Word Limit'];
+            $features[] = ['feature' => $package->word_limit . ' Character Limit'];
             $features[] = ['feature' => $package->image_limit . ' Image Limit'];
             // You can add more dynamic features here if needed
 

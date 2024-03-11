@@ -34,4 +34,19 @@ class AuthAdminController extends Controller
         ], 200);
     }
 
+    public function showAdmin(){
+        $admin_user = User::where('userType','ADMIN')->get();
+        if ($admin_user){
+            return response()->json([
+                'message' => 'Employee List',
+                'data' => $admin_user,
+            ]);
+        }else{
+            return response()->json([
+                'message' => 'Employee List Empty',
+                'data' => [],
+            ]);
+        }
+    }
+
 }
