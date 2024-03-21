@@ -16,8 +16,6 @@ return new class extends Migration
             $table->string('fullName');
             $table->string('email')->unique();
             $table->string('password')->nullable();
-            $table->string("mobile")->nullable();
-            $table->string("address")->nullable();
             $table->string("userType");
             $table->string("image")->nullable();
             $table->string("otp");
@@ -26,6 +24,7 @@ return new class extends Migration
             $table->rememberToken()->nullable();
             $table->string('google_id')->nullable();
             $table->string('apple_id')->nullable();
+            $table->string('facebook_id')->nullable();
             $table->softDeletes();
             $table->timestamps();
         });

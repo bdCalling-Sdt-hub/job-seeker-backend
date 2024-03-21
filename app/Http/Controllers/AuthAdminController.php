@@ -5,10 +5,11 @@ namespace App\Http\Controllers;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
-use Illuminate\Support\Facades\Validator;
 
 class AuthAdminController extends Controller
 {
+    //
+
     public function addAdmin(Request $request)
     {
         $validatedData = $request->validate([
@@ -34,17 +35,29 @@ class AuthAdminController extends Controller
         ], 200);
     }
 
-    public function showAdmin(){
-        $admin_user = User::where('userType','ADMIN')->get();
-        if ($admin_user){
+    public function showAdmin()
+    {
+        $admin_user = User::where('userType', 'ADMIN')->get();
+        if ($admin_user) {
             return response()->json([
                 'message' => 'Employee List',
                 'data' => $admin_user,
             ]);
-        }else{
+        } else {
             return response()->json([
                 'message' => 'Employee List Empty',
                 'data' => [],
+            ]);
+        }
+    }
+
+    public function deleteAdmin($id)
+    {
+        $admin_user = User::where('userType', 'ADMIN')->where('id', $id)->first();
+        if ($admin_user) {
+            $admin_user->forcedelete();
+            return response()->json([
+                'message' => 'Employee deleted successfully'
             ]);
         }
     }

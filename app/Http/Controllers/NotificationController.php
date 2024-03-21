@@ -49,60 +49,6 @@ class NotificationController extends Controller
             return response()->json(['success' => false, 'msg' => $e->getMessage()]);
         }
     }
-//    public function notification()
-//    {
-//        $user = $this->guard()->user();
-//
-//        if ($user) {
-//            $userId = $user->id;
-//            $unreadCount = DB::table('notifications')
-//                ->where('notifications.type', 'App\\Notifications\\UserNotification')
-//                ->where(function ($query) use ($userId) {
-//                    $query->where(function ($query) use ($userId) {
-//                        $query->where('notifiable_type', 'App\Models\User')
-//                            ->where('notifiable_id', $userId);
-//                    })
-//                        ->orWhere(function ($query) use ($userId) {
-//                            $query->whereJsonContains('data->user->user_id', $userId);
-//                        });
-//                })
-//                ->whereNull('read_at')
-//                ->count();
-//            $query = DB::table('notifications')
-//                ->where('notifications.type', 'App\\Notifications\\UserNotification')
-//                ->where(function ($query) use ($userId) {
-//                    $query->where(function ($query) use ($userId) {
-//                        $query->where('notifiable_type', 'App\Models\User')
-//                            ->where('notifiable_id', $userId);
-//                    })
-//                        ->orWhere(function ($query) use ($userId) {
-//                            $query->whereJsonContains('data->user->user_id', $userId);
-//                        });
-//                })
-//                ->orderBy('created_at', 'desc')
-//                ->get();
-//
-//            $user_notifications = $query->map(function ($notification) {
-//                $notification->data = json_decode($notification->data);
-//                return $notification;
-//            });
-//
-//            // Mark all notifications as read
-//            $user->unreadNotifications()->update(['read_at' => now()]);
-//
-//            return response()->json([
-//                'message' => 'Notification list',
-//                'notifications' => $user_notifications,
-//                'unread_count' => $unreadCount,
-//            ], 200);
-//        } else {
-//            return response()->json([
-//                'message' => 'User not authenticated',
-//                'notifications' => [],
-//                'unread_count' => 0,
-//            ], 401);
-//        }
-//    }
 
     public function notification()
     {
@@ -121,6 +67,11 @@ class NotificationController extends Controller
                         ->orWhere(function ($query) use ($userId) {
                             $query->whereJsonContains('data->user->user_id', $userId);
                         });
+//                        ->orWhere(function ($query) use ($userId) {
+//                            // Add condition for Story notifications
+//                            $query->where('notifiable_type', 'App\Models\Story')
+//                                ->where('notifiable_id', $userId);
+//                        });
                 })
                 ->orderBy('created_at', 'desc')
                 ->get();
@@ -130,21 +81,12 @@ class NotificationController extends Controller
                 return $notification;
             });
 
-            $unreadCount = $user->unreadNotifications()
-                ->where('notifiable_type', 'App\Models\User')
-                ->orWhere(function ($query) use ($userId) {
-                    $query->where('notifiable_id', $userId)
-                        ->whereJsonContains('data->user->user_id', $userId);
-                })
-                ->count();
-
-            // Mark all notifications as read
-            $user->unreadNotifications()->update(['read_at' => now()]);
+            $unread_count = $query->where('read_at',null)->count();
 
             return response()->json([
                 'message' => 'Notification list',
                 'notifications' => $user_notifications,
-                'unread_count' => $unreadCount,
+                'unread_count' => $unread_count,
             ], 200);
         } else {
             return response()->json([
@@ -155,131 +97,45 @@ class NotificationController extends Controller
         }
     }
 
-//    public function notification()
-//    {
-//        $user = $this->guard()->user();
-//
-//        if ($user) {
-//            $userId = $user->id;
-//
-//            // Fetch unread notifications
-//            $unreadNotifications = $user->unreadNotifications()
-//                ->where(function ($query) use ($userId) {
-//                    $query->where('notifiable_type', 'App\Models\User')
-//                        ->where('notifiable_id', $userId);
-//                })
-//                ->orWhere(function ($query) use ($userId) {
-//                    $query->whereJsonContains('data->user->user_id', $userId);
-//                })
-//                ->orderBy('created_at', 'desc')
-//                ->get();
-//
-//            // Mark fetched notifications as read
-//            foreach ($unreadNotifications as $notification) {
-//                $notification->markAsRead();
-//            }
-//
-//            $unreadCount = $unreadNotifications->count();
-//
-////            $userNotifications = $unreadNotifications->map(function ($notification) {
-////                $notification->data = json_decode($notification->data);
-////                return $notification;
-////            });
-//            $userNotifications = $unreadNotifications->map(function ($notification) {
-//                return $notification;
-//            });
-//
-//
-//            return response()->json([
-//                'message' => 'Notification list',
-//                'notifications' => $userNotifications,
-//                'unread_count' => $unreadCount,
-//            ], 200);
-//        } else {
-//            return response()->json([
-//                'message' => 'User not authenticated',
-//                'notifications' => [],
-//                'unread_count' => 0,
-//            ], 401);
-//        }
-//    }
-
-
-
-    public function readNotification(){
-
-    }
-
-
-//    public function testNotification()
-//    {
-//        $user = $this->guard()->user();
-//
-//        if ($user) {
-//            $userId = $user->id;
-//
-//            $unreadCount = $user->unreadNotifications()
-//                ->where('notifiable_type', 'App\Models\User')
-//                ->where('notifiable_type','App\Models\Story')
-//                ->where(function ($query) use ($userId) {
-//                    $query->where('notifiable_id', $userId)
-//                        ->orWhereJsonContains('data->user->user_id', $userId);
-//                })
-//                ->count();
-//
-//            $query = DB::table('notifications')
-//                ->where('notifiable_type', 'App\Models\User')
-//                ->where('notifiable_type','App\Models\Story')
-//                ->where(function ($query) use ($userId) {
-//                    $query->where('notifiable_id', $userId)
-//                        ->orWhereJsonContains('data->user->user_id', $userId);
-//                })
-//                ->orderBy('created_at', 'desc')
-//                ->get();
-//
-//            $user_notifications = $query->map(function ($notification) {
-//                $notification->data = json_decode($notification->data);
-//                return $notification;
-//            });
-//
-//            // Mark all notifications as read
-//            $user->unreadNotifications()->update(['read_at' => now()]);
-//
-//            return response()->json([
-//                'message' => 'Notification list',
-//                'notifications' => $user_notifications,
-//                'unread_count' => $unreadCount,
-//            ], 200);
-//        } else {
-//            return response()->json([
-//                'message' => 'User not authenticated',
-//                'notifications' => [],
-//                'unread_count' => 0,
-//            ], 401);
-//        }
-//    }
-    public function markRead()
+    public function userReadNotification()
     {
         $user = $this->guard()->user();
-        $notifications = [];
-        if ($user) {
-            $notifications = $user->unreadNotifications()->orderBy('created_at', 'desc')->get();
-            // Mark all unread notifications as read
-            $user->unreadNotifications->markAsRead();
 
-            // Retrieve and return the updated notifications
-            $updated_notifications = $user->notifications;
-            $notifications = [
-                'unread_notification' => $notifications,
-                'read_notification' => $updated_notifications,
-            ];
+        if ($user) {
+            $userId = $user->id;
+
+            $unreadNotifications = DB::table('notifications')
+                ->where('notifications.type', 'App\\Notifications\\UserNotification')
+                ->where(function ($query) use ($userId) {
+                    $query->where(function ($query) use ($userId) {
+                        $query->where('notifiable_type', 'App\Models\User')
+                            ->where('notifiable_id', $userId);
+                    })
+                        ->orWhere(function ($query) use ($userId) {
+                            $query->whereJsonContains('data->user->user_id', $userId);
+                        })
+                        ->orWhere(function ($query) use ($userId) {
+                            // Add condition for Story notifications
+                            $query->where('notifiable_type', 'App\Models\Story')
+                                ->where('notifiable_id', $userId);
+                        });
+                })
+                ->whereNull('read_at')
+                ->get();
+
+            // Mark notifications as read
+            foreach ($unreadNotifications as $notification) {
+                DB::table('notifications')
+                    ->where('id', $notification->id)
+                    ->update(['read_at' => now()]);
+            }
+
             return response()->json([
-                'message' => 'Notifications',
-                'notification' => $notifications,
+                'message' => 'Notifications marked as read successfully',
+                'unread_notifications_count' => 0,
             ], 200);
         } else {
             return response()->json([
-                'status' => 'error',
                 'message' => 'User not authenticated',
             ], 401);
         }
