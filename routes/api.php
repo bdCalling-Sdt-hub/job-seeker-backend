@@ -75,10 +75,22 @@ Route::middleware(['payment.user','auth:api'])->group(function () {
 
 Route::middleware(['admin','auth:api'])->group(function () {
 
-    // ================== Admin Api ====================//
+    // ================== Admin====================//
 
-    //update category
-    Route::post('/update-category/{id}',[CategoryController::class,'updateCategory']);
+    // -----------------Package -------------------
+    Route::get('show-package',[PackageController::class,'showPackage']);
+    Route::post('add-package',[PackageController::class,'addPackage']);
+    Route::post('update-package',[PackageController::class,'updatePackage']);
+    Route::get('delete-package',[PackageController::class,'deletePackage']);
+
+    // -----------------Category --------------------
+    Route::post('add-category', [CategoryController::class, 'addCategory']);
+    Route::post('update-category', [CategoryController::class, 'updateCategory']);
+    Route::get('delete-category/{id}', [CategoryController::class, 'deleteCategory']);
+    Route::get('show-category', [CategoryController::class, 'showCategory']);
+
+    //------------------
+
     //notification
 
     Route::get('/admin-notification',[NotificationController::class,'adminNotification']);
