@@ -25,47 +25,58 @@ class CategoryController extends Controller
         ]);
     }
 
-    public function show_category()
+    public function showCategory()
     {
         $show_category = Category::get();
         if ($show_category) {
             return response()->json([
-                'status' => 'success',
+                'message' => 'success',
                 'data' => $show_category
             ], 200);
         } else {
             return response()->json([
-                'status' => 'success',
+                'message' => 'success',
                 'data' => []
             ], 200);
         }
     }
 
-    public function updateCategory(Request $request, $id)
+    public function updateCategory(Request $request)
     {
-        $validator = Validator::make($request->all(), [
-            'category_name' => 'required|string',
-        ]);
-
-        if ($validator->fails()) {
-            return response()->json($validator->errors(), 400);
-        }
-
-        $category = Category::find($id);
-
-        if (!$category) {
+        $category = Category::where('id', $request->id)->first();
+        if ($category) {
+            $validator = Validator::make($request->all(), [
+                'category_name' => 'string|min:2|max:20',
+            ]);
+            if ($validator->fails()) {
+                return response()->json($validator->errors(), 400);
+            }
+            $category->category_name = $request->category_name;
+            $category->update();
             return response()->json([
-                'message' => 'Category not found'
-            ], 404);
+                'message' => 'package updated successfully',
+                'data' => $category,
+            ]);
+        } else {
+            return response()->json([
+                'message' => 'Package not found',
+                'data' => []
+            ]);
         }
 
-        $category->category_name = $request->category_name;
-        $category->update();
-
-        return response()->json([
-            'message' => 'Category updated successfully',
-            'data' => $category
-        ]);
     }
 
+    public function deleteCategory($id)
+    {
+        $category = Category::where('id', $id)->first();
+        if ($category) {
+            $category->delete();
+            return response()->json([
+                'message' => 'Category deleted successfully',
+            ],200);
+        }
+        return response()->json([
+            'message' => 'Category Not Found',
+        ],404);
+    }
 }

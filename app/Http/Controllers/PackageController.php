@@ -15,8 +15,8 @@ class PackageController extends Controller
             'package_name' => 'required|string|min:2|max:15|unique:packages',
             'amount' => 'required',
             'duration' => 'required',
-            'word_limit' => 'required',
-            'image_limit' => 'required',
+            'post_limit' => 'required',
+            'candidate_limit' => 'required',
             'feature' => 'required',
         ]);
         if ($validator->fails()) {
@@ -26,48 +26,28 @@ class PackageController extends Controller
         $package->package_name = $request->package_name;
         $package->amount = $request->amount;
         $package->duration = $request->duration;
-        $package->word_limit = $request->word_limit;
-        $package->image_limit = $request->image_limit;
+        $package->post_limit = $request->word_limit;
+        $package->candidate_limit = $request->candidate_limit;
         $package->feature = $request->feature;
         $package->save();
-        if ($package){
+        if ($package) {
             return response()->json([
                 'message' => 'package added Successfully',
                 'data' => $package
-            ],200);
+            ], 200);
         }
         return response()->json([
             'message' => 'Something went wrong',
-        ],402);
+        ], 402);
 
     }
 
-//    public function showPackage(){
-//        $package_list = Package::get();
-//
-//        $formatted_package = $package_list->map(function($package){
-//            $package->feature = json_decode($package->feature);
-//            return $package;
-//        });
-//
-//        return response()->json([
-//            'message' => 'success',
-//            'data' => $formatted_package
-//        ]);
-//    }
-
-    public function showPackage(){
+    public function showPackage()
+    {
         $package_list = Package::get();
 
-        $formatted_package = $package_list->map(function($package){
-            $features = [];
-            $features[] = ['feature' => $package->word_limit . ' Character Limit'];
-            $features[] = ['feature' => $package->image_limit . ' Image Limit'];
-            // You can add more dynamic features here if needed
-
-            // Merge dynamic features with existing features
-            $package->feature = array_merge(json_decode($package->feature, true), $features);
-
+        $formatted_package = $package_list->map(function ($package) {
+            $package->feature = json_decode($package->feature);
             return $package;
         });
 
@@ -76,5 +56,72 @@ class PackageController extends Controller
             'data' => $formatted_package
         ]);
     }
+    public function updatePackage(Request $request)
+    {
+        $package = Package::where('id', $request->id)->first();
+        if ($package) {
+            $validator = Validator::make($request->all(), [
+                'package_name' => 'string|min:2|max:20',
+                'amount' => '',
+                'duration' => '',
+                'post_limit' => '',
+                'candidate_limit' => '',
+                'feature' => '',
+            ]);
+            if ($validator->fails()) {
+                return response()->json($validator->errors(), 400);
+            }
+            $package->package_name = $request->package_name;
+            $package->amount = $request->amount;
+            $package->duration = $request->duration;
+            $package->post_limit = $request->post_limit;
+            $package->candidate_limit = $request->candidate_limit;
+            $package->feature = $request->feature;
+            $package->update();
+            return response()->json([
+                'message' => 'package updated successfully',
+                'data' => $package,
+            ]);
+        } else {
+            return response()->json([
+                'message' => 'Package not found',
+                'data' => []
+            ]);
+        }
+    }
 
+    public function deletePackage($id)
+    {
+        $package = Package::where('id', $id)->first();
+        if ($package) {
+            $package->delete();
+            return response()->json([
+                'message' => 'Package deleted successfully',
+            ]);
+        }
+        return response()->json([
+            'message' => 'Package Not Found',
+        ]);
+    }
 }
+
+//    public function showPackage(){
+//        $package_list = Package::get();
+//
+//        $formatted_package = $package_list->map(function($package){
+//            $features = [];
+//            $features[] = ['feature' => $package->word_limit . ' Character Limit'];
+//            $features[] = ['feature' => $package->image_limit . ' Image Limit'];
+//            // You can add more dynamic features here if needed
+//
+//            // Merge dynamic features with existing features
+//            $package->feature = array_merge(json_decode($package->feature, true), $features);
+//
+//            return $package;
+//        });
+//
+//        return response()->json([
+//            'message' => 'success',
+//            'data' => $formatted_package
+//        ]);
+//    }

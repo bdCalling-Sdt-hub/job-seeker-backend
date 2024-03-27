@@ -12,8 +12,8 @@ return new class extends Migration {
             $table->string('package_name');
             $table->double('amount');
             $table->tinyInteger('duration');
-            $table->integer('word_limit');
-            $table->integer('image_limit');
+            $table->integer('post_limit');
+            $table->integer('candidate_limit');
             $table->json('feature');
             $table->timestamps();
         });

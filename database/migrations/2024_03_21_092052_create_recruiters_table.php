@@ -13,7 +13,7 @@ return new class extends Migration {
         Schema::create('recruiters', function (Blueprint $table) {
             $table->id();
             $table->foreignId('user_id')->constrained()->onDelete('cascade');
-            $table->foreignId('category_id')->constrained()->onDelete('cascade');
+            $table->foreignId('category_id');
             $table->foreignId('sub_category_id');
             $table->string('company_name')->nullable();
             $table->string('logo')->nullable();
