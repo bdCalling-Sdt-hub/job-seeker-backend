@@ -3,29 +3,27 @@
 namespace App\Http\Controllers;
 
 use App\Events\SendNotificationEvent;
-use Illuminate\Http\Request;
-use App\Models\User;
-use Illuminate\Support\Facades\Mail;
-use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Validator;
-use Illuminate\Support\Facades\Hash;
-use App\Mail\OtpMail;
-use Illuminate\Validation\Rule;
-use Illuminate\Support\Str;
-use Illuminate\Support\Facades\File;
 use App\Http\Controllers\NotificationController;
+use App\Mail\OtpMail;
+use App\Models\User;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\File;
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Str;
+use Illuminate\Validation\Rule;
 
 class AuthController extends Controller
 {
     public function register(Request $request)
-
     {
         $user = User::where('email', $request->email)
             ->where('verify_email', 0)
             ->first();
 
         if ($user) {
-
             $random = Str::random(6);
             Mail::to($request->email)->send(new OtpMail($random));
             $user->update(['otp' => $random]);
@@ -41,21 +39,20 @@ class AuthController extends Controller
                 'fullName' => 'required|string|min:2|max:100',
                 'email' => 'required|string|email|max:60|unique:users|contains_dot',
                 'password' => 'required|string|min:6|confirmed',
-                'userType' => ['required', Rule::in(['USER', 'ADMIN', 'SUPER ADMIN'])],
+                'userType' => ['required', Rule::in(['USER', 'ADMIN', 'SUPER ADMIN', 'RECRUITER'])],
             ], [
                 'email.contains_dot' => 'without (.) Your email is invalid',
             ]);
             if ($validator->fails()) {
-                return response()->json(["message" => $validator->errors()], 400);
+                return response()->json(['message' => $validator->errors()], 400);
             }
-
 
             $userData = [
                 'fullName' => $request->fullName,
                 'email' => $request->email,
                 'password' => Hash::make($request->password),
                 'userType' => $request->userType,
-                'otp' =>  Str::random(6),
+                'otp' => Str::random(6),
                 'verify_email' => 0
             ];
 
@@ -70,7 +67,6 @@ class AuthController extends Controller
 
     public function emailVerified(Request $request)
     {
-
         $validator = Validator::make($request->all(), [
             'otp' => 'required',
         ]);
@@ -78,12 +74,11 @@ class AuthController extends Controller
         if ($validator->fails()) {
             return response(['errors' => $validator->errors()], 422);
         }
-        if ($request->otp){
-            $user = User::where('otp',$request->otp)->first();
-            if($user!=null){
+        if ($request->otp) {
+            $user = User::where('otp', $request->otp)->first();
+            if ($user != null) {
                 $token = $this->guard()->login($user);
             }
-
         }
 
         $user = User::where('otp', $request->otp)->first();
@@ -93,9 +88,9 @@ class AuthController extends Controller
         }
         $user->update(['verify_email' => 1]);
         $user->update(['otp' => 0]);
-        $result = app('App\Http\Controllers\NotificationController')->sendNotification('Welcome to the memorial moment app',$user->created_at,$user);
-        $admin_result = app('App\Http\Controllers\NotificationController')->sendAdminNotification('New Customer Registered',$user->created_at,$user->fullName,$user);
-        event(new SendNotificationEvent('New Customer Registered',$user->created_at,$user));
+        $result = app('App\Http\Controllers\NotificationController')->sendNotification('Welcome to the memorial moment app', $user->created_at, $user);
+        $admin_result = app('App\Http\Controllers\NotificationController')->sendAdminNotification('New Customer Registered', $user->created_at, $user->fullName, $user);
+        event(new SendNotificationEvent('New Customer Registered', $user->created_at, $user));
         return response([
             'message' => 'Email verified successfully',
             'notification' => $result,
@@ -112,8 +107,8 @@ class AuthController extends Controller
         if ($validator->fails()) {
             return response()->json($validator->errors(), 400);
         }
-        $userData = User::where("email", $request->email)->first();
-        //return gettype($userData->otp);
+        $userData = User::where('email', $request->email)->first();
+        // return gettype($userData->otp);
         if ($userData && Hash::check($request->password, $userData->password)) {
             if ($userData->verify_email == 0) {
                 return response()->json(['message' => 'Your email is not verified'], 401);
@@ -123,26 +118,23 @@ class AuthController extends Controller
         $credentials = $request->only('email', 'password');
 
         if ($token = $this->guard()->attempt($credentials)) {
-
             return $this->respondWithToken($token);
         }
 
         return response()->json(['message' => 'Your credential is wrong'], 402);
     }
 
-
     protected function respondWithToken($token)
     {
-
-        $user = Auth::guard('api')->user()->makeHidden(['mobile','address','image','otp','created_at','updated_at']);
+        $user = Auth::guard('api')->user()->makeHidden(['mobile', 'address', 'image', 'otp', 'created_at', 'updated_at']);
         return response()->json([
             'access_token' => $token,
             'user' => $user,
             'token_type' => 'bearer',
-            'user'=>$user,
+            'user' => $user,
             'expires_in' => auth('api')
                 ->factory()
-                ->getTTL()*600000000000, //hour*seconds
+                ->getTTL() * 600000000000,  // hour*seconds
         ]);
     }
 
@@ -156,9 +148,8 @@ class AuthController extends Controller
         if ($this->guard()->user()) {
             $user = $this->guard()->user();
 
-
             return response()->json([
-                "user"=>$user
+                'user' => $user
             ]);
         } else {
             return response()->json(['message' => 'You are unauthorized']);
@@ -171,12 +162,11 @@ class AuthController extends Controller
         $user = User::where('email', $email)->first();
         if (!$user) {
             return response()->json(['error' => 'Email not found'], 401);
-        }else if($user->google_id != null || $user->apple_id != null){
+        } else if ($user->google_id != null || $user->apple_id != null) {
             return response()->json([
                 'message' => 'Your are social user, You do not need to forget password',
-            ],400);
-        }
-        else {
+            ], 400);
+        } else {
             $random = Str::random(6);
             Mail::to($request->email)->send(new OtpMail($random));
             $user->update(['otp' => $random]);
@@ -192,7 +182,6 @@ class AuthController extends Controller
             ->first();
 
         if (!$user) {
-
             return response()->json(['error' => 'Your verified code does not matched '], 401);
         } else {
             $user->update(['verify_email' => 1]);
@@ -207,12 +196,12 @@ class AuthController extends Controller
 
         if (!$user) {
             return response()->json([
-                "message" => "Your email is not exists"
+                'message' => 'Your email is not exists'
             ], 401);
         }
         if ($user->verify_email == 0) {
             return response()->json([
-                "message" => "Your email is not verified"
+                'message' => 'Your email is not verified'
             ], 401);
         }
         $validator = Validator::make($request->all(), [
@@ -232,7 +221,6 @@ class AuthController extends Controller
         $user = $this->guard()->user();
 
         if ($user) {
-
             $validator = Validator::make($request->all(), [
                 'current_password' => 'required|string',
                 'new_password' => 'required|string|min:6|different:current_password',
@@ -253,9 +241,7 @@ class AuthController extends Controller
         }
     }
 
-
-
-    public function editProfile(Request $request,$id)
+    public function editProfile(Request $request, $id)
     {
         $user = $this->guard()->user();
 
@@ -279,7 +265,7 @@ class AuthController extends Controller
                     File::delete($destination);
                 }
 
-                $timeStamp = time(); // Current timestamp
+                $timeStamp = time();  // Current timestamp
                 $fileName = $timeStamp . '.' . $file->getClientOriginalExtension();
                 $file->storeAs('image', $fileName, 'public');
 
@@ -290,21 +276,21 @@ class AuthController extends Controller
 
             $user->update();
             return response()->json([
-                "message" => "Profile updated successfully",
+                'message' => 'Profile updated successfully',
                 'data' => $user,
             ]);
         } else {
             return response()->json([
-                "message" => "You are not authorized!"
+                'message' => 'You are not authorized!'
             ], 401);
         }
     }
 
-    //jusef
+    // jusef
     public function resendOtp(Request $request)
     {
         $user = User::where('email', $request->email)
-//            ->where('verify_email', 0)
+            //            ->where('verify_email', 0)
             ->first();
 
         if (!$user) {
@@ -313,10 +299,10 @@ class AuthController extends Controller
 
         // Check if OTP resend is allowed (based on time expiration)
         $currentTime = now();
-        $lastResentAt = $user->last_otp_sent_at; // Assuming you have a column in your users table to track the last OTP sent time
+        $lastResentAt = $user->last_otp_sent_at;  // Assuming you have a column in your users table to track the last OTP sent time
 
         // Define your expiration time (e.g., 5 minutes)
-        $expirationTime = 5; // in minutes
+        $expirationTime = 5;  // in minutes
 
         if ($lastResentAt && $lastResentAt->addMinutes($expirationTime)->isFuture()) {
             // Resend not allowed yet
@@ -374,7 +360,7 @@ class AuthController extends Controller
                     'message' => 'User unauthorized'
                 ], 401);
             } else {
-//                $avatar = 'dummyImg/default.jpg';
+                //                $avatar = 'dummyImg/default.jpg';
                 // Create a new user
                 $user = new User();
                 $user->fullName = $request->fullName;
@@ -383,7 +369,7 @@ class AuthController extends Controller
                 $user->google_id = $request->google_id ?? null;
                 $user->apple_id = $request->apple_id ?? null;
                 $user->verify_email = 1;
-                $user->otp=0;
+                $user->otp = 0;
                 $user->image = $request->image ?? null;
                 $user->save();
 
