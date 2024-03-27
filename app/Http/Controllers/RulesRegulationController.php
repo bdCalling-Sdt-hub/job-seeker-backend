@@ -15,12 +15,12 @@ class RulesRegulationController extends Controller
         $about = About::first();
         if ($about) {
             return response()->json([
-                'status' => 'success',
+                'message' => 'about us',
                 'data' => $about
             ], 200);
         } else {
             return response()->json([
-                'status' => 'false',
+                'message' => 'no data found',
                 'data' => []
             ], 200);
         }
@@ -31,12 +31,12 @@ class RulesRegulationController extends Controller
         $terms = TermsConditions::first();
         if ($terms) {
             return response()->json([
-                'status' => 'success',
+                'message' => 'Terms and Condition',
                 'data' => $terms
             ], 200);
         } else {
             return response()->json([
-                'status' => 'false',
+                'message' => 'No data found',
                 'data' => []
             ], 200);
         }
@@ -47,12 +47,12 @@ class RulesRegulationController extends Controller
         $privacy = Privacy::first();
         if ($privacy) {
             return response()->json([
-                'status' => 'success',
+                'message' => 'Privacy and Policy',
                 'data' => $privacy
             ], 200);
         } else {
             return response()->json([
-                'status' => 'false',
+                'message' => 'No data found',
                 'data' => []
             ], 200);
         }
