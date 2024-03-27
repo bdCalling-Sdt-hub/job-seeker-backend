@@ -2,17 +2,16 @@
 
 namespace App\Models;
 
+use App\Models\JobPost;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class Recruiter extends Model
+class Apply extends Model
 {
     use HasFactory;
 
-    public function category() {}
-
-    public function job_post(): HasMany
+    public function job_post()
     {
-        return $this->hasMany(Comment::class);
+        return $this->belongsTo(JobPost::class);
     }
 }

@@ -37,10 +37,9 @@ class Kernel extends HttpKernel
             \App\Http\Middleware\VerifyCsrfToken::class,
             \Illuminate\Routing\Middleware\SubstituteBindings::class,
         ],
-
         'api' => [
             // \Laravel\Sanctum\Http\Middleware\EnsureFrontendRequestsAreStateful::class,
-            \Illuminate\Routing\Middleware\ThrottleRequests::class.':api',
+            \Illuminate\Routing\Middleware\ThrottleRequests::class . ':api',
             \Illuminate\Routing\Middleware\SubstituteBindings::class,
         ],
     ];
@@ -68,6 +67,9 @@ class Kernel extends HttpKernel
         'payment.user' => \App\Http\Middleware\SubscriptionMiddleware::class,
         'admin' => \App\Http\Middleware\CheckAdminMiddleware::class,
         'super.admin' => \App\Http\Middleware\SuperAdminMiddleware::class,
+
+        'recruiter' => \App\Http\Middleware\CheckRecruiterMiddleware::class,
+
         'admin.user.recruiter' => \App\Http\Middleware\AllUserMiddleware::class,
     ];
 }

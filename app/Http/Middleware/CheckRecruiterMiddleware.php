@@ -2,14 +2,13 @@
 
 namespace App\Http\Middleware;
 
-use Closure;
 use Illuminate\Auth\AuthenticationException;
 use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Closure;
 
 class CheckRecruiterMiddleware
 {
-
     public function handle(Request $request, Closure $next): Response
     {
         try {
