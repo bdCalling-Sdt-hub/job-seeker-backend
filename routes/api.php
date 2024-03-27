@@ -51,114 +51,119 @@ Route::middleware(['user', 'auth:api'])->group(function () {
     Route::get('/my-subscription', [SubscriptionController::class, 'mySubscription']);
     Route::get('/upgrade-subscription', [SubscriptionController::class, 'upgradeSubscription']);
 
-Route::middleware(['user','auth:api'])->group(function () {
-
-    //-----------------Candidate-------------------------
-    Route::post('/add-profile-info',[CandidateController::class,'addProfileInfo']);
-    Route::post('/update-profile-info',[CandidateController::class,'updateProfileInfo']);
-    Route::post('/add-experience-info',[CandidateController::class,'addExperienceInfo']);
-    Route::post('/update-experience-info',[CandidateController::class,'updateExperienceInfo']);
-    Route::post('/add-education-info',[CandidateController::class,'addEducationInfo']);
-    Route::post('/update-education-info',[CandidateController::class,'updateEducationInfo']);
-    Route::post('/add-training-info',[CandidateController::class,'addTrainingInfo']);
-    Route::post('/update-training-info',[CandidateController::class,'updateTrainingInfo']);
-    Route::post('/add-interest-info',[CandidateController::class,'addInterestInfo']);
-    Route::post('/update-interest-info',[CandidateController::class,'updateInterestInfo']);
-    Route::get('/profile-info',[CandidateController::class,'getProfileInfo']);
-
-
-    //my subscription
-    Route::get('/my-subscription',[SubscriptionController::class,'mySubscription']);
-    Route::get('/upgrade-subscription',[SubscriptionController::class,'upgradeSubscription']);
-    // Subscription
-    Route::post('/user-subscription', [SubscriptionController::class, 'userSubscription']);
-
-    // Subscription
-    Route::post('/user-subscription', [SubscriptionController::class, 'userSubscription']);
-
-    Route::get('/terms-condition', [RulesRegulationController::class, 'termsCondition']);
-    Route::get('/privacy-policy', [RulesRegulationController::class, 'privacyPolicy']);
-    Route::get('/about-us', [RulesRegulationController::class, 'aboutUs']);
-
-    // delete user
-    Route::post('delete-user', [DeleteUserController::class, 'deleteUser']);
-
-    // notification
-
-    Route::get('/read-unread', [NotificationController::class, 'markRead']);
-
-    // ================ Application Now ==================//
-
-    Route::post('job/application', [CanditedController::class, 'apply_now']);
 });
+    Route::middleware(['user', 'auth:api'])->group(function () {
 
-Route::middleware(['payment.user', 'auth:api'])->group(function () {});
+        //-----------------Candidate-------------------------
+        Route::post('/add-profile-info', [CandidateController::class, 'addProfileInfo']);
+        Route::post('/update-profile-info', [CandidateController::class, 'updateProfileInfo']);
+        Route::post('/add-experience-info', [CandidateController::class, 'addExperienceInfo']);
+        Route::post('/update-experience-info', [CandidateController::class, 'updateExperienceInfo']);
+        Route::post('/add-education-info', [CandidateController::class, 'addEducationInfo']);
+        Route::post('/update-education-info', [CandidateController::class, 'updateEducationInfo']);
+        Route::post('/add-training-info', [CandidateController::class, 'addTrainingInfo']);
+        Route::post('/update-training-info', [CandidateController::class, 'updateTrainingInfo']);
+        Route::post('/add-interest-info', [CandidateController::class, 'addInterestInfo']);
+        Route::post('/update-interest-info', [CandidateController::class, 'updateInterestInfo']);
+        Route::get('/profile-info', [CandidateController::class, 'getProfileInfo']);
 
 
-Route::middleware(['admin', 'auth:api'])->group(function () {
-    // ================== Admin Api ====================//
+        //my subscription
+        Route::get('/my-subscription', [SubscriptionController::class, 'mySubscription']);
+        Route::get('/upgrade-subscription', [SubscriptionController::class, 'upgradeSubscription']);
+        // Subscription
+        Route::post('/user-subscription', [SubscriptionController::class, 'userSubscription']);
 
-    // update category
-    Route::post('/update-category/{id}', [CategoryController::class, 'updateCategory']);
-    // notification
+        // Subscription
+        Route::post('/user-subscription', [SubscriptionController::class, 'userSubscription']);
 
-    // ================== Admin====================//
+        Route::get('/terms-condition', [RulesRegulationController::class, 'termsCondition']);
+        Route::get('/privacy-policy', [RulesRegulationController::class, 'privacyPolicy']);
+        Route::get('/about-us', [RulesRegulationController::class, 'aboutUs']);
 
-    // -----------------Package -------------------
-    Route::get('show-package',[PackageController::class,'showPackage']);
-    Route::post('add-package',[PackageController::class,'addPackage']);
-    Route::post('update-package',[PackageController::class,'updatePackage']);
-    Route::get('delete-package',[PackageController::class,'deletePackage']);
+        // delete user
+        Route::post('delete-user', [DeleteUserController::class, 'deleteUser']);
 
-    // -----------------Category --------------------
-    Route::post('add-category', [CategoryController::class, 'addCategory']);
-    Route::post('update-category', [CategoryController::class, 'updateCategory']);
-    Route::get('delete-category/{id}', [CategoryController::class, 'deleteCategory']);
-    Route::get('show-category', [CategoryController::class, 'showCategory']);
+        // notification
 
-    //------------------
+        Route::get('/read-unread', [NotificationController::class, 'markRead']);
 
-    //notification
+        // ================ Application Now ==================//
 
-    Route::get('/admin-notification',[NotificationController::class,'adminNotification']);
-    Route::get('/read-notification',[NotificationController::class,'readNotificationById']);
+        Route::post('job/application', [CanditedController::class, 'apply_now']);
 
-    Route::get('/admin-notification', [NotificationController::class, 'adminNotification']);
-    Route::get('/read-notification', [NotificationController::class, 'readNotificationById']);
-});
+    });
 
-Route::middleware(['super.admin', 'auth:api'])->group(function () {
-    // super admin
-    Route::post('/add-admin', [AuthAdminController::class, 'addAdmin']);
-    Route::get('/show-admin', [AuthAdminController::class, 'showAdmin']);
-    Route::get('/delete-admin/{id}', [AuthAdminController::class, 'deleteAdmin']);
-});
+    Route::middleware(['payment.user', 'auth:api'])->group(function () {
 
-Route::get('/notification-event', [NotificationController::class, 'notificationEvent']);
+    });
+
+    Route::middleware(['admin', 'auth:api'])->group(function () {
+        // ================== Admin Api ====================//
+
+        // update category
+        Route::post('/update-category/{id}', [CategoryController::class, 'updateCategory']);
+        // notification
+
+        // ================== Admin====================//
+
+        // -----------------Package -------------------
+        Route::get('show-package', [PackageController::class, 'showPackage']);
+        Route::post('add-package', [PackageController::class, 'addPackage']);
+        Route::post('update-package', [PackageController::class, 'updatePackage']);
+        Route::get('delete-package', [PackageController::class, 'deletePackage']);
+
+        // -----------------Category --------------------
+        Route::post('add-category', [CategoryController::class, 'addCategory']);
+        Route::post('update-category', [CategoryController::class, 'updateCategory']);
+        Route::get('delete-category/{id}', [CategoryController::class, 'deleteCategory']);
+        Route::get('show-category', [CategoryController::class, 'showCategory']);
+
+        //------------------
+
+        //notification
+
+        Route::get('/admin-notification', [NotificationController::class, 'adminNotification']);
+        Route::get('/read-notification', [NotificationController::class, 'readNotificationById']);
+
+        Route::get('/admin-notification', [NotificationController::class, 'adminNotification']);
+        Route::get('/read-notification', [NotificationController::class, 'readNotificationById']);
+    });
+
+    Route::middleware(['super.admin', 'auth:api'])->group(function () {
+        // super admin
+        Route::post('/add-admin', [AuthAdminController::class, 'addAdmin']);
+        Route::get('/show-admin', [AuthAdminController::class, 'showAdmin']);
+        Route::get('/delete-admin/{id}', [AuthAdminController::class, 'deleteAdmin']);
+    });
+
+    Route::get('/notification-event', [NotificationController::class, 'notificationEvent']);
 
 // Emplyer section //
 
-Route::middleware(['recruiter', 'auth:api'])->group(function () {
-    Route::post('/create/recruiter', [EmployerController::class, 'create_recruiter']);
-    Route::get('/show/recruiter', [EmployerController::class, 'show_recruiter']);
-    Route::get('/edit/recruiter/{id}', [EmployerController::class, 'edite_recruiter']);
-    Route::post('/update/recruiter', [EmployerController::class, 'update_recrioter']);
-    Route::post('/update/logo', [EmployerController::class, 'updateLogo']);
-    Route::get('/delete/recruiter/{id}', [EmployerController::class, 'delete_recruiter']);
-    Route::get('/delete/log/{id}', [EmployerController::class, 'logodestroy']);
+    Route::middleware(['recruiter', 'auth:api'])->group(function () {
+        Route::post('/create/recruiter', [EmployerController::class, 'create_recruiter']);
+        Route::get('/show/recruiter', [EmployerController::class, 'show_recruiter']);
+        Route::get('/edit/recruiter/{id}', [EmployerController::class, 'edite_recruiter']);
+        Route::post('/update/recruiter', [EmployerController::class, 'update_recrioter']);
+        Route::post('/update/logo', [EmployerController::class, 'updateLogo']);
+        Route::get('/delete/recruiter/{id}', [EmployerController::class, 'delete_recruiter']);
+        Route::get('/delete/log/{id}', [EmployerController::class, 'logodestroy']);
 
-    // JOB POST //
+        // JOB POST //
 
-    Route::post('/create/job', [JobPostController::class, 'create_job']);
-    Route::get('/edit/job/{id}', [JobPostController::class, 'edit_job']);
-    Route::post('/update/job', [JobPostController::class, 'update_job']);
-    Route::get('/delete/job/{id}', [JobPostController::class, 'delete_job']);
-    Route::get('/show/job', [JobPostController::class, 'show_job']);
-    Route::get('/application/job', [JobPostController::class, 'apply_job_show']);
-Route::get('/notification-event',[NotificationController::class,'notificationEvent']);
+        Route::post('/create/job', [JobPostController::class, 'create_job']);
+        Route::get('/edit/job/{id}', [JobPostController::class, 'edit_job']);
+        Route::post('/update/job', [JobPostController::class, 'update_job']);
+        Route::get('/delete/job/{id}', [JobPostController::class, 'delete_job']);
+        Route::get('/show/job', [JobPostController::class, 'show_job']);
+        Route::get('/application/job', [JobPostController::class, 'apply_job_show']);
+        Route::get('/notification-event', [NotificationController::class, 'notificationEvent']);
+    });
 
-Route::middleware(['admin.user.recruiter'])->group(function () {
-    Route::get('/terms-condition', [RulesRegulationController::class, 'termsCondition']);
-    Route::get('/privacy-policy', [RulesRegulationController::class, 'privacyPolicy']);
-    Route::get('/about-us', [RulesRegulationController::class, 'aboutUs']);
-});
+    Route::middleware(['admin.user.recruiter'])->group(function () {
+        Route::get('/terms-condition', [RulesRegulationController::class, 'termsCondition']);
+        Route::get('/privacy-policy', [RulesRegulationController::class, 'privacyPolicy']);
+        Route::get('/about-us', [RulesRegulationController::class, 'aboutUs']);
+    });
+
