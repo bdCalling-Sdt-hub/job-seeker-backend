@@ -68,11 +68,11 @@ Route::middleware(['user', 'auth:api'])->group(function () {
         Route::get('/profile-info', [CandidateController::class, 'getProfileInfo']);
 
 
+
         //my subscription
         Route::get('/my-subscription', [SubscriptionController::class, 'mySubscription']);
         Route::get('/upgrade-subscription', [SubscriptionController::class, 'upgradeSubscription']);
-        // Subscription
-        Route::post('/user-subscription', [SubscriptionController::class, 'userSubscription']);
+
 
         // Subscription
         Route::post('/user-subscription', [SubscriptionController::class, 'userSubscription']);
@@ -116,7 +116,7 @@ Route::middleware(['user', 'auth:api'])->group(function () {
         // -----------------Category --------------------
         Route::post('add-category', [CategoryController::class, 'addCategory']);
         Route::post('update-category', [CategoryController::class, 'updateCategory']);
-        Route::get('delete-category/{id}', [CategoryController::class, 'deleteCategory']);
+        Route::get('delete-category', [CategoryController::class, 'deleteCategory']);
         Route::get('show-category', [CategoryController::class, 'showCategory']);
 
         //------------------
@@ -159,6 +159,9 @@ Route::middleware(['user', 'auth:api'])->group(function () {
         Route::get('/show/job', [JobPostController::class, 'show_job']);
         Route::get('/application/job', [JobPostController::class, 'apply_job_show']);
         Route::get('/notification-event', [NotificationController::class, 'notificationEvent']);
+
+        // Subscription
+        Route::post('/recruiter-subscription', [SubscriptionController::class, 'recruiterSubscription']);
     });
 
     Route::middleware(['admin.user.recruiter'])->group(function () {

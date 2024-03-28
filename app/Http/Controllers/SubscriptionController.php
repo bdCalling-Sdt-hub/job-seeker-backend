@@ -12,6 +12,34 @@ class SubscriptionController extends Controller
 {
     //
 
+    public function recruiterSubscription(Request $request){
+
+        $subscription = new subscription();
+        $subscription->package_id = $request->package_id;
+        $subscription->user_id = $request->user_id;
+        $subscription->tx_ref = $request->tx_ref;
+        $subscription->amount = $request->amount;
+        $subscription->currency = $request->currency;
+        $subscription->payment_type = $request->payment_type;
+        $subscription->status = $request->status;
+        $subscription->email = $request->email;
+        $subscription->name = $request->name;
+        $newEndDate = Carbon::parse($subscription->end_date)->addMonth();
+        $subscription->end_date = $newEndDate;
+        $subscription->save();
+        if ($subscription){
+            return response()->json([
+                'message' => 'subscription purchased successfully',
+                'data' => $subscription,
+            ]);
+        }else{
+            return response()->json([
+                'message' => 'subscription purchased successfully',
+                'data' => [],
+            ]);
+        }
+    }
+
     public function userSubscription(Request $request){
         $status = $request->status;
 

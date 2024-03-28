@@ -26,7 +26,7 @@ class PackageController extends Controller
         $package->package_name = $request->package_name;
         $package->amount = $request->amount;
         $package->duration = $request->duration;
-        $package->post_limit = $request->word_limit;
+        $package->post_limit = $request->post_limit;
         $package->candidate_limit = $request->candidate_limit;
         $package->feature = $request->feature;
         $package->save();
@@ -90,8 +90,9 @@ class PackageController extends Controller
         }
     }
 
-    public function deletePackage($id)
+    public function deletePackage(Request $request)
     {
+        $id = $request->id;
         $package = Package::where('id', $id)->first();
         if ($package) {
             $package->delete();
@@ -104,24 +105,3 @@ class PackageController extends Controller
         ]);
     }
 }
-
-//    public function showPackage(){
-//        $package_list = Package::get();
-//
-//        $formatted_package = $package_list->map(function($package){
-//            $features = [];
-//            $features[] = ['feature' => $package->word_limit . ' Character Limit'];
-//            $features[] = ['feature' => $package->image_limit . ' Image Limit'];
-//            // You can add more dynamic features here if needed
-//
-//            // Merge dynamic features with existing features
-//            $package->feature = array_merge(json_decode($package->feature, true), $features);
-//
-//            return $package;
-//        });
-//
-//        return response()->json([
-//            'message' => 'success',
-//            'data' => $formatted_package
-//        ]);
-//    }
