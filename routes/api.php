@@ -17,6 +17,7 @@ use App\Http\Controllers\RulesRegulationController;
 use App\Http\Controllers\SocialLoginController;
 use App\Http\Controllers\SubscriptionController;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\HomeController;
 
 Route::group([
     ['middleware' => 'auth:api']
@@ -66,6 +67,9 @@ Route::middleware(['user', 'auth:api'])->group(function () {
         Route::post('/add-interest-info', [CandidateController::class, 'addInterestInfo']);
         Route::post('/update-interest-info', [CandidateController::class, 'updateInterestInfo']);
         Route::get('/profile-info', [CandidateController::class, 'getProfileInfo']);
+
+        //-----------------filter-----------------
+        Route::get('/job-filter',[HomeController::class,'jobFilter']);
 
 
 

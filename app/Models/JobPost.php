@@ -19,4 +19,5 @@ class JobPost extends Model
     {
         return $this->hasMany(Apply::class);
     }
+
 }
