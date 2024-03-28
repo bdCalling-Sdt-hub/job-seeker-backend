@@ -18,10 +18,12 @@ class JobPostController extends Controller
         $recruiter_id = $recruiter->id;
         $create_job = new JobPost();
         $create_job->recruiter_id = $recruiter_id;
+        $create_job->user_id = $auth;
         $create_job->job_title = $request->job_title;
         $create_job->application_last_date = $request->dadLine;
         $create_job->salary = $request->salary;
         $create_job->job_type = $request->job_type;
+        $create_job->work_type = $request->work_type;
         $create_job->category_id = $request->category_id;
         $create_job->area = $request->area;
         $create_job->education = $request->education;
@@ -31,6 +33,7 @@ class JobPostController extends Controller
         $create_job->compensation_other_benifits = $request->other_benifits;
         $create_job->vacancy = $request->vacancy;
         $create_job->key_word = $request->key_word;
+        $create_job->status = 'pending';
         $create_job->save();
         if ($create_job) {
             return response()->json([
@@ -73,6 +76,7 @@ class JobPostController extends Controller
         $update_job->id = $request->id;
         $update_job->recruiter_id = $recruiter_id;
         $update_job->job_title = $request->job_title;
+        $update_job->work_type = $request->work_type;
         $update_job->application_last_date = $request->dadLine;
         $update_job->salary = $request->salary;
         $update_job->job_type = $request->job_type;
@@ -166,6 +170,7 @@ class JobPostController extends Controller
                 'application_last_date' => $job->application_last_date,
                 'salary' => $job->salary,
                 'job_type' => $job->job_type,
+                'work_type' => $job->work_type,
                 'category_id' => $job->category_id,
                 'area' => $job->area,
                 'education' => $job->education,
