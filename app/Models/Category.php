@@ -10,8 +10,8 @@ class Category extends Model
 {
     use HasFactory;
 
-    public function story(): HasMany
+    public function jobpost():HasMany
     {
-        return $this->hasMany(Story::class);
+        return $this->hasMany(JobPost::class);
     }
 }
