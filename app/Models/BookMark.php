@@ -5,21 +5,14 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Illuminate\Database\Eloquent\Relations\HasMany;
 
-class Recruiter extends Model
+class BookMark extends Model
 {
     use HasFactory;
 
-    public function category() {}
-
-    public function job_post(): HasMany
+    public function job_post():BelongsTo
     {
-        return $this->hasMany(Comment::class);
-    }
-    public function jobpost():HasMany
-    {
-        return $this->hasMany(JobPost::class);
+        return $this->belongsTo(JobPost::class);
     }
     public function user():BelongsTo
     {

@@ -9,7 +9,6 @@ use Illuminate\Http\Request;
 
 class RulesRegulationController extends Controller
 {
-    //
     public function aboutUs()
     {
         $about = About::first();

@@ -30,7 +30,7 @@ class CandidateController extends Controller
             return response()->json($validator->errors(), 400);
         }
         $profileInfo = new Candidate();
-        $profileInfo->user_id = $request->user_id;
+        $profileInfo->user_id = auth()->user()->id;
         $profileInfo->phone_number = $request->phone_number;
         $profileInfo->nid_number = $request->nid_number;
         $profileInfo->gender = $request->gender;

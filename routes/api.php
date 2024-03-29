@@ -18,6 +18,7 @@ use App\Http\Controllers\SocialLoginController;
 use App\Http\Controllers\SubscriptionController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\HomeController;
+use App\Http\Controllers\BookMarkController;
 
 Route::group([
     ['middleware' => 'auth:api']
@@ -70,6 +71,19 @@ Route::middleware(['user', 'auth:api'])->group(function () {
 
         //-----------------filter-----------------
         Route::get('/job-filter',[HomeController::class,'jobFilter']);
+        //book mark job
+        Route::post('toggle-bookmark',[BookMarkController::class,'toggleBookmark']);
+        Route::get('bookmark-data',[BookMarkController::class,'bookmarksData']);
+
+        //show category and count
+        Route::get('/category-job-post-count',[HomeController::class,'showCategoryandCount']);
+
+        //category wise job list show
+        Route::get('category-wise-job-list',[HomeController::class,'categoryWiseJobPost']);
+        //single category wise show job list
+        Route::get('category-wise-job-list',[HomeController::class,'categoryIdWiseJobPost']);
+
+        Route::get('company-wise-job-list',[HomeController::class,'companyWiseJobPost']);
 
 
 

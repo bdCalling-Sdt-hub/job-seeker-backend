@@ -27,7 +27,7 @@ return new class extends Migration {
             $table->json('responsibilities');
             $table->text('compensation_other_benifits');
             $table->text('vacancy');
-            $table->text('status')->default('published');
+            $table->text('status')->default('pending');
             $table->text('key_word');
             $table->timestamps();
         });
