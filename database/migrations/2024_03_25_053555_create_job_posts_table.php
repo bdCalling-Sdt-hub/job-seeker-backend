@@ -28,6 +28,8 @@ return new class extends Migration {
             $table->text('compensation_other_benifits');
             $table->text('vacancy');
             $table->text('status')->default('pending');
+            $table->integer('package_id')->nullable();
+            $table->integer('subscription_id');
             $table->text('key_word');
             $table->timestamps();
         });

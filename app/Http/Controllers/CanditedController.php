@@ -11,6 +11,7 @@ class CanditedController extends Controller
     {
         $auth = auth()->user()->id;
         $application = new Apply();
+        
         $application->user_id = $auth;
         $application->job_post_id = $request->jobPostId;
         $application->category_id = $request->catId;
