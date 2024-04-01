@@ -17,6 +17,8 @@ class JobPostController extends Controller
         $recruiter = Recruiter::where('user_id', $auth)->first();
         $recruiter_id = $recruiter->id;
         $create_job = new JobPost();
+        $create_job->package_id = $recruiter->packageId;
+        $create_job->subscription_id = $request->subscribId;
         $create_job->recruiter_id = $recruiter_id;
         $create_job->user_id = $auth;
         $create_job->job_title = $request->job_title;
@@ -75,6 +77,8 @@ class JobPostController extends Controller
         $update_job = JobPost::find($request->id);
         $update_job->id = $request->id;
         $update_job->recruiter_id = $recruiter_id;
+        $update_job->package_id = $recruiter->packageId;
+        $update_job->subscription_id = $request->subscribId;
         $update_job->job_title = $request->job_title;
         $update_job->work_type = $request->work_type;
         $update_job->application_last_date = $request->dadLine;
