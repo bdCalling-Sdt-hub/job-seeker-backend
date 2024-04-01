@@ -431,7 +431,6 @@ class CandidateController extends Controller
     {
         $profileInfo = User::with('candidate','education','experience','training','interest')->get();
         $formatted_profileInfo = $profileInfo->map(function($profile){
-//            $package->feature = array_merge(json_decode($package->feature, true), $features);
             return $profile;
         });
         return response()->json([

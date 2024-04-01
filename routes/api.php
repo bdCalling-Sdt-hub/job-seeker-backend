@@ -19,6 +19,7 @@ use App\Http\Controllers\SubscriptionController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\BookMarkController;
+use App\Http\Controllers\DashboardController;
 
 Route::group([
     ['middleware' => 'auth:api']
@@ -85,12 +86,9 @@ Route::middleware(['user', 'auth:api'])->group(function () {
 
         Route::get('company-wise-job-list',[HomeController::class,'companyWiseJobPost']);
 
-
-
         //my subscription
         Route::get('/my-subscription', [SubscriptionController::class, 'mySubscription']);
         Route::get('/upgrade-subscription', [SubscriptionController::class, 'upgradeSubscription']);
-
 
         // Subscription
         Route::post('/user-subscription', [SubscriptionController::class, 'userSubscription']);
@@ -117,13 +115,21 @@ Route::middleware(['user', 'auth:api'])->group(function () {
     });
 
     Route::middleware(['admin', 'auth:api'])->group(function () {
-        // ================== Admin Api ====================//
+        // ================== Dashboard Api ====================//
+
+        Route::get('dashboard',[DashboardController::class,'dashboard']);
+        Route::get('employer-list',[DashboardController::class,'employerList']);
+        Route::get('company-wise-subscription',[DashboardController::class,'companyWiseSubscription']);
 
         // update category
         Route::post('/update-category/{id}', [CategoryController::class, 'updateCategory']);
         // notification
 
+
+
+
         // ================== Admin====================//
+
 
         // -----------------Package -------------------
         Route::get('show-package', [PackageController::class, 'showPackage']);

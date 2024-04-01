@@ -17,7 +17,9 @@ class BookMarkController extends Controller
 
         if ($bookmark) {
             $bookmark->delete();
-            return response()->json(['message' => 'Bookmark deleted']);
+            return response()->json([
+                'message' => 'Bookmark deleted'
+            ]);
         } else {
             $bookmark_info = new BookMark();
             $bookmark_info->user_id = $user_id;

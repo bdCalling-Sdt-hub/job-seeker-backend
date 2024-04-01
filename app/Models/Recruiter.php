@@ -11,7 +11,10 @@ class Recruiter extends Model
 {
     use HasFactory;
 
-    public function category() {}
+    public function category() :BelongsTo
+    {
+        return $this->belongsTo(Category::class);
+    }
 
     public function job_post(): HasMany
     {
