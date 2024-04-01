@@ -94,4 +94,9 @@ class User extends Authenticatable implements JWTSubject
     {
         return $this->hasMany(BookMark::class);
     }
+
+    public function recruiter():HasMany
+    {
+        return $this->hasMany(Recruiter::class);
+    }
 }

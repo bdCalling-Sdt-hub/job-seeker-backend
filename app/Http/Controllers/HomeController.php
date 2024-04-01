@@ -43,7 +43,7 @@ class HomeController extends Controller
             $query->where('area', $request->input('area'));
         }
 
-        $job_posts = $query->with('user', 'recruiter')->whereIn('status', ['published','pending'])->get();
+        $job_posts = $query->with('user', 'recruiter','category')->whereIn('status', ['published','pending'])->paginate();
 
         return response()->json([
             'message' => 'Filtered Job List',
@@ -67,6 +67,8 @@ class HomeController extends Controller
 
             // Add category name and job posts to the result array
             $categoryWiseJobPosts[] = [
+                'category_id' => $category->id,
+                'category_image' => $category->category_image,
                 'category_name' => $category->category_name,
                 'job_post_count' => $jobPostCount
             ];
