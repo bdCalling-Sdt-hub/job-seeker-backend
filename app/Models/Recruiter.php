@@ -13,6 +13,6 @@ class Recruiter extends Model
 
     public function job_post(): HasMany
     {
-        return $this->hasMany(Comment::class);
+        return $this->hasMany(Apply::class);
     }
 }
