@@ -7,6 +7,7 @@ use App\Models\Subscription;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
@@ -55,15 +56,16 @@ class User extends Authenticatable implements JWTSubject
         'email_verified_at' => 'datetime',
         'password' => 'hashed',
     ];
-    public function subscription():HasMany
+//    public function subscription():HasMany
+//
+//    {
+//        return $this->hasMany(Subscription::class);
+//    }
 
-    {
-        return $this->hasMany(Subscription::class);
-    }
 
-    public function candidate():HasMany
+    public function candidate():HasOne
     {
-        return $this->HasMany(Candidate::class);
+        return $this->HasOne(Candidate::class);
     }
     public function experience():HasMany
     {
@@ -80,5 +82,21 @@ class User extends Authenticatable implements JWTSubject
     public function training():HasMany
     {
         return $this->hasMany(Training::class);
+    }
+
+
+    public function jobpost():HasMany
+    {
+        return $this->hasMany(JobPost::class);
+    }
+
+    public function book_mark():HasMany
+    {
+        return $this->hasMany(BookMark::class);
+    }
+
+    public function recruiter():HasMany
+    {
+        return $this->hasMany(Recruiter::class);
     }
 }

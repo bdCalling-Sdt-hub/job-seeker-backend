@@ -15,6 +15,9 @@ use App\Http\Controllers\RulesRegulationController;
 use App\Http\Controllers\SocialLoginController;
 use App\Http\Controllers\SubscriptionController;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\HomeController;
+use App\Http\Controllers\BookMarkController;
+use App\Http\Controllers\DashboardController;
 
 Route::group([
     ['middleware' => 'auth:api']
@@ -49,26 +52,44 @@ Route::middleware(['user', 'auth:api'])->group(function () {
     Route::get('/my-subscription', [SubscriptionController::class, 'mySubscription']);
     Route::get('/upgrade-subscription', [SubscriptionController::class, 'upgradeSubscription']);
 });
-Route::middleware(['user', 'auth:api'])->group(function () {
-    // -----------------Candidate-------------------------
-    Route::post('/add-profile-info', [CandidateController::class, 'addProfileInfo']);
-    Route::post('/update-profile-info', [CandidateController::class, 'updateProfileInfo']);
-    Route::post('/add-experience-info', [CandidateController::class, 'addExperienceInfo']);
-    Route::post('/update-experience-info', [CandidateController::class, 'updateExperienceInfo']);
-    Route::post('/add-education-info', [CandidateController::class, 'addEducationInfo']);
-    Route::post('/update-education-info', [CandidateController::class, 'updateEducationInfo']);
-    Route::post('/add-training-info', [CandidateController::class, 'addTrainingInfo']);
-    Route::post('/update-training-info', [CandidateController::class, 'updateTrainingInfo']);
-    Route::post('/add-interest-info', [CandidateController::class, 'addInterestInfo']);
-    Route::post('/update-interest-info', [CandidateController::class, 'updateInterestInfo']);
-    Route::get('/profile-info', [CandidateController::class, 'getProfileInfo']);
 
-    // my subscription
-    Route::get('/my-subscription', [SubscriptionController::class, 'mySubscription']);
-    Route::get('/upgrade-subscription', [SubscriptionController::class, 'upgradeSubscription']);
+    Route::middleware(['user', 'auth:api'])->group(function () {
 
-    // Subscription
-    Route::post('/user-subscription', [SubscriptionController::class, 'userSubscription']);
+        //-----------------Candidate-------------------------
+        Route::post('/add-profile-info', [CandidateController::class, 'addProfileInfo']);
+        Route::post('/update-profile-info', [CandidateController::class, 'updateProfileInfo']);
+        Route::post('/add-experience-info', [CandidateController::class, 'addExperienceInfo']);
+        Route::post('/update-experience-info', [CandidateController::class, 'updateExperienceInfo']);
+        Route::post('/add-education-info', [CandidateController::class, 'addEducationInfo']);
+        Route::post('/update-education-info', [CandidateController::class, 'updateEducationInfo']);
+        Route::post('/add-training-info', [CandidateController::class, 'addTrainingInfo']);
+        Route::post('/update-training-info', [CandidateController::class, 'updateTrainingInfo']);
+        Route::post('/add-interest-info', [CandidateController::class, 'addInterestInfo']);
+        Route::post('/update-interest-info', [CandidateController::class, 'updateInterestInfo']);
+        Route::get('/profile-info', [CandidateController::class, 'getProfileInfo']);
+
+        //-----------------filter-----------------
+        Route::get('/job-filter',[HomeController::class,'jobFilter']);
+        //book mark job
+        Route::post('toggle-bookmark',[BookMarkController::class,'toggleBookmark']);
+        Route::get('bookmark-data',[BookMarkController::class,'bookmarksData']);
+
+        //show category and count
+        Route::get('/category-job-post-count',[HomeController::class,'showCategoryandCount']);
+
+        //category wise job list show
+        Route::get('category-wise-job-list',[HomeController::class,'categoryWiseJobPost']);
+        //single category wise show job list
+        Route::get('category-wise-job-list',[HomeController::class,'categoryIdWiseJobPost']);
+
+        Route::get('company-wise-job-list',[HomeController::class,'companyWiseJobPost']);
+
+        //my subscription
+        Route::get('/my-subscription', [SubscriptionController::class, 'mySubscription']);
+        Route::get('/upgrade-subscription', [SubscriptionController::class, 'upgradeSubscription']);
+
+        // Subscription
+        Route::post('/user-subscription', [SubscriptionController::class, 'userSubscription']);
 
     Route::get('/terms-condition', [RulesRegulationController::class, 'termsCondition']);
     Route::get('/privacy-policy', [RulesRegulationController::class, 'privacyPolicy']);
@@ -95,7 +116,12 @@ Route::middleware(['admin', 'auth:api'])->group(function () {
     Route::post('/update-category/{id}', [CategoryController::class, 'updateCategory']);
     // notification
 
-    // ================== Admin====================//
+    Route::middleware(['admin', 'auth:api'])->group(function () {
+        // ================== Dashboard Api ====================//
+
+        Route::get('dashboard',[DashboardController::class,'dashboard']);
+        Route::get('employer-list',[DashboardController::class,'employerList']);
+        Route::get('company-wise-subscription',[DashboardController::class,'companyWiseSubscription']);
 
     // -----------------Package -------------------
     Route::get('show-package', [PackageController::class, 'showPackage']);
@@ -103,13 +129,18 @@ Route::middleware(['admin', 'auth:api'])->group(function () {
     Route::post('update-package', [PackageController::class, 'updatePackage']);
     Route::get('delete-package', [PackageController::class, 'deletePackage']);
 
+
     // -----------------Category --------------------
     Route::post('add-category', [CategoryController::class, 'addCategory']);
     Route::post('update-category', [CategoryController::class, 'updateCategory']);
     Route::get('delete-category', [CategoryController::class, 'deleteCategory']);
     Route::get('show-category', [CategoryController::class, 'showCategory']);
 
-    // ------------------
+        // -----------------Package -------------------
+        Route::get('show-package', [PackageController::class, 'showPackage']);
+        Route::post('add-package', [PackageController::class, 'addPackage']);
+        Route::post('update-package', [PackageController::class, 'updatePackage']);
+        Route::get('delete-package', [PackageController::class, 'deletePackage']);
 
     // notification
 

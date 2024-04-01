@@ -6,12 +6,16 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
-class Subscription extends Model
+class BookMark extends Model
 {
     use HasFactory;
 
-    public function package():BelongsTo
+    public function job_post():BelongsTo
     {
-        return $this->belongsTo(Package::class);
+        return $this->belongsTo(JobPost::class);
+    }
+    public function user():BelongsTo
+    {
+        return $this->belongsTo(User::class);
     }
 }

@@ -11,13 +11,17 @@ class CategoryController extends Controller
     public function addCategory(Request $request)
     {
         $validator = Validator::make($request->all(), [
-            'category_name' => 'required|string|min:2',
+            'category_name' => 'required|string|min:2|unique:categories',
+            'category_image' => 'required|mimes:jpg,png,jpeg,gif,svg|max:2048',
         ]);
         if ($validator->fails()) {
             return response()->json($validator->errors(), 400);
         }
         $category = new Category();
         $category->category_name = $request->category_name;
+        if ($request->file('category_image')) {
+            $category->category_image = $this->saveImage($request);
+        }
         $category->save();
         return response()->json([
             'message' => 'Category added Successfully',
@@ -47,9 +51,16 @@ class CategoryController extends Controller
         if ($category) {
             $validator = Validator::make($request->all(), [
                 'category_name' => 'string|min:2|max:20',
+                'category_image' => ''
             ]);
             if ($validator->fails()) {
                 return response()->json($validator->errors(), 400);
+            }
+            if ($request->file('category_image')) {
+                if (!empty($category->category_image)) {
+                    $this->removeImage($category->category_image);
+                }
+                $category->category_image = $this->saveImage($request);
             }
             $category->category_name = $request->category_name;
             $category->update();
@@ -78,5 +89,24 @@ class CategoryController extends Controller
         return response()->json([
             'message' => 'Category Not Found',
         ],404);
+    }
+
+    protected function saveImage($request)
+    {
+        $image = $request->file('category_image');
+        $imageName = rand() . '.' . $image->getClientOriginalExtension();
+        $directory = 'adminAsset/category-image/';
+        $imgUrl = $directory . $imageName;
+        $image->move($directory, $imageName);
+        return $imgUrl;
+    }
+
+    // Function to remove an image
+    private function removeImage($imagePath)
+    {
+        // Check if the file exists before attempting to delete it
+        if (file_exists($imagePath)) {
+            unlink($imagePath);
+        }
     }
 }
