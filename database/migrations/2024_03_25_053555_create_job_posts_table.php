@@ -30,7 +30,7 @@ return new class extends Migration {
             $table->text('status')->default('pending');
             $table->integer('package_id')->nullable();
             $table->integer('subscription_id');
-            $table->text('key_word');
+            $table->json('key_word');
             $table->timestamps();
         });
     }

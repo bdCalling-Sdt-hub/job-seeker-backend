@@ -5,49 +5,59 @@ namespace App\Http\Controllers;
 use App\Models\Apply;
 use App\Models\JobPost;
 use App\Models\Recruiter;
+use App\Models\Subscription;
 use Illuminate\Http\Request;
 
 class JobPostController extends Controller
 {
     public function create_job(Request $request)
     {
-        $post_limit = 1;
-        $candite_limit = 20;
         $auth = auth()->user()->id;
-        $recruiter = Recruiter::where('user_id', $auth)->first();
-        $recruiter_id = $recruiter->id;
-        $create_job = new JobPost();
-        $create_job->recruiter_id = $recruiter_id;
-        $create_job->user_id = $auth;
-        $create_job->job_title = $request->job_title;
-        $create_job->application_last_date = $request->dadLine;
-        $create_job->salary = $request->salary;
-        $create_job->job_type = $request->job_type;
-        $create_job->work_type = $request->work_type;
-        $create_job->category_id = $request->category_id;
-        $create_job->area = $request->area;
-        $create_job->education = $request->education;
-        $create_job->experience = $request->experience;
-        $create_job->additional_requirement = $request->additional_requirement;
-        $create_job->responsibilities = $request->responsibilities;
-        $create_job->compensation_other_benifits = $request->other_benifits;
-        $create_job->vacancy = $request->vacancy;
-        $create_job->key_word = $request->key_word;
-        $create_job->status = 'pending';
-        $create_job->save();
-        if ($create_job) {
+        $subscription = Subscription::where('user_id', $auth)->latest('updated_at')->first();
+        $already_exist_job_post = JobPost::where('subscription_id',$subscription->id)->first();
+        if($subscription && empty($already_exist_job_post)){
+            $recruiter = Recruiter::where('user_id', $auth)->first();
+            $auth = auth()->user()->id;
+            $create_job = new JobPost();
+            $create_job->recruiter_id = $recruiter->id;
+            $create_job->user_id = $auth;
+            $create_job->job_title = $request->job_title;
+            $create_job->application_last_date = $request->dadLine;
+            $create_job->salary = $request->salary;
+            $create_job->job_type = $request->job_type;
+            $create_job->work_type = $request->work_type;
+            $create_job->category_id = $request->category_id;
+            $create_job->area = $request->area;
+            $create_job->education = $request->education;
+            $create_job->experience = $request->experience;
+            $create_job->additional_requirement = $request->additional_requirement;
+            $create_job->responsibilities = $request->responsibilities;
+            $create_job->compensation_other_benifits = $request->other_benifits;
+            $create_job->vacancy = $request->vacancy;
+            $create_job->key_word = $request->key_word;
+            $create_job->status = 'pending';
+            $create_job->subscription_id = $subscription->id;
+            $create_job->package_id = $subscription->package_id;
+                $create_job->save();
+            if ($create_job) {
+                return response()->json([
+                    'status' => 'success',
+                    'message' => 'success your job post',
+                    'data' => $create_job
+                ], 200);
+            } else {
+                return response()->json([
+                    'status' => 'false',
+                    'message' => 'failed your job post',
+                    'data' => []
+                ], 500);
+            }
+        }else{
             return response()->json([
-                'status' => 'success',
-                'message' => 'success your job post',
-                'data' => $create_job
-            ], 200);
-        } else {
-            return response()->json([
-                'status' => 'false',
-                'message' => 'faile your job post',
-                'data' => []
-            ], 500);
+                'message' => 'you do not have subscription',
+            ],404);
         }
+
     }
 
     public function edit_job($id)

@@ -37,4 +37,14 @@ class JobPost extends Model
         return $this->belongsTo(Category::class);
     }
 
+    public function package():BelongsTo
+    {
+        return $this->belongsTo(Package::class);
+    }
+
+    public function subscription():BelongsTo
+    {
+        return $this->belongsTo(Subscription::class);
+    }
+
 }

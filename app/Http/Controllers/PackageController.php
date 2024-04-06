@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Category;
 use App\Models\Package;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
@@ -103,5 +104,23 @@ class PackageController extends Controller
         return response()->json([
             'message' => 'Package Not Found',
         ]);
+    }
+
+    public function singlePackage(Request $request)
+    {
+        $package_id = $request->id;
+        $package = Package::where('id',$package_id)->first();
+        if ($package)
+        {
+            return response()->json([
+                'message' => 'Package',
+                'data' => $package
+            ]);
+        }else{
+            return response()->json([
+                'message' => 'Package is not found',
+                'data' => [],
+            ]);
+        }
     }
 }
