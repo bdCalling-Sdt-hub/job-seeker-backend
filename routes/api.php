@@ -185,6 +185,19 @@ Route::middleware(['recruiter', 'auth:api'])->group(function () {
     Route::get('/cv', [EmplyDashboardController::class, 'CV']);
     Route::post('/apply/status', [EmplyDashboardController::class, 'applyStatus']);
     Route::post('/send/mail', [EmplyDashboardController::class, 'select_candited_send_mail']);
+    Route::post('/contact/mail', [EmplyDashboardController::class, 'send_mail_data']);
+    Route::get('/subscription', [EmplyDashboardController::class, 'subscription']);
+    Route::get('/subscription/details/{id}', [EmplyDashboardController::class, 'subscription_details']);
+
+    // ==================CONTACT PAGE =============== //
+    Route::post('/contact/message', [EmplyDashboardController::class, 'post_contact']);
+    Route::get('/inbox/message', [EmplyDashboardController::class, 'message_inbox']);
+    Route::get('/send/message', [EmplyDashboardController::class, 'send_message']);
+
+    // ===================FILTERING==========================//
+
+    Route::get('/job/search', [EmplyDashboardController::class, 'job_search']);
+    Route::get('/job/filter', [EmplyDashboardController::class, 'job_filter']);
 });
 
 Route::middleware(['admin.user.recruiter'])->group(function () {
