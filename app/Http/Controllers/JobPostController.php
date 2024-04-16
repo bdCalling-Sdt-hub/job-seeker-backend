@@ -13,13 +13,32 @@ class JobPostController extends Controller
     public function create_job(Request $request)
     {
         $auth = auth()->user()->id;
-        $subscription = Subscription::where('user_id', $auth)->latest('updated_at')->first();
-        $already_exist_job_post = JobPost::where('subscription_id',$subscription->id)->first();
-        if($subscription && empty($already_exist_job_post)){
+        $packageId = $request->packageId;
+        $date = date('Y-m-d H:i:s');
+        $check_subscribe = Subscription::where('user_id', $auth)->count();
+        $check_packageId = Subscription::where('user_id', $auth)->where('package_id', $packageId)->count();
+        $check_package_date = Subscription::where('user_id', $auth)
+            ->where('package_id', $packageId)
+            ->whereDate('end_date', '<', now())
+            ->count();
+
+        if (!$check_subscribe) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'You have no subscription'
+            ]);
+        } elseif (!$check_packageId) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Package not avalable'
+            ]);
+        } elseif (!$check_package_date) {
             $recruiter = Recruiter::where('user_id', $auth)->first();
-            $auth = auth()->user()->id;
+            $recruiter_id = $recruiter->id;
             $create_job = new JobPost();
-            $create_job->recruiter_id = $recruiter->id;
+            $create_job->package_id = $request->packageId;
+            $create_job->subscription_id = $request->subscribId;
+            $create_job->recruiter_id = $recruiter_id;
             $create_job->user_id = $auth;
             $create_job->job_title = $request->job_title;
             $create_job->application_last_date = $request->dadLine;
@@ -36,9 +55,7 @@ class JobPostController extends Controller
             $create_job->vacancy = $request->vacancy;
             $create_job->key_word = $request->key_word;
             $create_job->status = 'pending';
-            $create_job->subscription_id = $subscription->id;
-            $create_job->package_id = $subscription->package_id;
-                $create_job->save();
+            $create_job->save();
             if ($create_job) {
                 return response()->json([
                     'status' => 'success',
@@ -48,14 +65,15 @@ class JobPostController extends Controller
             } else {
                 return response()->json([
                     'status' => 'false',
-                    'message' => 'failed your job post',
+                    'message' => 'faile your job post',
                     'data' => []
                 ], 500);
             }
-        }else{
+        } else {
             return response()->json([
-                'message' => 'you do not have subscription',
-            ],404);
+                'status' => 'error',
+                'message' => 'Package time over'
+            ]);
         }
 
     }
@@ -85,6 +103,8 @@ class JobPostController extends Controller
         $update_job = JobPost::find($request->id);
         $update_job->id = $request->id;
         $update_job->recruiter_id = $recruiter_id;
+        $update_job->package_id = $recruiter->packageId;
+        $update_job->subscription_id = $request->subscribId;
         $update_job->job_title = $request->job_title;
         $update_job->work_type = $request->work_type;
         $update_job->application_last_date = $request->dadLine;
@@ -131,16 +151,80 @@ class JobPostController extends Controller
         }
     }
 
-    public function show_job()
+    // public function show_job(Request $request)
+    // {
+    //     $title = $request->jobTitle;
+    //     $keyword = $request->keyWord;
+    //     $status = $request->status;
+
+    //     return $auth = auth()->user()->id;
+
+    //     $display_job = JobPost::where('user_id', $auth)
+    //         ->with('Recruiter')
+    //         ->orWhere('job_title', 'like', "%$title%")
+    //         ->orWhere('key_word', 'like', "%$keyword%")
+    //         ->orWhere('status', 'like', "%$status%")
+    //         ->orderBy('id', 'desc')
+    //         ->paginate(10);
+
+    //     if ($display_job->isNotEmpty()) {
+    //         $decode_data = $display_job->toArray();
+    //         foreach ($decode_data['data'] as &$job) {
+    //             $job['education'] = json_decode($job['education'], true);
+    //             $job['additional_requirement'] = json_decode($job['additional_requirement'], true);
+    //             $job['responsibilities'] = json_decode($job['responsibilities'], true);
+    //             $job['compensation_other_benifits'] = json_decode($job['compensation_other_benifits'], true);
+    //             $job['key_word'] = json_decode($job['key_word'], true);
+    //         }
+
+    //         return response()->json([
+    //             'status' => 'success',
+    //             'data' => $decode_data
+    //         ]);
+    //     } else {
+    //         return response()->json([
+    //             'status' => 'false',
+    //             'data' => []
+    //         ]);
+    //     }
+    // }
+
+    public function show_job(Request $request)
     {
-        $auth = auth()->user()->id;
-        $recruiter = Recruiter::where('user_id', $auth)->first();
-        $recruiter_id = $recruiter->id;
-        $display_job = JobPost::where('recruiter_id', $recruiter_id)->with('Recruiter')->orderBy('id', 'desc')->paginate(10);
-        if ($display_job) {
+        // Get authenticated user's ID
+        $authUserId = auth()->user()->id;
+
+        // Retrieve request parameters
+        $title = $request->jobTitle;
+        $keyword = $request->keyWord;
+        $status = $request->status;
+
+        // Query to fetch job posts
+        $display_job = JobPost::where('user_id', $authUserId)
+            ->with('Recruiter')
+            ->where(function ($query) use ($title, $keyword, $status) {
+                $query
+                    ->where('job_title', 'like', "%$title%")
+                    ->orWhere('key_word', 'like', "%$keyword%")
+                    ->orWhere('status', 'like', "%$status%");
+            })
+            ->orderBy('id', 'desc')
+            ->paginate(10);
+
+        // Process and return the result
+        if ($display_job->isNotEmpty()) {
+            $decode_data = $display_job->toArray();
+            foreach ($decode_data['data'] as &$job) {
+                $job['education'] = json_decode($job['education'], true);
+                $job['additional_requirement'] = json_decode($job['additional_requirement'], true);
+                $job['responsibilities'] = json_decode($job['responsibilities'], true);
+                $job['compensation_other_benifits'] = json_decode($job['compensation_other_benifits'], true);
+                $job['key_word'] = json_decode($job['key_word'], true);
+            }
+
             return response()->json([
                 'status' => 'success',
-                'data' => $display_job
+                'data' => $decode_data
             ]);
         } else {
             return response()->json([

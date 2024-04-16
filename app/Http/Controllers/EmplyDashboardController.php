@@ -2,12 +2,16 @@
 
 namespace App\Http\Controllers;
 
+use App\Mail\SendMail;
+use App\Mail\sendMailNotification;
 use App\Models\Apply;
+use App\Models\Emplyer_contact;
 use App\Models\JobPost;
 use App\Models\Subscription;
 use App\Models\User;
 use Illuminate\Http\Request;
 use DB;
+use Mail;
 
 class EmplyDashboardController extends Controller
 {
@@ -54,11 +58,87 @@ class EmplyDashboardController extends Controller
     public function apply_list()
     {
         $auth = auth()->user()->id;
-        $application_list = Apply::where('user_id', $auth)->with('job_post', 'User', 'Category')->orderBy('id', 'asc')->paginate(10);
+        $job_list = JobPost::where('user_id', $auth)->pluck('id');  // pluck() returns an array of ids
+
+        $application_list = [];
+        foreach ($job_list as $job_id) {
+            $applications = Apply::where('job_post_id', $job_id)
+                ->with('job_post', 'user', 'category')
+                ->orderBy('id', 'asc')
+                ->paginate(10);
+
+            foreach ($applications as $application) {
+                if (!is_null($application->job_post)) {
+                    if (isset($application->job_post->education)) {
+                        $application->job_post->education = json_decode($application->job_post->education);
+                    }
+                }
+                if (!is_null($application->job_post)) {
+                    if (isset($application->job_post->additional_requirement)) {
+                        $application->job_post->additional_requirement = json_decode($application->job_post->additional_requirement);
+                    }
+                }
+                if (!is_null($application->job_post)) {
+                    if (isset($application->job_post->compensation_other_benifits)) {
+                        $application->job_post->compensation_other_benifits = json_decode($application->job_post->compensation_other_benifits);
+                    }
+                }
+                if (!is_null($application->job_post)) {
+                    if (isset($application->job_post->key_word)) {
+                        $application->job_post->key_word = json_decode($application->job_post->key_word);
+                    }
+                }
+            }
+
+            $application_list[$job_id] = $applications;
+        }
         return response()->json([
-            'status=' => 'success',
+            'status' => 'success',
             'data' => $application_list
         ]);
+    }
+
+    public function job_search(Request $request)
+    {
+        $title = $request->jobTitle;
+        $keyword = $request->keyWord;
+        $status = $request->status;
+
+        $jobPosts = JobPost::where('job_title', 'like', "%$title%")
+            ->orWhere('key_word', 'like', "%$keyword%")
+            ->get();
+
+        // Decode serialized fields
+        foreach ($jobPosts as $jobPost) {
+            $jobPost->education = json_decode($jobPost->education);
+            $jobPost->additional_requirement = json_decode($jobPost->additional_requirement);
+            $jobPost->responsibilities = json_decode($jobPost->responsibilities);
+            $jobPost->compensation_other_benifits = json_decode($jobPost->compensation_other_benifits);
+            $jobPost->key_word = json_decode($jobPost->key_word);
+        }
+
+        return response()->json([
+            'status' => 'success',
+            'data' => $jobPosts
+        ]);
+    }
+
+    public function job_filter(Request $request)
+    {
+        $status = $request->status;
+
+        $jobPosts = JobPost::where('status', $status)->get();
+
+        // Decode serialized fields
+        foreach ($jobPosts as $jobPost) {
+            $jobPost->education = json_decode($jobPost->education);
+            $jobPost->additional_requirement = json_decode($jobPost->additional_requirement);
+            $jobPost->responsibilities = json_decode($jobPost->responsibilities);
+            $jobPost->compensation_other_benifits = json_decode($jobPost->compensation_other_benifits);
+            $jobPost->key_word = json_decode($jobPost->key_word);
+        }
+
+        return $jobPosts;
     }
 
     public function applyDetails($applyId)
@@ -103,8 +183,96 @@ class EmplyDashboardController extends Controller
         }
     }
 
-    public function select_candited_send_mail()
+    public function select_candited_send_mail(Request $request)
     {
-        return 'mail sendig';
+        $email = $request->email;
+        $jobName = $request->jobTitle;
+        $address = $request->address;
+        $date = $request->date;
+        $time = $request->time;
+        $description = $request->message;
+        Mail::to($email)->send(new sendMailNotification($jobName, $address, $date, $time, $description));
+    }
+
+    public function send_mail_data(Request $request)
+    {
+        $email = $request->email;
+        $subject = $request->subject;
+        $description = $request->description;
+        Mail::to($email)->send(new SendMail($subject, $description));
+    }
+
+    public function subscription()
+    {
+        $auth = auth()->user()->id;
+        $subscribe = Subscription::where('user_id', $auth)->with('User', 'package')->orderBy('id', 'desc')->paginate(10);
+        return response()->json([
+            'status' => 'success',
+            'data' => $subscribe
+        ]);
+    }
+
+    public function subscription_details($id)
+    {
+        $subscribe = Subscription::where('id', $id)->with('User', 'package')->first();
+        $subscribe_job = Subscription::where('id', $id)->first();
+        $package_id = $subscribe_job->package_id;
+        $job_list = JobPost::where('package_id', $package_id)->paginate(10);
+
+        return response()->json([
+            'status' => 'success',
+            'subscribe' => $subscribe,
+            'job_list' => $job_list
+        ]);
+    }
+
+    // ====================CONTACT=====================//
+
+    public function post_contact(Request $request)
+    {
+        $reciver = User::where('userType', 'ADMIN')->first();
+        $reciver_id = $reciver->id;
+        $new_contact = new Emplyer_contact();
+        $new_contact->sender_id = auth()->user()->id;
+        $new_contact->reciver_id = $reciver_id;
+        // $new_contact->subject = $request->subject;
+        $new_contact->body = $request->message;
+        $new_contact->save();
+        if ($new_contact) {
+            return response()->json([
+                'status' => 'success',
+                'message' => 'Data insert successfully'
+            ], 200);
+        } else {
+            return response()->json([
+                'status' => 'success',
+                'message' => 'Data insert faile'
+            ], 400);
+        }
+    }
+
+    public function message_inbox()
+    {
+        $auth = auth()->user()->id;
+        $message = Emplyer_contact::where('reciver_id', $auth)->paginate(10);
+        if ($message) {
+            return response()->json([
+                'status' => 'success',
+                'data' => $message
+            ], 200);
+        }
+    }
+
+    public function send_message()
+    {
+        $auth = auth()->user()->id;
+        $send_message = Emplyer_contact::where('sender_id', $auth)->paginate(10);
+
+        if ($send_message) {
+            return response()->json([
+                'status' => 'success',
+                'message' => $send_message
+            ]);
+        }
     }
 }

@@ -2,12 +2,15 @@
 
 use App\Http\Controllers\AuthAdminController;
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\BookMarkController;
 use App\Http\Controllers\CandidateController;
 use App\Http\Controllers\CanditedController;
 use App\Http\Controllers\CategoryController;
+use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\DeleteUserController;
 use App\Http\Controllers\EmployerController;
 use App\Http\Controllers\EmplyDashboardController;
+use App\Http\Controllers\HomeController;
 use App\Http\Controllers\JobPostController;
 use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\PackageController;
@@ -88,12 +91,12 @@ Route::middleware(['user', 'auth:api'])->group(function () {
 
         Route::get('company-wise-job-list',[HomeController::class,'companyWiseJobPost']);
 
-        //my subscription
-        Route::get('/my-subscription', [SubscriptionController::class, 'mySubscription']);
-        Route::get('/upgrade-subscription', [SubscriptionController::class, 'upgradeSubscription']);
+    // my subscription
+    Route::get('/my-subscription', [SubscriptionController::class, 'mySubscription']);
+    Route::get('/upgrade-subscription', [SubscriptionController::class, 'upgradeSubscription']);
 
-        // Subscription
-        Route::post('/user-subscription', [SubscriptionController::class, 'userSubscription']);
+    // Subscription
+    Route::post('/user-subscription', [SubscriptionController::class, 'userSubscription']);
 
     Route::get('/terms-condition', [RulesRegulationController::class, 'termsCondition']);
     Route::get('/privacy-policy', [RulesRegulationController::class, 'privacyPolicy']);
@@ -153,6 +156,12 @@ Route::middleware(['admin','auth:api'])->group(function () {
     //job list
     Route::get('job-list',[DashboardController::class,'jobList']);
     Route::get('single-job-list',[DashboardController::class,'jobDetails']);
+    Route::post('/update-category/{id}', [CategoryController::class, 'updateCategory']);
+    // ================== Dashboard Api ====================//
+
+    Route::get('dashboard', [DashboardController::class, 'dashboard']);
+    Route::get('employer-list', [DashboardController::class, 'employerList']);
+    Route::get('company-wise-subscription', [DashboardController::class, 'companyWiseSubscription']);
 
     // -----------------Package -------------------
     Route::get('show-package', [PackageController::class, 'showPackage']);
@@ -160,18 +169,17 @@ Route::middleware(['admin','auth:api'])->group(function () {
     Route::post('update-package', [PackageController::class, 'updatePackage']);
     Route::get('delete-package', [PackageController::class, 'deletePackage']);
 
-
     // -----------------Category --------------------
     Route::post('add-category', [CategoryController::class, 'addCategory']);
     Route::post('update-category', [CategoryController::class, 'updateCategory']);
     Route::get('delete-category', [CategoryController::class, 'deleteCategory']);
     Route::get('show-category', [CategoryController::class, 'showCategory']);
 
-        // -----------------Package -------------------
-        Route::get('show-package', [PackageController::class, 'showPackage']);
-        Route::post('add-package', [PackageController::class, 'addPackage']);
-        Route::post('update-package', [PackageController::class, 'updatePackage']);
-        Route::get('delete-package', [PackageController::class, 'deletePackage']);
+    // -----------------Package -------------------
+    Route::get('show-package', [PackageController::class, 'showPackage']);
+    Route::post('add-package', [PackageController::class, 'addPackage']);
+    Route::post('update-package', [PackageController::class, 'updatePackage']);
+    Route::get('delete-package', [PackageController::class, 'deletePackage']);
 
     // notification
 
@@ -226,6 +234,19 @@ Route::middleware(['recruiter', 'auth:api'])->group(function () {
     Route::get('/cv', [EmplyDashboardController::class, 'CV']);
     Route::post('/apply/status', [EmplyDashboardController::class, 'applyStatus']);
     Route::post('/send/mail', [EmplyDashboardController::class, 'select_candited_send_mail']);
+    Route::post('/contact/mail', [EmplyDashboardController::class, 'send_mail_data']);
+    Route::get('/subscription', [EmplyDashboardController::class, 'subscription']);
+    Route::get('/subscription/details/{id}', [EmplyDashboardController::class, 'subscription_details']);
+
+    // ==================CONTACT PAGE =============== //
+    Route::post('/contact/message', [EmplyDashboardController::class, 'post_contact']);
+    Route::get('/inbox/message', [EmplyDashboardController::class, 'message_inbox']);
+    Route::get('/send/message', [EmplyDashboardController::class, 'send_message']);
+
+    // ===================FILTERING==========================//
+
+    Route::get('/job/search', [EmplyDashboardController::class, 'job_search']);
+    Route::get('/job/filter', [EmplyDashboardController::class, 'job_filter']);
 });
 
 Route::middleware(['all.user.type'])->group(function () {
