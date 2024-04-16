@@ -81,8 +81,6 @@ class ContactController extends Controller
 
 
     }
-
-
     protected function saveImage($request)
     {
         $image = $request->file('image');
