@@ -13,4 +13,9 @@ class Package extends Model
     {
         return $this->hasMany(Subscription::class);
     }
+
+    public function jobpost():HasMany
+    {
+        return $this->hasMany(JobPost::class);
+    }
 }

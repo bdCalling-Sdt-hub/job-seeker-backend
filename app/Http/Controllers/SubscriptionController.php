@@ -16,7 +16,7 @@ class SubscriptionController extends Controller
 
         $subscription = new subscription();
         $subscription->package_id = $request->package_id;
-        $subscription->user_id = $request->user_id;
+        $subscription->user_id = auth()->user()->id;
         $subscription->tx_ref = $request->tx_ref;
         $subscription->amount = $request->amount;
         $subscription->currency = $request->currency;
@@ -133,12 +133,6 @@ class SubscriptionController extends Controller
             ]);
         }
     }
-
-
-    public function upgradeSubscription(Request $request){
-            
-    }
-
 
 
 }

@@ -75,6 +75,7 @@ class JobPostController extends Controller
                 'message' => 'Package time over'
             ]);
         }
+
     }
 
     public function edit_job($id)

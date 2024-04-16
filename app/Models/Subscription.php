@@ -15,6 +15,12 @@ class Subscription extends Model
         return $this->belongsTo(Package::class);
     }
 
+    public function jobpost():BelongsTo
+    {
+        return $this->belongsTo(JobPost::class);
+    }
+
+
     public function User(): BelongsTo
     {
         return $this->belongsTo(User::class);

@@ -347,11 +347,11 @@ class CandidateController extends Controller
         // Validate request data
         $validator = Validator::make($request->all(), [
             'user_id' => 'required',
-            'work_type' => 'required|string',
-            'work_category' => 'required|string',
-            'work_shift' => 'required|string',
-            'expected_pay' => 'required|string',
-            'area' => 'required|string',
+            'work_type' => 'nullable|string',
+            'work_category' => 'nullable|string',
+            'work_shift' => 'nullable|string',
+            'expected_pay' => 'nullable|string',
+            'area' => 'nullable|string',
             'current_salary' => 'nullable|string',
             'job_title' => 'nullable|string',
             'job_type' => 'nullable|string',
@@ -366,7 +366,7 @@ class CandidateController extends Controller
         $interest->work_type = $request->work_type;
         $interest->work_category = $request->work_category;
         $interest->work_shift = $request->work_shift;
-        $interest->expected_pay = $request->expected_pay;
+        $interest->expected_salary = $request->expected_salary;
         $interest->area = $request->area;
         $interest->current_salary = $request->current_salary;
         $interest->job_title = $request->job_title;
@@ -429,7 +429,8 @@ class CandidateController extends Controller
 
     public function getProfileInfo()
     {
-        $profileInfo = User::with('candidate','education','experience','training','interest')->get();
+        $auth_user = auth()->user()->id;
+        $profileInfo = User::with('candidate','education','experience','training','interest')->where('id',$auth_user)->get();
         $formatted_profileInfo = $profileInfo->map(function($profile){
             return $profile;
         });

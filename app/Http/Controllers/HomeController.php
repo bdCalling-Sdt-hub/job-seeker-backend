@@ -11,45 +11,80 @@ use Illuminate\Http\Request;
 
 class HomeController extends Controller
 {
+//    public function jobFilter(Request $request)
+//    {
+//        $query = JobPost::query();
+//
+//        if ($request->has('job_title')) {
+//            $query->where('job_title', 'like', '%' . $request->input('job_title') . '%');
+//        }
+//
+//        if ($request->has('key_word')) {
+//            $query->where('key_word','like', '%' . $request->input('key_word'));
+//        }
+//
+//        if ($request->has('job_type')) {
+//            $query->where('job_type', $request->input('job_type'));
+//        }
+//
+//        if ($request->has('work_type')) {
+//            $query->where('work_type', $request->input('work_type'));
+//        }
+//
+//        if ($request->has('work_category')) {
+//            $query->where('category_id', $request->input('work_category'));
+//        }
+//
+//        if ($request->has('experience')) {
+//            $query->where('experience', '<=', $request->input('experience'));
+//        }
+//
+//        if ($request->has('area')) {
+//            $query->where('area', $request->input('area'));
+//        }
+//
+//        $job_posts = $query->with('user', 'recruiter','category')->whereIn('status', ['published','pending'])->paginate();
+//
+//        return response()->json([
+//            'message' => 'Filtered Job List',
+//            'data' => $job_posts,
+//        ]);
+//    }
     public function jobFilter(Request $request)
     {
+        $user_id = auth()->user()->id; // Get authenticated user id
+
         $query = JobPost::query();
 
         if ($request->has('job_title')) {
             $query->where('job_title', 'like', '%' . $request->input('job_title') . '%');
         }
 
-        if ($request->has('key_word')) {
-            $query->where('key_word','like', '%' . $request->input('key_word'));
-        }
+        // Other filters...
 
-        if ($request->has('job_type')) {
-            $query->where('job_type', $request->input('job_type'));
-        }
+        $job_posts = $query->with('user', 'recruiter', 'category')
+            ->whereIn('status', ['published', 'pending'])
+            ->paginate();
 
-        if ($request->has('work_type')) {
-            $query->where('work_type', $request->input('work_type'));
-        }
+        // Check if each job post is bookmarked by the user
+        $bookmarked_job_ids = Bookmark::where('user_id', $user_id)
+            ->pluck('job_post_id')
+            ->toArray();
 
-        if ($request->has('work_category')) {
-            $query->where('category_id', $request->input('work_category'));
+        foreach ($job_posts as $job_post) {
+            if (in_array($job_post->id, $bookmarked_job_ids)) {
+                $job_post->is_bookmarked = true;
+            } else {
+                $job_post->is_bookmarked = false;
+            }
         }
-
-        if ($request->has('experience')) {
-            $query->where('experience', '<=', $request->input('experience'));
-        }
-
-        if ($request->has('area')) {
-            $query->where('area', $request->input('area'));
-        }
-
-        $job_posts = $query->with('user', 'recruiter','category')->whereIn('status', ['published','pending'])->paginate();
 
         return response()->json([
             'message' => 'Filtered Job List',
             'data' => $job_posts,
         ]);
     }
+
     public function showCategoryandCount()
     {
         $categories = Category::all();
@@ -111,6 +146,10 @@ class HomeController extends Controller
             'message' => 'Category-wise Job List',
             'data' => $categoryWiseJobPosts
         ]);
+    }
+    public function SingleCategoryWiseJobPost(Request $request)
+    {
+        // single job details
     }
 
     public function categoryIdWiseJobPost(Request $request)

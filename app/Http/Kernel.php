@@ -70,6 +70,6 @@ class Kernel extends HttpKernel
 
         'recruiter' => \App\Http\Middleware\CheckRecruiterMiddleware::class,
 
-        'admin.user.recruiter' => \App\Http\Middleware\AllUserMiddleware::class,
+        'all.user.type' => \App\Http\Middleware\AllUserMiddleware::class,
     ];
 }

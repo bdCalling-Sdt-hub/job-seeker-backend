@@ -247,13 +247,13 @@ class AuthController extends Controller
 
         if ($user) {
             $validator = Validator::make($request->all(), [
-                'fullName' => 'required|string|min:2|max:100',
+                'fullName' => 'string|min:2|max:100',
             ]);
 
             if ($validator->fails()) {
                 return response()->json($validator->errors(), 400);
             }
-            $user->fullName = $request->fullName;
+            $user->fullName = $request->fullName ? $request->fullName : $user->fullName;
             $user->mobile = $request->mobile ? $request->mobile : $user->mobile;
             $user->address = $request->address ? $request->address : $user->address;
 
