@@ -31,6 +31,8 @@ class EmployerController extends Controller
         $new_post->company_size = $request->company_size;
         $new_post->social_media_link = $request->social_media_link;
         $new_post->company_des = $request->company_des;
+        $new_post->company_service = $request->company_service;
+        $new_post->country = $request->country;
         $new_post->save();
         if ($new_post) {
             return response()->json([
@@ -155,6 +157,8 @@ class EmployerController extends Controller
         $update_job->company_size = $request->company_size;
         $update_job->social_media_link = $request->social_media_link;
         $update_job->company_des = $request->company_des;
+        $update_job->company_service = $request->company_service;
+        $update_job->country = $request->country;
         $update_job->save();
         if ($update_job) {
             return response()->json([
