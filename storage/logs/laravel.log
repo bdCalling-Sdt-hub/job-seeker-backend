@@ -3793,3 +3793,15 @@
 #38 D:\\xampp Software\\htdocs\\jobs\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\resources\\server.php(16): require_once('D:\\\\xampp Softwa...')
 #39 {main}
 "} 
+[2024-04-16 08:58:04] local.ERROR: Cannot use App\Http\Controllers\HomeController as HomeController because the name is already in use {"exception":"[object] (Symfony\\Component\\ErrorHandler\\Error\\FatalError(code: 0): Cannot use App\\Http\\Controllers\\HomeController as HomeController because the name is already in use at D:\\xampp Software\\htdocs\\jobs\\routes\\api.php:21)
+[stacktrace]
+#0 {main}
+"} 
+[2024-04-16 08:58:04] local.ERROR: Cannot use App\Http\Controllers\HomeController as HomeController because the name is already in use {"exception":"[object] (Symfony\\Component\\ErrorHandler\\Error\\FatalError(code: 0): Cannot use App\\Http\\Controllers\\HomeController as HomeController because the name is already in use at D:\\xampp Software\\htdocs\\jobs\\routes\\api.php:21)
+[stacktrace]
+#0 {main}
+"} 
+[2024-04-16 08:58:04] local.ERROR: Cannot use App\Http\Controllers\HomeController as HomeController because the name is already in use {"exception":"[object] (Symfony\\Component\\ErrorHandler\\Error\\FatalError(code: 0): Cannot use App\\Http\\Controllers\\HomeController as HomeController because the name is already in use at D:\\xampp Software\\htdocs\\jobs\\routes\\api.php:21)
+[stacktrace]
+#0 {main}
+"} 

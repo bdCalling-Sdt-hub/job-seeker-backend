@@ -18,9 +18,6 @@ use App\Http\Controllers\RulesRegulationController;
 use App\Http\Controllers\SocialLoginController;
 use App\Http\Controllers\SubscriptionController;
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\HomeController;
-use App\Http\Controllers\BookMarkController;
-use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\ContactController;
 
 Route::group([

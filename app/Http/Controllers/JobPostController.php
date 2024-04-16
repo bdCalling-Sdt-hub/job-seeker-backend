@@ -151,44 +151,6 @@ class JobPostController extends Controller
         }
     }
 
-    // public function show_job(Request $request)
-    // {
-    //     $title = $request->jobTitle;
-    //     $keyword = $request->keyWord;
-    //     $status = $request->status;
-
-    //     return $auth = auth()->user()->id;
-
-    //     $display_job = JobPost::where('user_id', $auth)
-    //         ->with('Recruiter')
-    //         ->orWhere('job_title', 'like', "%$title%")
-    //         ->orWhere('key_word', 'like', "%$keyword%")
-    //         ->orWhere('status', 'like', "%$status%")
-    //         ->orderBy('id', 'desc')
-    //         ->paginate(10);
-
-    //     if ($display_job->isNotEmpty()) {
-    //         $decode_data = $display_job->toArray();
-    //         foreach ($decode_data['data'] as &$job) {
-    //             $job['education'] = json_decode($job['education'], true);
-    //             $job['additional_requirement'] = json_decode($job['additional_requirement'], true);
-    //             $job['responsibilities'] = json_decode($job['responsibilities'], true);
-    //             $job['compensation_other_benifits'] = json_decode($job['compensation_other_benifits'], true);
-    //             $job['key_word'] = json_decode($job['key_word'], true);
-    //         }
-
-    //         return response()->json([
-    //             'status' => 'success',
-    //             'data' => $decode_data
-    //         ]);
-    //     } else {
-    //         return response()->json([
-    //             'status' => 'false',
-    //             'data' => []
-    //         ]);
-    //     }
-    // }
-
     public function show_job(Request $request)
     {
         // Get authenticated user's ID
