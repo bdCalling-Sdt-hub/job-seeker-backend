@@ -19,6 +19,7 @@ return new class extends Migration {
             $table->text('salary');
             $table->text('job_type');
             $table->text('work_type');
+            $table->text('work_shift');
             $table->integer('category_id');
             $table->text('area');
             $table->json('education');

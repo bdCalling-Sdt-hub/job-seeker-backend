@@ -10,6 +10,12 @@ use Illuminate\Http\Request;
 
 class JobPostController extends Controller
 {
+    public function show_subscribe_package()
+    {
+        $auth = auth()->user()->id;
+        return $show_subscribe = Subscription::where('user_id', $auth)->with('package')->get();
+    }
+
     public function create_job(Request $request)
     {
         $auth = auth()->user()->id;
@@ -45,6 +51,7 @@ class JobPostController extends Controller
             $create_job->salary = $request->salary;
             $create_job->job_type = $request->job_type;
             $create_job->work_type = $request->work_type;
+            $create_job->work_shift = $request->work_shift;
             $create_job->category_id = $request->category_id;
             $create_job->area = $request->area;
             $create_job->education = $request->education;
@@ -75,13 +82,20 @@ class JobPostController extends Controller
                 'message' => 'Package time over'
             ]);
         }
-
     }
 
     public function edit_job($id)
     {
-        $edit_job = JobPost::where('id', $id)->first();
+        $edit_job = JobPost::where('id', $id)->with('user', 'category', 'recruiter')->first();
+
         if ($edit_job) {
+            $edit_job->education = json_decode($edit_job->education, true);
+            $edit_job->additional_requirement = json_decode($edit_job->additional_requirement, true);
+            $edit_job->responsibilities = json_decode($edit_job->responsibilities, true);
+            $edit_job->compensation_other_benifits = json_decode($edit_job->compensation_other_benifits, true);
+            $edit_job->key_word = json_decode($edit_job->key_word, true);
+            $edit_job->recruiter->company_service = json_decode($edit_job->recruiter->company_service, true);
+
             return response()->json([
                 'status' => 'success',
                 'data' => $edit_job
@@ -89,7 +103,7 @@ class JobPostController extends Controller
         } else {
             return response()->json([
                 'status' => 'false',
-                'message' => 'faile your job post',
+                'message' => 'Failed to retrieve the job post',
                 'data' => []
             ], 200);
         }
@@ -107,6 +121,7 @@ class JobPostController extends Controller
         $update_job->subscription_id = $request->subscribId;
         $update_job->job_title = $request->job_title;
         $update_job->work_type = $request->work_type;
+        $update_job->work_shift = $request->work_shift;
         $update_job->application_last_date = $request->dadLine;
         $update_job->salary = $request->salary;
         $update_job->job_type = $request->job_type;
@@ -195,19 +210,19 @@ class JobPostController extends Controller
         $authUserId = auth()->user()->id;
 
         // Retrieve request parameters
-        $title = $request->jobTitle;
-        $keyword = $request->keyWord;
-        $status = $request->status;
+        // $title = $request->jobTitle;
+        // $keyword = $request->keyWord;
+        // $status = $request->status;
 
         // Query to fetch job posts
         $display_job = JobPost::where('user_id', $authUserId)
-            ->with('Recruiter')
-            ->where(function ($query) use ($title, $keyword, $status) {
-                $query
-                    ->where('job_title', 'like', "%$title%")
-                    ->orWhere('key_word', 'like', "%$keyword%")
-                    ->orWhere('status', 'like', "%$status%");
-            })
+            ->with('Recruiter', 'user', 'category')
+            // ->where(function ($query) use ($title, $keyword, $status) {
+            //     $query
+            //         ->where('job_title', 'like', "%$title%")
+            //         ->orWhere('key_word', 'like', "%$keyword%")
+            //         ->orWhere('status', 'like', "%$status%");
+            // })
             ->orderBy('id', 'desc')
             ->paginate(10);
 
@@ -234,6 +249,65 @@ class JobPostController extends Controller
         }
     }
 
+    // public function apply_job_show()
+    // {
+    //     $auth = auth()->user()->id;
+    //     $recruiter = Recruiter::where('user_id', $auth)->with('user')->first();
+
+    //     if (!$recruiter) {
+    //         return response()->json([
+    //             'status' => 'error',
+    //             'message' => 'Recruiter not found for the logged-in user.'
+    //         ]);
+    //     }
+
+    //     $recruiter_id = $recruiter->id;
+    //     $display_job = JobPost::where('recruiter_id', $recruiter_id)
+    //         ->where('status', 'published')
+    //         ->with('Recruiter')
+    //         ->orderBy('id', 'desc')
+    //         ->paginate(10);
+    //     $jobsWithApplicationsCount = [];
+
+    //     foreach ($display_job as $job) {
+    //         $apply_count = Apply::where('job_post_id', $job->id)->count();
+    //         $jobsWithApplicationsCount[] = [
+    //             'applied_count' => $apply_count,
+    //             'id' => $job->id,
+    //             'recruiter_id' => $job->recruiter_id,
+    //             'job_title' => $job->job_title,
+    //             'application_last_date' => $job->application_last_date,
+    //             'salary' => $job->salary,
+    //             'job_type' => $job->job_type,
+    //             'work_type' => $job->work_type,
+    //             'category_id' => $job->category_id,
+    //             'area' => $job->area,
+    //             'education' => $job->education,
+    //             'experience' => $job->experience,
+    //             'additional_requirement' => $job->additional_requirement,
+    //             'responsibilities' => $job->responsibilities,
+    //             'compensation_other_benefits' => $job->compensation_other_benefits,
+    //             'vacancy' => $job->vacancy,
+    //             'status' => $job->status,
+    //             'key_word' => $job->key_word,
+    //             'created_at' => $job->created_at,
+    //             'updated_at' => $job->updated_at,
+    //             'recruiter' => $job->Recruiter,
+    //         ];
+    //     }
+
+    //     return response()->json([
+    //         'status' => 'success',
+    //         'data' => $jobsWithApplicationsCount,
+    //         'pagination' => [
+    //             'current_page' => $display_job->currentPage(),
+    //             'per_page' => $display_job->perPage(),
+    //             'total' => $display_job->total(),
+    //             'last_page' => $display_job->lastPage(),
+    //         ]
+    //     ]);
+    // }
+
     public function apply_job_show()
     {
         $auth = auth()->user()->id;
@@ -249,7 +323,7 @@ class JobPostController extends Controller
         $recruiter_id = $recruiter->id;
         $display_job = JobPost::where('recruiter_id', $recruiter_id)
             ->where('status', 'published')
-            ->with('Recruiter')
+            ->with(['Recruiter', 'Recruiter.user'])
             ->orderBy('id', 'desc')
             ->paginate(10);
         $jobsWithApplicationsCount = [];
@@ -265,16 +339,17 @@ class JobPostController extends Controller
                 'salary' => $job->salary,
                 'job_type' => $job->job_type,
                 'work_type' => $job->work_type,
+                'work_shift' => $job->work_shift,
                 'category_id' => $job->category_id,
                 'area' => $job->area,
-                'education' => $job->education,
+                'education' => json_decode($job->education),
                 'experience' => $job->experience,
-                'additional_requirement' => $job->additional_requirement,
-                'responsibilities' => $job->responsibilities,
-                'compensation_other_benefits' => $job->compensation_other_benefits,
+                'additional_requirement' => json_decode($job->additional_requirement),
+                'responsibilities' => json_decode($job->responsibilities),
+                'compensation_other_benefits' => json_decode($job->compensation_other_benefits),
                 'vacancy' => $job->vacancy,
                 'status' => $job->status,
-                'key_word' => $job->key_word,
+                'key_word' => json_decode($job->key_word),
                 'created_at' => $job->created_at,
                 'updated_at' => $job->updated_at,
                 'recruiter' => $job->Recruiter,
