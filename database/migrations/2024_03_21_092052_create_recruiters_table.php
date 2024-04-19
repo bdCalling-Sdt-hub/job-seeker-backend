@@ -25,7 +25,9 @@ return new class extends Migration {
             $table->string('website_url')->default('link');
             $table->string('year_of_establishment')->nullable();
             $table->integer('company_size')->nullable();
-            $table->string('social_media_link')->default('link');
+            $table->string('linkdin_url')->default('link');
+            $table->string('facebook_url')->default('link');
+            $table->string('instagram_url')->default('link');
             $table->string('company_des')->nullable();
 
             $table->timestamps();
