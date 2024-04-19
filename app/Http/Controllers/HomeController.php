@@ -60,11 +60,46 @@ class HomeController extends Controller
             $query->where('job_title', 'like', '%' . $request->input('job_title') . '%');
         }
 
-        // Other filters...
+        if ($request->has('key_word')) {
+            $query->where('key_word','like', '%' . $request->input('key_word'));
+        }
+
+        if ($request->has('job_type')) {
+            $query->where('job_type', $request->input('job_type'));
+        }
+
+        if ($request->has('work_type')) {
+            $query->where('work_type', $request->input('work_type'));
+        }
+
+        if ($request->has('work_category')) {
+            $query->where('category_id', $request->input('work_category'));
+        }
+
+        if ($request->has('experience')) {
+            $query->where('experience', '<=', $request->input('experience'));
+        }
+
+        if ($request->has('area')) {
+            $query->where('area', $request->input('area'));
+        }
+        if ($request->has('salary')) {
+            $query->where('salary', $request->input('salary'));
+        }
 
         $job_posts = $query->with('user', 'recruiter', 'category')
-            ->whereIn('status', ['published', 'pending'])
-            ->paginate();
+            ->where('status', 'published')
+            ->paginate(9);
+
+        $formatted_job_list = $job_posts->map(function ($job) {
+            $job->education = json_decode($job->education);
+            $job->additional_requirement = json_decode($job->additional_requirement);
+            $job->compensation_other_benifits = json_decode($job->compensation_other_benifits);
+            $job->key_word = json_decode($job->key_word);
+            $job->responsibilities = json_decode($job->responsibilities);
+//            $job->recruiter->company_service = json_decode($job->recruiter->company_service);
+            return $job;
+        });
 
         // Check if each job post is bookmarked by the user
         $bookmarked_job_ids = Bookmark::where('user_id', $user_id)
@@ -78,17 +113,27 @@ class HomeController extends Controller
                 $job_post->is_bookmarked = false;
             }
         }
-
         return response()->json([
             'message' => 'Filtered Job List',
-            'data' => $job_posts,
+            'current_page' => $job_posts->currentPage(),
+            'data' => $formatted_job_list,
+            'first_page_url' => $job_posts->url(1),
+            'from' => $job_posts->firstItem(),
+            'last_page' => $job_posts->lastPage(),
+            'last_page_url' => $job_posts->url($job_posts->lastPage()),
+            'links' => $job_posts->links(),
+            'next_page_url' => $job_posts->nextPageUrl(),
+            'path' => $job_posts->url($job_posts->currentPage()),
+            'per_page' => $job_posts->perPage(),
+            'prev_page_url' => $job_posts->previousPageUrl(),
+            'to' => $job_posts->lastItem(),
+            'total' => $job_posts->total(),
         ]);
     }
 
     public function showCategoryandCount()
     {
         $categories = Category::all();
-
         // Initialize an empty array to store category-wise job posts
         $categoryWiseJobPosts = [];
 
@@ -108,14 +153,11 @@ class HomeController extends Controller
                 'job_post_count' => $jobPostCount
             ];
         }
-
         return response()->json([
             'message' => 'Category job count',
             'data' => $categoryWiseJobPosts
         ]);
     }
-
-
     public function categoryWiseJobPost(Request $request)
     {
         // Fetch all categories
@@ -168,25 +210,35 @@ class HomeController extends Controller
 
     public function companyWiseJobPost(Request $request)
     {
-        $recruiters = User::where('userType', 'RECRUITER')->get();
+        $recruiters = User::where('userType', 'RECRUITER')->paginate(9);
 
         $recruiterWiseJobPosts = [];
         foreach ($recruiters as $recruiter) {
             // Fetch job posts related to the current category
-            $jobPosts = JobPost::with('recruiter', 'user', 'category')
+            $job_posts = JobPost::with('recruiter', 'user', 'category')
                 ->where('user_id', $recruiter->id)->where('status','published')
                 ->get();
 
             // Count the number of job posts for the current category
-            $jobPostCount = $jobPosts->count();
+            $jobPostCount = $job_posts->count();
+
+            $formatted_job_list = $job_posts->map(function ($job) {
+                $job->education = json_decode($job->education);
+                $job->additional_requirement = json_decode($job->additional_requirement);
+                $job->compensation_other_benifits = json_decode($job->compensation_other_benifits);
+                $job->key_word = json_decode($job->key_word);
+                $job->responsibilities = json_decode($job->responsibilities);
+//                $job->recruiter->company_service = json_decode($job->recruiter->company_service);
+                return $job;
+            });
 
             $recruiterWiseJobPosts[] = [
-                'job_posts' => $jobPosts,
+                'job_posts' => $formatted_job_list,
                 'job_post_count' => $jobPostCount
             ];
         }
         return response()->json([
-            'message' => 'Category-wise Job List',
+            'message' => 'Company Wise Job List',
             'data' => $recruiterWiseJobPosts
         ]);
     }

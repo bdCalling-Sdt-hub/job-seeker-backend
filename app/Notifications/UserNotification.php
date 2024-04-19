@@ -23,7 +23,6 @@ class UserNotification extends Notification
         $this->user = $user;
     }
 
-
     public function via(object $notifiable): array
     {
         return ['database'];

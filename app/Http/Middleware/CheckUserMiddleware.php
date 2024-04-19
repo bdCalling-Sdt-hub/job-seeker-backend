@@ -11,16 +11,6 @@ use Symfony\Component\HttpFoundation\Response;
 class CheckUserMiddleware
 {
 
-//    public function handle(Request $request, Closure $next): Response
-//    {
-//        if (auth()->check() && auth()->user()->userType == 'USER'){
-//            return $next($request);
-//        }
-//        return response()->json([
-//            'message' => 'Unauthorized user'
-//        ],401);
-//    }
-
     public function handle(Request $request, Closure $next): Response
     {
         try {
@@ -37,4 +27,5 @@ class CheckUserMiddleware
             ], 401);
         }
     }
+
 }
