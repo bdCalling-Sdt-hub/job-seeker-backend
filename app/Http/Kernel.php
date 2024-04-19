@@ -71,5 +71,6 @@ class Kernel extends HttpKernel
         'recruiter' => \App\Http\Middleware\CheckRecruiterMiddleware::class,
 
         'all.user.type' => \App\Http\Middleware\AllUserMiddleware::class,
+        'guest_user' => \App\Http\Middleware\GuestUser::class
     ];
 }

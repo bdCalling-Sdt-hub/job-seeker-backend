@@ -2,10 +2,12 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Apply;
 use App\Models\Candidate;
 use App\Models\Education;
 use App\Models\Experience;
 use App\Models\Interest;
+use App\Models\JobPost;
 use App\Models\Training;
 use App\Models\User;
 use Illuminate\Http\Request;
@@ -49,11 +51,60 @@ class CandidateController extends Controller
         }
     }
 
+//    public function updateProfileInfo(Request $request)
+//    {
+//        // Validate request data
+//        $validator = Validator::make($request->all(), [
+//            'user_id' => 'required',
+//            'phone_number' => 'nullable|string',
+//            'nid_number' => 'nullable|string',
+//            'gender' => 'nullable|string',
+//            'present_address' => 'nullable|string',
+//            'permanent_address' => 'nullable|string',
+//        ]);
+//        if ($validator->fails()) {
+//            return response()->json($validator->errors(), 400);
+//        }
+//
+//        // Find the candidate by user_id
+//        $candidate = Candidate::where('user_id', $request->user_id)->first();
+//
+//        // If candidate not found, return error
+//        if (!$candidate) {
+//            return response()->json([
+//                'message' => 'Candidate not found'
+//            ], 404);
+//        }
+//
+//        // Update candidate information
+//        $candidate->phone_number = $request->phone_number ?? $candidate->phone_number;
+//        $candidate->nid_number = $request->nid_number ?? $candidate->nid_number;
+//        $candidate->gender = $request->gender ?? $candidate->gender;
+//        $candidate->present_address = $request->present_address ?? $candidate->present_address;
+//        $candidate->permanent_address = $request->permanent_address ?? $candidate->permanent_address;
+//        $candidate->save();
+//
+//        // Check if the update was successful
+//        if ($candidate->wasChanged()) {
+//            return response()->json([
+//                'message' => 'Candidate profile information updated successfully',
+//                'data' => $candidate,
+//            ]);
+//        } else {
+//            return response()->json([
+//                'message' => 'No changes detected in candidate pro'
+//            ]);
+//        }
+//
+//    }
     public function updateProfileInfo(Request $request)
     {
         // Validate request data
         $validator = Validator::make($request->all(), [
-            'user_id' => 'required',
+            'user_id' => '',
+            'fullName' => 'nullable|string',
+            'email' => 'nullable|email',
+            'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
             'phone_number' => 'nullable|string',
             'nid_number' => 'nullable|string',
             'gender' => 'nullable|string',
@@ -64,37 +115,91 @@ class CandidateController extends Controller
             return response()->json($validator->errors(), 400);
         }
 
-        // Find the candidate by user_id
-        $candidate = Candidate::where('user_id', $request->user_id)->first();
+        $auth_user = auth()->user()->id;
+        // Find the user by user_id
+        $user = User::where('id',$auth_user)->first();
 
-        // If candidate not found, return error
-        if (!$candidate) {
+        // If user not found, return error
+        if (!$user) {
             return response()->json([
-                'message' => 'Candidate not found'
+                'message' => 'User not found'
             ], 404);
         }
+        // Update user information
+        $user->fullName = $request->fullName ?? $user->fullName;
+        $user->email = $request->email ?? $user->email;
 
-        // Update candidate information
-        $candidate->phone_number = $request->phone_number ?? $candidate->phone_number;
-        $candidate->nid_number = $request->nid_number ?? $candidate->nid_number;
-        $candidate->gender = $request->gender ?? $candidate->gender;
-        $candidate->present_address = $request->present_address ?? $candidate->present_address;
-        $candidate->permanent_address = $request->permanent_address ?? $candidate->permanent_address;
-        $candidate->save();
+        // Update user's image if provided
+        if ($request->file('image')) {
+            if (!empty($user->image)) {
+                $this->removeImage($user->image);
+            }
+            $user->image = $this->saveImage($request);
+        }
+//        $user->category_name = $request->category_name;
+
+        $user->update();
+
+        // Find or create the candidate by user_id
+        $candidate = Candidate::where('user_id', $auth_user)->first();
+        if ($candidate){
+            // Update candidate information
+            $candidate->phone_number = $request->phone_number ?? $candidate->phone_number;
+            $candidate->nid_number = $request->nid_number ?? $candidate->nid_number;
+            $candidate->gender = $request->gender ?? $candidate->gender;
+            $candidate->present_address = $request->present_address ?? $candidate->present_address;
+            $candidate->permanent_address = $request->permanent_address ?? $candidate->permanent_address;
+            $candidate->update();
+        }elseif(empty($candidate)){
+            // add new data
+            $candidate = new Candidate();
+            $candidate->user_id = auth()->user()->id;
+            $candidate->phone_number = $request->phone_number ?? null;
+            $candidate->nid_number = $request->nid_number ?? null;
+            $candidate->gender = $request->gender ?? null;
+            $candidate->present_address = $request->present_address ?? null;
+            $candidate->permanent_address = $request->permanent_address ?? null;
+            $candidate->save();
+        }else{
+            return response()->json([
+                'message' => 'Something went wrong',
+            ],400);
+        }
 
         // Check if the update was successful
-        if ($candidate->wasChanged()) {
+        if ($user || $candidate) {
             return response()->json([
-                'message' => 'Candidate profile information updated successfully',
-                'data' => $candidate,
+                'message' => 'Profile information updated successfully',
+                'data' => [
+                    'user' => $user,
+                    'candidate' => $candidate,
+                ],
             ]);
         } else {
             return response()->json([
-                'message' => 'No changes detected in candidate pro'
+                'message' => 'No changes detected in profile information'
             ]);
         }
-
     }
+
+    protected function saveImage($request)
+    {
+        $image = $request->file('image');
+        $imageName = rand() . '.' . $image->getClientOriginalExtension();
+        $directory = 'Asset/candidate-image/';
+        $imgUrl = $directory . $imageName;
+        $image->move($directory, $imageName);
+        return $imgUrl;
+    }
+
+    private function removeImage($imagePath)
+    {
+        // Check if the file exists before attempting to delete it
+        if (file_exists($imagePath)) {
+            unlink($imagePath);
+        }
+    }
+
     // education section
     public function addExperienceInfo(Request $request)
     {
@@ -438,5 +543,45 @@ class CandidateController extends Controller
             'message' => 'success',
             'data' => $formatted_profileInfo
         ]);
+    }
+
+    public function jobGallery()
+    {
+        $auth_user = auth()->user()->id;
+        $job_gallery = Apply::with('job_post.recruiter')->where('user_id',$auth_user)->paginate(9);
+
+        $formatted_job_gallery = $job_gallery->map(function ($job){
+            $job->job_post->education = json_decode($job->job_post->education);
+            $job->job_post->additional_requirement = json_decode($job->job_post->additional_requirement);
+            $job->job_post->compensation_other_benifits = json_decode($job->job_post->compensation_other_benifits);
+            $job->job_post->key_word = json_decode($job->job_post->key_word);
+            $job->job_post->responsibilities = json_decode($job->job_post->responsibilities);
+            $job->job_post->recruiter->company_service = json_decode($job->job_post->recruiter->company_service);
+            return $job;
+        });
+
+        return response()->json([
+            'message' => 'Job Gallery',
+            'current_page' => $job_gallery->currentPage(),
+            'data' => $formatted_job_gallery,
+            'first_page_url' => $job_gallery->url(1),
+            'from' => $job_gallery->firstItem(),
+            'last_page' => $job_gallery->lastPage(),
+            'last_page_url' => $job_gallery->url($job_gallery->lastPage()),
+            'links' => $job_gallery->links(),
+            'next_page_url' => $job_gallery->nextPageUrl(),
+            'path' => $job_gallery->url($job_gallery->currentPage()),
+            'per_page' => $job_gallery->perPage(),
+            'prev_page_url' => $job_gallery->previousPageUrl(),
+            'to' => $job_gallery->lastItem(),
+            'total' => $job_gallery->total(),
+        ]);
+    }
+    public function test()
+    {
+        return $test = JobPost::all();
+
+        // i want to show only those job post which popularity is higher
+
     }
 }

@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Recruiter;
+use App\Models\User;
 use Illuminate\Http\Request;
 use File;
 
@@ -51,7 +52,7 @@ class EmployerController extends Controller
     public function show_recruiter()
     {
         $auth = auth()->user()->id;
-        $information = Recruiter::where('user_id', $auth)->first();
+        $information = User::with('recruiter')->where('id', $auth)->first();
         if ($information) {
             return response()->json([
                 'status' => 'success',

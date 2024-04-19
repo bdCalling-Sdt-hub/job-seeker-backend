@@ -88,7 +88,7 @@ class AuthController extends Controller
         }
         $user->update(['verify_email' => 1]);
         $user->update(['otp' => 0]);
-        $result = app('App\Http\Controllers\NotificationController')->sendNotification('Welcome to the memorial moment app', $user->created_at, $user);
+        $result = app('App\Http\Controllers\NotificationController')->sendNotification('Welcome to the get hired app', $user->created_at, $user);
         $admin_result = app('App\Http\Controllers\NotificationController')->sendAdminNotification('New Customer Registered', $user->created_at, $user->fullName, $user);
         event(new SendNotificationEvent('New Customer Registered', $user->created_at, $user));
         return response([

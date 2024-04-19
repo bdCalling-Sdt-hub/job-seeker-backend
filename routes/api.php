@@ -51,42 +51,43 @@ Route::get('/show/category', [CategoryController::class, 'show_category']);
 Route::post('/add-package', [PackageController::class, 'addPackage']);
 
 Route::middleware(['user', 'auth:api'])->group(function () {
+
     // my subscription
     Route::get('/my-subscription', [SubscriptionController::class, 'mySubscription']);
     Route::get('/upgrade-subscription', [SubscriptionController::class, 'upgradeSubscription']);
-});
 
-    Route::middleware(['user', 'auth:api'])->group(function () {
+    //-----------------Candidate-------------------------
+    Route::post('/add-profile-info', [CandidateController::class, 'addProfileInfo']);
+    Route::post('/update-profile-info', [CandidateController::class, 'updateProfileInfo']);
+    Route::post('/add-experience-info', [CandidateController::class, 'addExperienceInfo']);
+    Route::post('/update-experience-info', [CandidateController::class, 'updateExperienceInfo']);
+    Route::post('/add-education-info', [CandidateController::class, 'addEducationInfo']);
+    Route::post('/update-education-info', [CandidateController::class, 'updateEducationInfo']);
+    Route::post('/add-training-info', [CandidateController::class, 'addTrainingInfo']);
+    Route::post('/update-training-info', [CandidateController::class, 'updateTrainingInfo']);
+    Route::post('/add-interest-info', [CandidateController::class, 'addInterestInfo']);
+    Route::post('/update-interest-info', [CandidateController::class, 'updateInterestInfo']);
+    Route::get('/profile-info', [CandidateController::class, 'getProfileInfo']);
 
-        //-----------------Candidate-------------------------
-        Route::post('/add-profile-info', [CandidateController::class, 'addProfileInfo']);
-        Route::post('/update-profile-info', [CandidateController::class, 'updateProfileInfo']);
-        Route::post('/add-experience-info', [CandidateController::class, 'addExperienceInfo']);
-        Route::post('/update-experience-info', [CandidateController::class, 'updateExperienceInfo']);
-        Route::post('/add-education-info', [CandidateController::class, 'addEducationInfo']);
-        Route::post('/update-education-info', [CandidateController::class, 'updateEducationInfo']);
-        Route::post('/add-training-info', [CandidateController::class, 'addTrainingInfo']);
-        Route::post('/update-training-info', [CandidateController::class, 'updateTrainingInfo']);
-        Route::post('/add-interest-info', [CandidateController::class, 'addInterestInfo']);
-        Route::post('/update-interest-info', [CandidateController::class, 'updateInterestInfo']);
-        Route::get('/profile-info', [CandidateController::class, 'getProfileInfo']);
+    //-----------------filter-----------------
+    Route::get('/job-filter',[HomeController::class,'jobFilter']);
+    //book mark job
+    Route::post('toggle-bookmark',[BookMarkController::class,'toggleBookmark']);
+    Route::get('bookmark-data',[BookMarkController::class,'bookmarksData']);
 
-        //-----------------filter-----------------
-        Route::get('/job-filter',[HomeController::class,'jobFilter']);
-        //book mark job
-        Route::post('toggle-bookmark',[BookMarkController::class,'toggleBookmark']);
-        Route::get('bookmark-data',[BookMarkController::class,'bookmarksData']);
+    // ---------Job Gallery ----------
+    Route::get('/job-gallery',[CandidateController::class,'jobGallery']);
 
-        //show category and count
-        Route::get('/category-job-post-count',[HomeController::class,'showCategoryandCount']);
+    //show category and count
+    Route::get('/category-job-post-count',[HomeController::class,'showCategoryandCount']);
 
-        //category wise job list show
-        Route::get('category-wise-job-list',[HomeController::class,'categoryWiseJobPost']);
-        Route::get('single-category-wise-job-list',[HomeController::class,'SingleCategoryWiseJobPost']);
-        //single category wise show job list
-        Route::get('category-wise-job-list',[HomeController::class,'categoryIdWiseJobPost']);
+    //category wise job list show
+    Route::get('category-wise-job-list',[HomeController::class,'categoryWiseJobPost']);
+    Route::get('single-category-wise-job-list',[HomeController::class,'SingleCategoryWiseJobPost']);
+    //single category wise show job list
+    Route::get('category-wise-job-list',[HomeController::class,'categoryIdWiseJobPost']);
 
-        Route::get('company-wise-job-list',[HomeController::class,'companyWiseJobPost']);
+    Route::get('company-wise-job-list',[HomeController::class,'companyWiseJobPost']);
 
     // my subscription
     Route::get('/my-subscription', [SubscriptionController::class, 'mySubscription']);
@@ -100,7 +101,7 @@ Route::middleware(['user', 'auth:api'])->group(function () {
     Route::get('/about-us', [RulesRegulationController::class, 'aboutUs']);
 
     // delete user
-    Route::post('delete-user', [DeleteUserController::class, 'deleteUser']);
+    Route::get('delete-user', [DeleteUserController::class, 'deleteUser']);
 
     // notification
 
@@ -110,6 +111,7 @@ Route::middleware(['user', 'auth:api'])->group(function () {
 
     Route::post('job/application', [CanditedController::class, 'apply_now']);
 });
+
 
 Route::middleware(['payment.user', 'auth:api'])->group(function () {});
 
@@ -170,7 +172,7 @@ Route::middleware(['admin','auth:api'])->group(function () {
     Route::post('add-category', [CategoryController::class, 'addCategory']);
     Route::post('update-category', [CategoryController::class, 'updateCategory']);
     Route::get('delete-category', [CategoryController::class, 'deleteCategory']);
-    Route::get('show-category', [CategoryController::class, 'showCategory']);
+//    Route::get('show-category', [CategoryController::class, 'showCategory']);
 
     // -----------------Package -------------------
     Route::get('show-package', [PackageController::class, 'showPackage']);
@@ -186,6 +188,7 @@ Route::middleware(['admin','auth:api'])->group(function () {
     Route::get('/admin-notification', [NotificationController::class, 'adminNotification']);
     Route::get('/read-notification', [NotificationController::class, 'readNotificationById']);
 });
+
 
 Route::middleware(['super.admin', 'auth:api'])->group(function () {
     // super admin
@@ -253,3 +256,5 @@ Route::middleware(['all.user.type'])->group(function () {
 Route::get('/terms-condition', [RulesRegulationController::class, 'termsCondition']);
 Route::get('/privacy-policy', [RulesRegulationController::class, 'privacyPolicy']);
 Route::get('/about-us', [RulesRegulationController::class, 'aboutUs']);
+Route::get('show-category', [CategoryController::class, 'showCategory']);
+Route::get('test',[CandidateController::class,'test']);

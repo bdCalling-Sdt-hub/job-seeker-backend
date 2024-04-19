@@ -30,7 +30,7 @@ class JobPostController extends Controller
         } elseif (!$check_packageId) {
             return response()->json([
                 'status' => 'error',
-                'message' => 'Package not avalable'
+                'message' => 'Package not available'
             ]);
         } elseif (!$check_package_date) {
             $recruiter = Recruiter::where('user_id', $auth)->first();
@@ -65,7 +65,7 @@ class JobPostController extends Controller
             } else {
                 return response()->json([
                     'status' => 'false',
-                    'message' => 'faile your job post',
+                    'message' => 'failed your job post',
                     'data' => []
                 ], 500);
             }
@@ -89,7 +89,7 @@ class JobPostController extends Controller
         } else {
             return response()->json([
                 'status' => 'false',
-                'message' => 'faile your job post',
+                'message' => 'failed your job post',
                 'data' => []
             ], 200);
         }

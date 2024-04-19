@@ -22,8 +22,8 @@ class CanditedController extends Controller
         $check = Apply::where('user_id', $auth)->where('job_post_id', $jobId)->count();
         if ($check) {
             return response()->json([
-                'message' => 'all ready applyed'
-            ]);
+                'message' => 'you already applied for this position'
+            ],409);
         } else {
             $application = new Apply();
 
@@ -44,14 +44,13 @@ class CanditedController extends Controller
             if ($application) {
                 return response()->json([
                     'status' => 'success',
-                    'message' => 'Applicaton successfully',
+                    'message' => 'You applied Successfully',
                     'notification' => Notification::send($recruiterUser, new RecruiterNotification($application))
                 ], 200);
             } else {
                 return response()->json([
-                    'status' => 'false',
-                    'message' => 'Applicaton faile',
-                ], 200);
+                    'message' => 'Something went wrong',
+                ], 400);
             };
         }
     }
