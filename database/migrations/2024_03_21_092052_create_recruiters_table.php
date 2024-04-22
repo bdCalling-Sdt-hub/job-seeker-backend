@@ -16,7 +16,7 @@ return new class extends Migration {
             $table->foreignId('category_id');
             $table->foreignId('sub_category_id');
             $table->string('company_name')->nullable();
-            $table->json('company_service');
+            $table->text('company_service');
             $table->text('country')->nullable();
             $table->string('logo')->nullable();
             $table->string('phone')->nullable();
