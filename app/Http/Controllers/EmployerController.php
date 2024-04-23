@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Category;
 use App\Models\Recruiter;
 use App\Models\User;
 use Illuminate\Http\Request;
@@ -51,54 +52,11 @@ class EmployerController extends Controller
         }
     }
 
-    // public function show_recruiter()
-    // {
-    //     $auth = auth()->user()->id;
-    //     $information = Recruiter::where('user_id', $auth)->with('user')->with('category')->first();
-    //     $decode_info = [];
-    //     foreach ($information as $info) {
-    //         $info['company_service'] = json_decode($info['company_service']);
-    //     }
-
-    //     if ($information) {
-    //         return response()->json([
-    //             'status' => 'success',
-    //             'data' => $decode_info
-    //         ], 200);
-    //     } else {
-    //         return response()->json([
-    //             'status' => 'false',
-    //             'data' => []
-    //         ], 200);
-    //     }
-    // }
-
-    // public function show_recruiter()
-    // {
-    //     $auth = auth()->user()->id;
-    //     $user = User::where('id', $auth)->first();
-    //     $recruiter = Recruiter::where('user_id', $auth)->with('user')->with('category')->first();
-
-    //     if ($recruiter) {
-    //         // Decode company_service attribute
-    //         $recruiter->company_service = json_decode($recruiter->company_service);
-
-    //         return response()->json([
-    //             'status' => 'success',
-    //             'data' => $recruiter
-    //         ], 200);
-    //     } else {
-    //         return response()->json([
-    //             'data' => [],
-    //             'user' => $user
-    //         ], 200);
-    //     }
-    // }
-
     public function show_recruiter()
     {
         $auth = auth()->user()->id;
-        $information = User::with('recruiter')->where('id', $auth)->first();
+        $information = User::with('recruiter', 'recruiter.category')->where('id', $auth)->first();
+
         if ($information) {
             return response()->json([
                 'status' => 'success',
@@ -270,33 +228,46 @@ class EmployerController extends Controller
     public function update_recrioter(Request $request)
     {
         $auth = auth()->user()->id;
+<<<<<<< HEAD
         $recruiterCount = Recruiter::where('user_id', $auth)->count();
         $recruiterDetails = Recruiter::where('user_id', $auth)->first();
         $recruiterId = $recruiterDetails->id;
+=======
+        $recruiter = Recruiter::where('user_id', $auth)->first();
+>>>>>>> 3e611a866718656e5f340f3ac5b2ed53dca27303
 
-        if ($recruiterCount) {
-            $update_job = Recruiter::find($recruiterId);
-            $update_job->category_id = $request->catId ?? $update_user->category_id;
-            $update_job->sub_category_id = $request->subCatId ?? $update_user->sub_category_id;
-            $update_job->company_name = $request->companyName ?? $update_user->company_name;
-            $update_job->phone = $request->phone ?? $update_user->phone;
-            $update_job->location = $request->location ?? $update_user->location;
-            $update_job->verify_no = $request->verify_no ?? $update_user->verify_no;
-            $update_job->website_url = $request->website_url ?? $update_user->website_url;
-            $update_job->year_of_establishment = $request->stablished ?? $update_user->year_of_establishment;
-            $update_job->company_size = $request->company_size ?? $update_user->company_size;
-            $update_job->linkdin_url = $request->linkdin_url ?? $update_user->linkdin_url;
-            $update_job->facebook_url = $request->facebook_url ?? $update_user->facebook_url;
-            $update_job->instagram_url = $request->instagram_url ?? $update_user->instagram_url;
-            $update_job->company_des = $request->company_des ?? $update_user->company_des;
-            $update_job->company_service = $request->company_service ?? $update_user->company_service;
-            $update_job->country = $request->country ?? $update_user->country;
+        if ($recruiter) {
+            $update_job = $recruiter;
+            $update_job->category_id = $request->catId ?? $update_job->category_id;
+            $update_job->sub_category_id = $request->subCatId ?? $update_job->sub_category_id;
+            $update_job->company_name = $request->companyName ?? $update_job->company_name;
+            $update_job->phone = $request->phone ?? $update_job->phone;
+            $update_job->location = $request->location ?? $update_job->location;
+            $update_job->verify_no = $request->verify_no ?? $update_job->verify_no;
+            $update_job->website_url = $request->website_url ?? $update_job->website_url;
+            $update_job->year_of_establishment = $request->stablished ?? $update_job->year_of_establishment;
+            $update_job->company_size = $request->company_size ?? $update_job->company_size;
+            $update_job->linkdin_url = $request->linkdin_url ?? $update_job->linkdin_url;
+            $update_job->facebook_url = $request->facebook_url ?? $update_job->facebook_url;
+            $update_job->instagram_url = $request->instagram_url ?? $update_job->instagram_url;
+            $update_job->company_des = $request->company_des ?? $update_job->company_des;
+            $update_job->company_service = $request->company_service ?? $update_job->company_service;
+            $update_job->country = $request->country ?? $update_job->country;
             $update_job->save();
 
             $update_user = User::find($auth);
-            $update_user->fullName = $request->companyName ?? $update_user->email;
+            $update_user->fullName = $request->companyName ?? $update_user->fullName;
             $update_user->email = $request->email ?? $update_user->email;
+
+            if ($request->hasfile('image')) {
+                $file = $request->file('image');
+                $extenstion = $file->getClientOriginalExtension();
+                $filename = 'images/' . time() . '.' . $extenstion;
+                $file->move('images/', $filename);
+                $update_user->image = $filename;
+            }
             $update_user->save();
+<<<<<<< HEAD
             if ($update_job) {
                 return response()->json([
                     'status' => 'success',
@@ -310,9 +281,16 @@ class EmployerController extends Controller
                     'data' => $update_job
                 ]);
             }
+=======
+
+            return response()->json([
+                'status' => 'success',
+                'message' => 'Update recruiter success',
+                'data' => $update_job
+            ]);
+>>>>>>> 3e611a866718656e5f340f3ac5b2ed53dca27303
         } else {
             $update_job = new Recruiter();
-            $update_job->id = $request->id;
             $update_job->user_id = $auth;
             $update_job->category_id = $request->catId;
             $update_job->sub_category_id = $request->subCatId;
@@ -330,19 +308,23 @@ class EmployerController extends Controller
             $update_job->company_service = $request->company_service;
             $update_job->country = $request->country;
             $update_job->save();
-            if ($update_job) {
-                return response()->json([
-                    'status' => 'success',
-                    'message' => 'Update job post success',
-                    'data' => $update_job
-                ]);
-            } else {
-                return response()->json([
-                    'status' => 'false',
-                    'message' => 'Internalr server error',
-                    'data' => $update_job
-                ]);
+
+            $update_user = User::find($auth);
+
+            if ($request->hasfile('image')) {
+                $file = $request->file('image');
+                $extenstion = $file->getClientOriginalExtension();
+                $filename = 'images/' . time() . '.' . $extenstion;
+                $file->move('images/', $filename);
+                $update_user->image = $filename;
             }
+            $update_user->save();
+
+            return response()->json([
+                'status' => 'success',
+                'message' => 'Add recruiter success',
+                'data' => $update_job
+            ]);
         }
     }
 }
