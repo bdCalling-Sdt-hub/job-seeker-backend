@@ -188,12 +188,91 @@ class EmployerController extends Controller
         }
     }
 
+//    public function update_recrioter(Request $request)
+//    {
+//        $auth = auth()->user()->id;
+//        $recruiterCount = Recruiter::where('user_id', $auth)->count();
+//        $recruiterCount = Recruiter::where('user_id', $auth)->first();
+//        $recruiterId = $recruiterCount->id;
+//
+//        if ($recruiterCount) {
+//            $update_job = Recruiter::find($recruiterId);
+//            $update_job->category_id = $request->catId ?? $update_user->category_id;
+//            $update_job->sub_category_id = $request->subCatId ?? $update_user->sub_category_id;
+//            $update_job->company_name = $request->companyName ?? $update_user->company_name;
+//            $update_job->phone = $request->phone ?? $update_user->phone;
+//            $update_job->location = $request->location ?? $update_user->location;
+//            $update_job->verify_no = $request->verify_no ?? $update_user->verify_no;
+//            $update_job->website_url = $request->website_url ?? $update_user->website_url;
+//            $update_job->year_of_establishment = $request->stablished ?? $update_user->year_of_establishment;
+//            $update_job->company_size = $request->company_size ?? $update_user->company_size;
+//            $update_job->linkdin_url = $request->linkdin_url ?? $update_user->linkdin_url;
+//            $update_job->facebook_url = $request->facebook_url ?? $update_user->facebook_url;
+//            $update_job->instagram_url = $request->instagram_url ?? $update_user->instagram_url;
+//            $update_job->company_des = $request->company_des ?? $update_user->company_des;
+//            $update_job->company_service = $request->company_service ?? $update_user->company_service;
+//            $update_job->country = $request->country ?? $update_user->country;
+//            $update_job->save();
+//
+//            $update_user = User::find($auth);
+//            $update_user->fullName = $request->companyName ?? $update_user->email;
+//            $update_user->email = $request->email ?? $update_user->email;
+//            $update_user->save();
+//
+//            if ($update_job) {
+//                return response()->json([
+//                    'status' => 'success',
+//                    'message' => 'Update job post success',
+//                    'data' => $update_job
+//                ]);
+//            } else {
+//                return response()->json([
+//                    'status' => 'false',
+//                    'message' => 'Internalr server error',
+//                    'data' => $update_job
+//                ]);
+//            }
+//        } else {
+//            $update_job = new Recruiter();
+//            $update_job->id = $request->id;
+//            $update_job->user_id = $auth;
+//            $update_job->category_id = $request->catId;
+//            $update_job->sub_category_id = $request->subCatId;
+//            $update_job->company_name = $request->companyName;
+//            $update_job->phone = $request->phone;
+//            $update_job->location = $request->location;
+//            $update_job->verify_no = $request->verify_no;
+//            $update_job->website_url = $request->website_url;
+//            $update_job->year_of_establishment = $request->stablished;
+//            $update_job->company_size = $request->company_size;
+//            $update_job->linkdin_url = $request->linkdin_url;
+//            $update_job->facebook_url = $request->facebook_url;
+//            $update_job->instagram_url = $request->instagram_url;
+//            $update_job->company_des = $request->company_des;
+//            $update_job->company_service = $request->company_service;
+//            $update_job->country = $request->country;
+//            $update_job->save();
+//            if ($update_job) {
+//                return response()->json([
+//                    'status' => 'success',
+//                    'message' => 'Update job post success',
+//                    'data' => $update_job
+//                ]);
+//            } else {
+//                return response()->json([
+//                    'status' => 'false',
+//                    'message' => 'Internalr server error',
+//                    'data' => $update_job
+//                ]);
+//            }
+//        }
+//    }
     public function update_recrioter(Request $request)
     {
         $auth = auth()->user()->id;
         $recruiterCount = Recruiter::where('user_id', $auth)->count();
-        $recruiterCount = Recruiter::where('user_id', $auth)->first();
-        $recruiterId = $recruiterCount->id;
+        $recruiterDetails = Recruiter::where('user_id', $auth)->first();
+        $recruiterId = $recruiterDetails->id;
 
         if ($recruiterCount) {
             $update_job = Recruiter::find($recruiterId);
@@ -218,7 +297,6 @@ class EmployerController extends Controller
             $update_user->fullName = $request->companyName ?? $update_user->email;
             $update_user->email = $request->email ?? $update_user->email;
             $update_user->save();
-
             if ($update_job) {
                 return response()->json([
                     'status' => 'success',

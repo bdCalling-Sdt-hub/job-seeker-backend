@@ -18,6 +18,7 @@ use App\Http\Controllers\RulesRegulationController;
 use App\Http\Controllers\SocialLoginController;
 use App\Http\Controllers\SubscriptionController;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\PopularJobController;
 
 Route::group([
     ['middleware' => 'auth:api']
@@ -49,6 +50,11 @@ Route::get('/show/category', [CategoryController::class, 'show_category']);
 Route::post('/add-package', [PackageController::class, 'addPackage']);
 
 Route::middleware(['user', 'auth:api'])->group(function () {
+
+    Route::get('/popular-job-post',[PopularJobController::class,'popularJobPost']);
+
+    //view job post
+    Route::get('/job-details',[PopularJobController::class,'jobDetails']);
 
     // my subscription
     Route::get('/my-subscription', [SubscriptionController::class, 'mySubscription']);
@@ -84,22 +90,6 @@ Route::middleware(['user', 'auth:api'])->group(function () {
     Route::get('category-wise-job-list', [HomeController::class, 'categoryWiseJobPost']);
     Route::get('single-category-wise-job-list', [HomeController::class, 'SingleCategoryWiseJobPost']);
     //single category wise show job list
-    Route::get('category-wise-job-list', [HomeController::class, 'categoryIdWiseJobPost']);
-
-    Route::get('company-wise-job-list', [HomeController::class, 'companyWiseJobPost']);
-    // -----------------filter-----------------
-    Route::get('/job-filter', [HomeController::class, 'jobFilter']);
-    // book mark job
-    Route::post('toggle-bookmark', [BookMarkController::class, 'toggleBookmark']);
-    Route::get('bookmark-data', [BookMarkController::class, 'bookmarksData']);
-
-    // show category and count
-    Route::get('/category-job-post-count', [HomeController::class, 'showCategoryandCount']);
-
-    // category wise job list show
-    Route::get('category-wise-job-list', [HomeController::class, 'categoryWiseJobPost']);
-    Route::get('single-category-wise-job-list', [HomeController::class, 'SingleCategoryWiseJobPost']);
-    // single category wise show job list
     Route::get('category-wise-job-list', [HomeController::class, 'categoryIdWiseJobPost']);
 
     Route::get('company-wise-job-list', [HomeController::class, 'companyWiseJobPost']);
@@ -175,7 +165,7 @@ Route::middleware(['admin', 'auth:api'])->group(function () {
     Route::get('company-wise-subscription', [DashboardController::class, 'companyWiseSubscription']);
 
     // -----------------Package -------------------
-    Route::get('show-package', [PackageController::class, 'showPackage']);
+//    Route::get('show-package', [PackageController::class, 'showPackage']);
     Route::post('add-package', [PackageController::class, 'addPackage']);
     Route::post('update-package', [PackageController::class, 'updatePackage']);
     Route::get('delete-package', [PackageController::class, 'deletePackage']);
@@ -186,7 +176,7 @@ Route::middleware(['admin', 'auth:api'])->group(function () {
     Route::get('delete-category', [CategoryController::class, 'deleteCategory']);
 
     // -----------------Package -------------------
-    Route::get('show-package', [PackageController::class, 'showPackage']);
+//    Route::get('show-package', [PackageController::class, 'showPackage']);
     Route::post('add-package', [PackageController::class, 'addPackage']);
     Route::post('update-package', [PackageController::class, 'updatePackage']);
     Route::get('delete-package', [PackageController::class, 'deletePackage']);

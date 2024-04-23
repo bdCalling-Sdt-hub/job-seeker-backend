@@ -29,14 +29,10 @@ return new class extends Migration {
             $table->string('facebook_url')->default('link');
             $table->string('instagram_url')->default('link');
             $table->string('company_des')->nullable();
-
             $table->timestamps();
         });
     }
 
-    /**
-     * Reverse the migrations.
-     */
     public function down(): void
     {
         Schema::dropIfExists('candidates');
