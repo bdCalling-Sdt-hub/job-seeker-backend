@@ -11,7 +11,6 @@ class UserNotification extends Notification
 {
     use Queueable;
 
-
     protected $message;
     protected $time;
     protected $user;
@@ -27,14 +26,6 @@ class UserNotification extends Notification
     {
         return ['database'];
     }
-
-//    public function toMail(object $notifiable): MailMessage
-//    {
-//        return (new MailMessage)
-//                    ->line('The introduction to the notification.')
-//                    ->action('Notification Action', url('/'))
-//                    ->line('Thank you for using our application!');
-//    }
 
     public function toArray(object $notifiable): array
     {

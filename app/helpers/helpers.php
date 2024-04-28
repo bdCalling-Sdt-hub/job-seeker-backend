@@ -25,6 +25,7 @@ function removeImage($imagePath)
 
 function candidateSaveImage($request)
 {
+//    $file = $request->file($fileType);
     $image = $request->file('image');
     $imageName = rand() . '.' . $image->getClientOriginalExtension();
     $directory = 'Asset/candidate-image/';

@@ -18,4 +18,19 @@ class Package extends Model
     {
         return $this->hasMany(JobPost::class);
     }
+
+    // Package.php
+
+    public function post_limit_exceeded()
+    {
+        // Assuming you have a relationship with the jobs table
+        $totalPosts = $this->jobpost()->where('user_id',auth()->user()->id)->count();
+        return $totalPosts >= $this->post_limit;
+    }
+
+    public function hasExpired()
+    {
+        $latestSubscription = $this->subscription()->latest()->first();
+        return now()->greaterThanOrEqualTo($latestSubscription->end_date);
+    }
 }

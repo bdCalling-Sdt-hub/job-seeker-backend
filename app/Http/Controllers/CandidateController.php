@@ -15,8 +15,6 @@ use Illuminate\Support\Facades\Validator;
 
 class CandidateController extends Controller
 {
-    // profile section
-
     public function addProfileInfo(Request $request)
     {
         // Validate request data
@@ -53,6 +51,7 @@ class CandidateController extends Controller
 
     public function updateProfileInfo(Request $request)
     {
+
         // Validate request data
         $validator = Validator::make($request->all(), [
             'user_id' => '',
@@ -90,7 +89,6 @@ class CandidateController extends Controller
             }
             $user->image = candidateSaveImage($request);
         }
-//        $user->category_name = $request->category_name;
 
         $user->update();
 
@@ -492,9 +490,9 @@ class CandidateController extends Controller
             $job->job_post->compensation_other_benifits = json_decode($job->job_post->compensation_other_benifits);
             $job->job_post->key_word = json_decode($job->job_post->key_word);
             $job->job_post->responsibilities = json_decode($job->job_post->responsibilities);
-            if (is_string($job->job_post->recruiter->company_service)) {
-                $job->job_post->recruiter->company_service = json_decode($job->job_post->recruiter->company_service);
-            }
+//            if (is_string($job->job_post->recruiter->company_service)) {
+//                $job->job_post->recruiter->company_service = json_decode($job->job_post->recruiter->company_service);
+//            }
 //            $job->job_post->recruiter->company_service = json_decode($job->job_post->recruiter->company_service);
             return $job;
         });

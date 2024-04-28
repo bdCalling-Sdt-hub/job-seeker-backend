@@ -37,7 +37,7 @@ class BookMarkController extends Controller
     public function bookmarksData()
     {
         $user_id = auth()->user()->id;
-        $bookmarks = Bookmark::with('user', 'job_post.recruiter')->where('user_id', $user_id)->get();
+        $bookmarks = Bookmark::with('user', 'job_post.recruiter')->where('user_id', $user_id)->paginate(9);
         return response()->json([
             'message' => 'Bookmarked job list',
             'data' => $bookmarks,

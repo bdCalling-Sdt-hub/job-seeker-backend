@@ -58,7 +58,7 @@ Route::middleware(['user', 'auth:api'])->group(function () {
     Route::get('/job-details',[PopularJobController::class,'jobDetails']);
 
     // my subscription
-    Route::get('/my-subscription', [SubscriptionController::class, 'mySubscription']);
+//    Route::get('/my-subscription', [SubscriptionController::class, 'mySubscription']);
     Route::get('/upgrade-subscription', [SubscriptionController::class, 'upgradeSubscription']);
 
     // -----------------Candidate-------------------------
@@ -106,8 +106,7 @@ Route::middleware(['user', 'auth:api'])->group(function () {
     Route::get('/privacy-policy', [RulesRegulationController::class, 'privacyPolicy']);
     Route::get('/about-us', [RulesRegulationController::class, 'aboutUs']);
 
-    // delete user
-    Route::get('delete-user', [DeleteUserController::class, 'deleteUser']);
+
 
     // notification
 
@@ -118,7 +117,7 @@ Route::middleware(['user', 'auth:api'])->group(function () {
     Route::post('job/application', [CanditedController::class, 'apply_now']);
 });
 
-Route::middleware(['admin', 'auth:api'])->group(function () {
+Route::middleware(['admin','super.admin', 'auth:api'])->group(function () {
     // ================== Admin Api ====================//
     Route::get('package-wise-company-subscription', [DashboardController::class, 'packageWiseCompanySubscription']);
 
@@ -201,6 +200,10 @@ Route::get('/notification-event', [NotificationController::class, 'notificationE
 // Emplyer section //
 
 Route::middleware(['recruiter', 'auth:api'])->group(function () {
+
+    Route::get('/my-subscription', [SubscriptionController::class, 'mySubscription']);
+    //delete recruiter
+    Route::post('delete-user', [DeleteUserController::class, 'deleteUser']);
     // contact with admin
     Route::post('send-message-admin', [ContactController::class, 'sendMessageToAdmin']);
 
@@ -212,9 +215,10 @@ Route::middleware(['recruiter', 'auth:api'])->group(function () {
     Route::get('/delete/recruiter/{id}', [EmployerController::class, 'delete_recruiter']);
     Route::get('/delete/log/{id}', [EmployerController::class, 'logodestroy']);
 
-    // JOB POST //
+    // JOB POST
 
     Route::post('/create/job', [JobPostController::class, 'create_job']);
+    Route::post('/create-job', [JobPostController::class, 'createJob']);
     Route::get('/edit/job/{id}', [JobPostController::class, 'edit_job']);
     Route::post('/update/job', [JobPostController::class, 'update_job']);
     Route::get('/delete/job/{id}', [JobPostController::class, 'delete_job']);
@@ -222,6 +226,9 @@ Route::middleware(['recruiter', 'auth:api'])->group(function () {
     Route::get('/show/subscribe/package', [JobPostController::class, 'show_subscribe_package']);
     Route::get('/application/job', [JobPostController::class, 'apply_job_show']);
     Route::get('/notification-event', [NotificationController::class, 'notificationEvent']);
+
+    //alive subscription
+    Route::get('/alive-subscription',[SubscriptionController::class,'aliveSubscription']);
 
     // Subscription
     Route::post('/recruiter-subscription', [SubscriptionController::class, 'recruiterSubscription']);
@@ -249,7 +256,10 @@ Route::middleware(['recruiter', 'auth:api'])->group(function () {
     Route::get('/job/filter', [EmplyDashboardController::class, 'job_filter']);
 });
 
-Route::middleware(['all.user.type'])->group(function () {});
+Route::middleware(['all.user.type'])->group(function () {
+    // delete user
+//    Route::get('delete-user', [DeleteUserController::class, 'deleteUser']);
+});
 
 Route::get('/terms-condition', [RulesRegulationController::class, 'termsCondition']);
 Route::get('/privacy-policy', [RulesRegulationController::class, 'privacyPolicy']);
@@ -258,3 +268,5 @@ Route::get('show-category', [CategoryController::class, 'showCategory']);
 
 Route::get('/show-package', [PackageController::class, 'showPackage']);
 Route::get('/single-package', [PackageController::class, 'singlePackage']);
+
+

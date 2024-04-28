@@ -17,7 +17,7 @@ return new class extends Migration
             $table->string('job_title')->nullable();
             $table->string('company_name')->nullable();
             $table->string('location')->nullable();
-            $table->string('working_status')->nullable();
+            $table->boolean('working_status')->nullable();
             $table->string('date_from')->nullable();
             $table->string('date_to')->nullable();
             $table->string('responsibility')->nullable();

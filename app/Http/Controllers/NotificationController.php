@@ -67,11 +67,6 @@ class NotificationController extends Controller
                         ->orWhere(function ($query) use ($userId) {
                             $query->whereJsonContains('data->user->user_id', $userId);
                         });
-//                        ->orWhere(function ($query) use ($userId) {
-//                            // Add condition for Story notifications
-//                            $query->where('notifiable_type', 'App\Models\Story')
-//                                ->where('notifiable_id', $userId);
-//                        });
                 })
                 ->orderBy('created_at', 'desc')
                 ->get();
