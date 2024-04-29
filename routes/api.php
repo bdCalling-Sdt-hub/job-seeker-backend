@@ -19,6 +19,7 @@ use App\Http\Controllers\SocialLoginController;
 use App\Http\Controllers\SubscriptionController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\PopularJobController;
+use App\Http\Controllers\CvController;
 
 Route::group([
     ['middleware' => 'auth:api']
@@ -73,7 +74,17 @@ Route::middleware(['user', 'auth:api'])->group(function () {
     Route::post('/update-training-info', [CandidateController::class, 'updateTrainingInfo']);
     Route::post('/add-interest-info', [CandidateController::class, 'addInterestInfo']);
     Route::post('/update-interest-info', [CandidateController::class, 'updateInterestInfo']);
+    Route::post('/add-skill', [CandidateController::class, 'addSkill']);
+    Route::post('/update-skill', [CandidateController::class, 'updateSkill']);
+    Route::post('/add-reference', [CvController::class, 'addReference']);
+    Route::post('/update-reference', [CvController::class, 'updateReference']);
+    Route::post('/add-portfolio', [CvController::class, 'addPortfolio']);
+    Route::post('/update-portfolio', [CvController::class, 'updatePortfolio']);
     Route::get('/profile-info', [CandidateController::class, 'getProfileInfo']);
+
+    Route::post('/cv-upload',[CvController::class,'cvUpload']);
+    Route::get('/delete-resume',[CvController::class,'deleteResume']);
+    Route::get('/show-resume',[CvController::class,'cvUpload']);
 
     // -----------------filter-----------------
     Route::get('/job-filter', [HomeController::class, 'jobFilter']);

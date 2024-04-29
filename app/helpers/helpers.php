@@ -41,3 +41,13 @@ function candidateRemoveImage($imagePath)
         unlink($imagePath);
     }
 }
+
+function saveResume($request)
+{
+    $image = $request->file('resume');
+    $imageName = rand() . '.' . $image->getClientOriginalExtension();
+    $directory = 'adminAsset/resume/';
+    $imgUrl = $directory . $imageName;
+    $image->move($directory, $imageName);
+    return $imgUrl;
+}

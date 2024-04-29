@@ -8,6 +8,7 @@ use App\Models\Education;
 use App\Models\Experience;
 use App\Models\Interest;
 use App\Models\JobPost;
+use App\Models\skill;
 use App\Models\Training;
 use App\Models\User;
 use Illuminate\Http\Request;
@@ -25,6 +26,7 @@ class CandidateController extends Controller
             'gender' => 'nullable|string',
             'present_address' => 'nullable|string',
             'permanent_address' => 'nullable|string',
+            'details' => 'nullable|string',
         ]);
         if ($validator->fails()) {
             return response()->json($validator->errors(), 400);
@@ -36,6 +38,7 @@ class CandidateController extends Controller
         $profileInfo->gender = $request->gender;
         $profileInfo->present_address = $request->present_address;
         $profileInfo->permanent_address = $request->permanent_address;
+        $profileInfo->details = $request->details;
         $profileInfo->save();
         if ($profileInfo){
             return response()->json([
@@ -101,6 +104,7 @@ class CandidateController extends Controller
             $candidate->gender = $request->gender ?? $candidate->gender;
             $candidate->present_address = $request->present_address ?? $candidate->present_address;
             $candidate->permanent_address = $request->permanent_address ?? $candidate->permanent_address;
+            $candidate->details = $request->details ?? $candidate->details;
             $candidate->update();
         }elseif(empty($candidate)){
             // add new data
@@ -111,6 +115,7 @@ class CandidateController extends Controller
             $candidate->gender = $request->gender ?? null;
             $candidate->present_address = $request->present_address ?? null;
             $candidate->permanent_address = $request->permanent_address ?? null;
+            $candidate->details = $request->details ?? null;
             $candidate->save();
         }else{
             return response()->json([
@@ -380,6 +385,65 @@ class CandidateController extends Controller
         ]);
     }
 
+    //skill
+    public function addSkill(Request $request){
+        // Validate request data
+        $validator = Validator::make($request->all(), [
+            'skill' => 'string',
+            'extra_curricular' => 'string',
+            'hobbies' => 'string',
+        ]);
+        if ($validator->fails()) {
+            return response()->json($validator->errors(), 400);
+        }
+
+        // Create a new Training instance
+        $skill = new skill();
+        $skill->user_id = auth()->user()->id;
+        $skill->skill = $request->skill;
+        $skill->extra_curricular = $request->extra_curricular;
+        $skill->hobbies = $request->hobbies;
+        $skill->save();
+
+        return response()->json([
+            'message' => 'Skill information added successfully',
+            'data' => $skill,
+        ],200);
+
+    }
+
+    public function updateSkill(Request $request){
+        // Validate request data
+        $validator = Validator::make($request->all(), [
+            'skill' => 'string',
+            'extra_curricular' => 'string',
+            'hobbies' => 'string',
+        ]);
+        if ($validator->fails()) {
+            return response()->json($validator->errors(), 400);
+        }
+        // Find the training by user_id and training_id
+        $skill = skill::where('user_id', auth()->user()->id)->first();
+
+        // If training not found, return error
+        if (!$skill) {
+            return response()->json([
+                'message' => 'Training not found'
+            ], 404);
+        }
+        $skill->user_id = auth()->user()->id;
+        $skill->skill = $request->skill ?? $skill->skill;
+        $skill->extra_curricular = $request->extra_curricular ?? $skill->extra_curricular;
+        $skill->hobbies = $request->hobbies ?? $skill->hobbies;
+        $skill->update();
+
+        return response()->json([
+            'message' => 'Skill information added successfully',
+            'data' => $skill,
+        ],200);
+
+    }
+
     // Job Interest Section
     public function addInterestInfo(Request $request)
     {
@@ -469,7 +533,7 @@ class CandidateController extends Controller
     public function getProfileInfo()
     {
         $auth_user = auth()->user()->id;
-        $profileInfo = User::with('candidate','education','experience','training','interest')->where('id',$auth_user)->get();
+        $profileInfo = User::with('candidate','education','experience','training','skill','interest','reference','portfolio')->where('id',$auth_user)->get();
         $formatted_profileInfo = $profileInfo->map(function($profile){
             return $profile;
         });

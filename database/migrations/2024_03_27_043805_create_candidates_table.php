@@ -19,6 +19,7 @@ return new class extends Migration
             $table->string('gender')->nullable();
             $table->string('present_address')->nullable();
             $table->string('permanent_address')->nullable();
+            $table->string('details')->nullable();
             $table->timestamps();
         });
     }

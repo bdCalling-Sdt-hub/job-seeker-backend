@@ -103,4 +103,19 @@ class User extends Authenticatable implements JWTSubject
     {
         return $this->hasMany(ContactEmail::class);
     }
+
+    public function skill():HasMany
+    {
+        return $this->hasMany(skill::class);
+    }
+
+    public function reference():HasMany
+    {
+        return $this->hasMany(Reference::class);
+    }
+
+    public function portfolio():HasMany
+    {
+        return $this->hasMany(Portfolio::class);
+    }
 }
