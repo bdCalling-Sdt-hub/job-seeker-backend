@@ -20,7 +20,7 @@ class CategoryController extends Controller
         $category = new Category();
         $category->category_name = $request->category_name;
         if ($request->file('category_image')) {
-            $category->category_image = $this->saveImage($request);
+            $category->category_image = saveImage($request);
         }
         $category->save();
         return response()->json([
@@ -58,19 +58,19 @@ class CategoryController extends Controller
             }
             if ($request->file('category_image')) {
                 if (!empty($category->category_image)) {
-                    $this->removeImage($category->category_image);
+                    removeImage($category->category_image);
                 }
-                $category->category_image = $this->saveImage($request);
+                $category->category_image = saveImage($request);
             }
-            $category->category_name = $request->category_name;
+            $category->category_name = $request->category_name ?? $category->category_name;
             $category->update();
             return response()->json([
-                'message' => 'package updated successfully',
+                'message' => 'Category updated successfully',
                 'data' => $category,
             ]);
         } else {
             return response()->json([
-                'message' => 'Package not found',
+                'message' => 'Category not found',
                 'data' => []
             ]);
         }
@@ -89,24 +89,5 @@ class CategoryController extends Controller
         return response()->json([
             'message' => 'Category Not Found',
         ],404);
-    }
-
-    protected function saveImage($request)
-    {
-        $image = $request->file('category_image');
-        $imageName = rand() . '.' . $image->getClientOriginalExtension();
-        $directory = 'adminAsset/category-image/';
-        $imgUrl = $directory . $imageName;
-        $image->move($directory, $imageName);
-        return $imgUrl;
-    }
-
-    // Function to remove an image
-    private function removeImage($imagePath)
-    {
-        // Check if the file exists before attempting to delete it
-        if (file_exists($imagePath)) {
-            unlink($imagePath);
-        }
     }
 }

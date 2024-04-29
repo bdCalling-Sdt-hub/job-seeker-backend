@@ -8,6 +8,7 @@ use App\Models\Education;
 use App\Models\Experience;
 use App\Models\Interest;
 use App\Models\JobPost;
+use App\Models\skill;
 use App\Models\Training;
 use App\Models\User;
 use Illuminate\Http\Request;
@@ -15,8 +16,6 @@ use Illuminate\Support\Facades\Validator;
 
 class CandidateController extends Controller
 {
-    // profile section
-
     public function addProfileInfo(Request $request)
     {
         // Validate request data
@@ -27,6 +26,7 @@ class CandidateController extends Controller
             'gender' => 'nullable|string',
             'present_address' => 'nullable|string',
             'permanent_address' => 'nullable|string',
+            'details' => 'nullable|string',
         ]);
         if ($validator->fails()) {
             return response()->json($validator->errors(), 400);
@@ -38,6 +38,7 @@ class CandidateController extends Controller
         $profileInfo->gender = $request->gender;
         $profileInfo->present_address = $request->present_address;
         $profileInfo->permanent_address = $request->permanent_address;
+        $profileInfo->details = $request->details;
         $profileInfo->save();
         if ($profileInfo){
             return response()->json([
@@ -51,54 +52,9 @@ class CandidateController extends Controller
         }
     }
 
-//    public function updateProfileInfo(Request $request)
-//    {
-//        // Validate request data
-//        $validator = Validator::make($request->all(), [
-//            'user_id' => 'required',
-//            'phone_number' => 'nullable|string',
-//            'nid_number' => 'nullable|string',
-//            'gender' => 'nullable|string',
-//            'present_address' => 'nullable|string',
-//            'permanent_address' => 'nullable|string',
-//        ]);
-//        if ($validator->fails()) {
-//            return response()->json($validator->errors(), 400);
-//        }
-//
-//        // Find the candidate by user_id
-//        $candidate = Candidate::where('user_id', $request->user_id)->first();
-//
-//        // If candidate not found, return error
-//        if (!$candidate) {
-//            return response()->json([
-//                'message' => 'Candidate not found'
-//            ], 404);
-//        }
-//
-//        // Update candidate information
-//        $candidate->phone_number = $request->phone_number ?? $candidate->phone_number;
-//        $candidate->nid_number = $request->nid_number ?? $candidate->nid_number;
-//        $candidate->gender = $request->gender ?? $candidate->gender;
-//        $candidate->present_address = $request->present_address ?? $candidate->present_address;
-//        $candidate->permanent_address = $request->permanent_address ?? $candidate->permanent_address;
-//        $candidate->save();
-//
-//        // Check if the update was successful
-//        if ($candidate->wasChanged()) {
-//            return response()->json([
-//                'message' => 'Candidate profile information updated successfully',
-//                'data' => $candidate,
-//            ]);
-//        } else {
-//            return response()->json([
-//                'message' => 'No changes detected in candidate pro'
-//            ]);
-//        }
-//
-//    }
     public function updateProfileInfo(Request $request)
     {
+
         // Validate request data
         $validator = Validator::make($request->all(), [
             'user_id' => '',
@@ -132,11 +88,10 @@ class CandidateController extends Controller
         // Update user's image if provided
         if ($request->file('image')) {
             if (!empty($user->image)) {
-                $this->removeImage($user->image);
+                candidateRemoveImage($user->image);
             }
-            $user->image = $this->saveImage($request);
+            $user->image = candidateSaveImage($request);
         }
-//        $user->category_name = $request->category_name;
 
         $user->update();
 
@@ -149,6 +104,7 @@ class CandidateController extends Controller
             $candidate->gender = $request->gender ?? $candidate->gender;
             $candidate->present_address = $request->present_address ?? $candidate->present_address;
             $candidate->permanent_address = $request->permanent_address ?? $candidate->permanent_address;
+            $candidate->details = $request->details ?? $candidate->details;
             $candidate->update();
         }elseif(empty($candidate)){
             // add new data
@@ -159,6 +115,7 @@ class CandidateController extends Controller
             $candidate->gender = $request->gender ?? null;
             $candidate->present_address = $request->present_address ?? null;
             $candidate->permanent_address = $request->permanent_address ?? null;
+            $candidate->details = $request->details ?? null;
             $candidate->save();
         }else{
             return response()->json([
@@ -179,24 +136,6 @@ class CandidateController extends Controller
             return response()->json([
                 'message' => 'No changes detected in profile information'
             ]);
-        }
-    }
-
-    protected function saveImage($request)
-    {
-        $image = $request->file('image');
-        $imageName = rand() . '.' . $image->getClientOriginalExtension();
-        $directory = 'Asset/candidate-image/';
-        $imgUrl = $directory . $imageName;
-        $image->move($directory, $imageName);
-        return $imgUrl;
-    }
-
-    private function removeImage($imagePath)
-    {
-        // Check if the file exists before attempting to delete it
-        if (file_exists($imagePath)) {
-            unlink($imagePath);
         }
     }
 
@@ -446,6 +385,65 @@ class CandidateController extends Controller
         ]);
     }
 
+    //skill
+    public function addSkill(Request $request){
+        // Validate request data
+        $validator = Validator::make($request->all(), [
+            'skill' => 'string',
+            'extra_curricular' => 'string',
+            'hobbies' => 'string',
+        ]);
+        if ($validator->fails()) {
+            return response()->json($validator->errors(), 400);
+        }
+
+        // Create a new Training instance
+        $skill = new skill();
+        $skill->user_id = auth()->user()->id;
+        $skill->skill = $request->skill;
+        $skill->extra_curricular = $request->extra_curricular;
+        $skill->hobbies = $request->hobbies;
+        $skill->save();
+
+        return response()->json([
+            'message' => 'Skill information added successfully',
+            'data' => $skill,
+        ],200);
+
+    }
+
+    public function updateSkill(Request $request){
+        // Validate request data
+        $validator = Validator::make($request->all(), [
+            'skill' => 'string',
+            'extra_curricular' => 'string',
+            'hobbies' => 'string',
+        ]);
+        if ($validator->fails()) {
+            return response()->json($validator->errors(), 400);
+        }
+        // Find the training by user_id and training_id
+        $skill = skill::where('user_id', auth()->user()->id)->first();
+
+        // If training not found, return error
+        if (!$skill) {
+            return response()->json([
+                'message' => 'Training not found'
+            ], 404);
+        }
+        $skill->user_id = auth()->user()->id;
+        $skill->skill = $request->skill ?? $skill->skill;
+        $skill->extra_curricular = $request->extra_curricular ?? $skill->extra_curricular;
+        $skill->hobbies = $request->hobbies ?? $skill->hobbies;
+        $skill->update();
+
+        return response()->json([
+            'message' => 'Skill information added successfully',
+            'data' => $skill,
+        ],200);
+
+    }
+
     // Job Interest Section
     public function addInterestInfo(Request $request)
     {
@@ -535,7 +533,7 @@ class CandidateController extends Controller
     public function getProfileInfo()
     {
         $auth_user = auth()->user()->id;
-        $profileInfo = User::with('candidate','education','experience','training','interest')->where('id',$auth_user)->get();
+        $profileInfo = User::with('candidate','education','experience','training','skill','interest','reference','portfolio')->where('id',$auth_user)->get();
         $formatted_profileInfo = $profileInfo->map(function($profile){
             return $profile;
         });
@@ -556,7 +554,10 @@ class CandidateController extends Controller
             $job->job_post->compensation_other_benifits = json_decode($job->job_post->compensation_other_benifits);
             $job->job_post->key_word = json_decode($job->job_post->key_word);
             $job->job_post->responsibilities = json_decode($job->job_post->responsibilities);
-            $job->job_post->recruiter->company_service = json_decode($job->job_post->recruiter->company_service);
+//            if (is_string($job->job_post->recruiter->company_service)) {
+//                $job->job_post->recruiter->company_service = json_decode($job->job_post->recruiter->company_service);
+//            }
+//            $job->job_post->recruiter->company_service = json_decode($job->job_post->recruiter->company_service);
             return $job;
         });
 
@@ -576,12 +577,5 @@ class CandidateController extends Controller
             'to' => $job_gallery->lastItem(),
             'total' => $job_gallery->total(),
         ]);
-    }
-    public function test()
-    {
-        return $test = JobPost::all();
-
-        // i want to show only those job post which popularity is higher
-
     }
 }

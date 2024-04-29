@@ -16,34 +16,88 @@ class JobPostController extends Controller
         return $show_subscribe = Subscription::where('user_id', $auth)->with('package')->get();
     }
 
+//    public function create_job(Request $request)
+//    {
+//        $auth = auth()->user()->id;
+//        $packageId = $request->packageId;
+//        $date = date('Y-m-d H:i:s');
+//        $check_subscribe = Subscription::where('user_id', $auth)->count();
+//        $check_packageId = Subscription::where('user_id', $auth)->where('package_id', $packageId)->count();
+//        $check_package_date = Subscription::where('user_id', $auth)
+//            ->where('package_id', $packageId)
+//            ->whereDate('end_date', '<', now())
+//            ->count();
+//
+//        if (!$check_subscribe) {
+//            return response()->json([
+//                'status' => 'error',
+//                'message' => 'You have no subscription'
+//            ]);
+//        } elseif (!$check_packageId) {
+//            return response()->json([
+//                'status' => 'error',
+//                'message' => 'Package not available'
+//            ]);
+//        } elseif (!$check_package_date) {
+//            $recruiter = Recruiter::where('user_id', $auth)->first();
+//            $recruiter_id = $recruiter->id;
+//            $create_job = new JobPost();
+//            $create_job->package_id = $request->packageId;
+//            $create_job->subscription_id = $request->subscribId;
+//            $create_job->recruiter_id = $recruiter_id;
+//            $create_job->user_id = $auth;
+//            $create_job->job_title = $request->job_title;
+//            $create_job->application_last_date = $request->dadLine;
+//            $create_job->salary = $request->salary;
+//            $create_job->job_type = $request->job_type;
+//            $create_job->work_type = $request->work_type;
+//            $create_job->work_shift = $request->work_shift;
+//            $create_job->category_id = $request->category_id;
+//            $create_job->area = $request->area;
+//            $create_job->education = $request->education;
+//            $create_job->experience = $request->experience;
+//            $create_job->additional_requirement = $request->additional_requirement;
+//            $create_job->responsibilities = $request->responsibilities;
+//            $create_job->compensation_other_benifits = $request->other_benifits;
+//            $create_job->vacancy = $request->vacancy;
+//            $create_job->key_word = $request->key_word;
+//            $create_job->status = 'pending';
+//            $create_job->save();
+//            if ($create_job) {
+//                return response()->json([
+//                    'status' => 'success',
+//                    'message' => 'success your job post',
+//                    'data' => $create_job
+//                ], 200);
+//            } else {
+//                return response()->json([
+//                    'status' => 'false',
+//                    'message' => 'failed your job post',
+//                    'data' => []
+//                ], 500);
+//            }
+//        } else {
+//            return response()->json([
+//                'status' => 'error',
+//                'message' => 'Package time over'
+//            ]);
+//        }
+//    }
+
     public function create_job(Request $request)
     {
         $auth = auth()->user()->id;
-        $packageId = $request->packageId;
         $date = date('Y-m-d H:i:s');
-        $check_subscribe = Subscription::where('user_id', $auth)->count();
-        $check_packageId = Subscription::where('user_id', $auth)->where('package_id', $packageId)->count();
-        $check_package_date = Subscription::where('user_id', $auth)
-            ->where('package_id', $packageId)
-            ->whereDate('end_date', '<', now())
-            ->count();
+        $check_package_date = Subscription::with('package')->where('user_id', $auth)
+            ->whereDate('end_date', '>', now())
+            ->first();
 
-        if (!$check_subscribe) {
-            return response()->json([
-                'status' => 'error',
-                'message' => 'You have no subscription'
-            ]);
-        } elseif (!$check_packageId) {
-            return response()->json([
-                'status' => 'error',
-                'message' => 'Package not available'
-            ]);
-        } elseif (!$check_package_date) {
+        if (!empty($check_package_date)) {
             $recruiter = Recruiter::where('user_id', $auth)->first();
             $recruiter_id = $recruiter->id;
             $create_job = new JobPost();
-            $create_job->package_id = $request->packageId;
-            $create_job->subscription_id = $request->subscribId;
+            $create_job->package_id = $check_package_date->package->id;
+            $create_job->subscription_id = $check_package_date->id;
             $create_job->recruiter_id = $recruiter_id;
             $create_job->user_id = $auth;
             $create_job->job_title = $request->job_title;
@@ -83,6 +137,69 @@ class JobPostController extends Controller
             ]);
         }
     }
+
+
+    public function createJob(Request $request)
+    {
+        $subscription = $this->checkSubscription();
+        $auth_user_id = auth()->user()->id;
+
+        if ($subscription->package->post_limit_exceeded()) {
+            return response()->json(['message' => 'Post limit exceeded for this package.'], 400);
+        }
+
+        if ($subscription->package->hasExpired()) {
+            return response()->json(['message' => 'Subscription package has expired.'], 400);
+        }
+        $recruiter = Recruiter::where('user_id', $auth_user_id)->first();
+        if (empty($recruiter))
+        {
+            return response()->json([
+                'message' => "Please update your profile; some company information is missing.",
+            ],412);
+        }
+        $recruiter_id = $recruiter->id;
+        $create_job = new JobPost();
+        $create_job->package_id = $subscription->package->id;
+        $create_job->subscription_id = $subscription->id;
+        $create_job->recruiter_id = $recruiter_id;
+        $create_job->user_id = $auth_user_id;
+        $create_job->job_title = $request->job_title;
+        $create_job->application_last_date = $request->dadLine;
+        $create_job->salary = $request->salary;
+        $create_job->job_type = $request->job_type;
+        $create_job->work_type = $request->work_type;
+        $create_job->work_shift = $request->work_shift;
+        $create_job->category_id = $request->category_id;
+        $create_job->area = $request->area;
+        $create_job->education = $request->education;
+        $create_job->experience = $request->experience;
+        $create_job->additional_requirement = $request->additional_requirement;
+        $create_job->responsibilities = $request->responsibilities;
+        $create_job->compensation_other_benifits = $request->other_benifits;
+        $create_job->vacancy = $request->vacancy;
+        $create_job->key_word = $request->key_word;
+        $create_job->status = 'pending';
+        $create_job->save();
+        return response()->json([
+            'message' => 'Job Created Successfully',
+            'data' => 'job post',
+        ]);
+
+    }
+
+    private function checkSubscription()
+    {
+        $auth_user_id = auth()->user()->id;
+        return Subscription::with('package')->where('user_id', $auth_user_id)->firstOrFail();
+    }
+
+
+
+
+
+
+
 
     public function edit_job($id)
     {

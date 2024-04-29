@@ -14,7 +14,7 @@ return new class extends Migration {
             $table->id();
             $table->foreignId('user_id')->constrained()->onDelete('cascade');
             $table->foreignId('category_id');
-            $table->foreignId('sub_category_id');
+//            $table->foreignId('sub_category_id');
             $table->string('company_name')->nullable();
             $table->text('company_service');
             $table->text('country')->nullable();
@@ -29,14 +29,10 @@ return new class extends Migration {
             $table->string('facebook_url')->default('link');
             $table->string('instagram_url')->default('link');
             $table->string('company_des')->nullable();
-
             $table->timestamps();
         });
     }
 
-    /**
-     * Reverse the migrations.
-     */
     public function down(): void
     {
         Schema::dropIfExists('candidates');

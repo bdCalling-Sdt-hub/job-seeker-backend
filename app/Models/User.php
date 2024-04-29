@@ -84,7 +84,6 @@ class User extends Authenticatable implements JWTSubject
         return $this->hasMany(Training::class);
     }
 
-
     public function jobpost():HasMany
     {
         return $this->hasMany(JobPost::class);
@@ -103,5 +102,20 @@ class User extends Authenticatable implements JWTSubject
     public function contactemail():hasMany
     {
         return $this->hasMany(ContactEmail::class);
+    }
+
+    public function skill():HasMany
+    {
+        return $this->hasMany(skill::class);
+    }
+
+    public function reference():HasMany
+    {
+        return $this->hasMany(Reference::class);
+    }
+
+    public function portfolio():HasMany
+    {
+        return $this->hasMany(Portfolio::class);
     }
 }

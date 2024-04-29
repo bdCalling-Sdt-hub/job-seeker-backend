@@ -145,7 +145,6 @@ class EmployerController extends Controller
             ]);
         }
     }
-
     public function update_recrioter(Request $request)
     {
         $auth = auth()->user()->id;
@@ -154,7 +153,7 @@ class EmployerController extends Controller
         if ($recruiter) {
             $update_job = $recruiter;
             $update_job->category_id = $request->catId ?? $update_job->category_id;
-            $update_job->sub_category_id = $request->subCatId ?? $update_job->sub_category_id;
+//            $update_job->sub_category_id = $request->subCatId ?? $update_job->sub_category_id;
             $update_job->company_name = $request->companyName ?? $update_job->company_name;
             $update_job->phone = $request->phone ?? $update_job->phone;
             $update_job->location = $request->location ?? $update_job->location;
@@ -192,7 +191,7 @@ class EmployerController extends Controller
             $update_job = new Recruiter();
             $update_job->user_id = $auth;
             $update_job->category_id = $request->catId;
-            $update_job->sub_category_id = $request->subCatId;
+//            $update_job->sub_category_id = $request->subCatId;
             $update_job->company_name = $request->companyName;
             $update_job->phone = $request->phone;
             $update_job->location = $request->location;

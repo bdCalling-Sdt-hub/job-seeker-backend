@@ -22,10 +22,10 @@ return new class extends Migration {
             $table->text('work_shift');
             $table->integer('category_id');
             $table->text('area');
-            $table->json('education');
+            $table->text('education');
             $table->text('experience');
-            $table->json('additional_requirement');
-            $table->json('responsibilities');
+            $table->text('additional_requirement');
+            $table->text('responsibilities');
             $table->text('compensation_other_benifits');
             $table->text('vacancy');
             $table->text('status')->default('pending');
