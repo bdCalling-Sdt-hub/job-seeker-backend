@@ -441,7 +441,6 @@ class CandidateController extends Controller
             'message' => 'Skill information added successfully',
             'data' => $skill,
         ],200);
-
     }
 
     // Job Interest Section
@@ -487,11 +486,10 @@ class CandidateController extends Controller
         // Validate request data
         $validator = Validator::make($request->all(), [
             'user_id' => 'required',
-            'interest_id' => 'required',
             'work_type' => 'nullable|string',
             'work_category' => 'nullable|string',
             'work_shift' => 'nullable|string',
-            'expected_pay' => 'nullable|string',
+            'expected_salary' => 'nullable|string',
             'area' => 'nullable|string',
             'current_salary' => 'nullable|string',
             'job_title' => 'nullable|string',
@@ -502,9 +500,7 @@ class CandidateController extends Controller
         }
 
         // Find the interest by user_id and interest_id
-        $interest = Interest::where('user_id', $request->user_id)
-            ->where('id', $request->interest_id)
-            ->first();
+        $interest = Interest::where('user_id', $request->user_id)->first();
 
         // If interest not found, return error
         if (!$interest) {
@@ -517,7 +513,7 @@ class CandidateController extends Controller
         $interest->work_type = $request->work_type ?? $interest->work_type;
         $interest->work_category = $request->work_category ?? $interest->work_category;
         $interest->work_shift = $request->work_shift ?? $interest->work_shift;
-        $interest->expected_pay = $request->expected_pay ?? $interest->expected_pay;
+        $interest->expected_salary = $request->expected_pay ?? $interest->expected_salary;
         $interest->area = $request->area ?? $interest->area;
         $interest->current_salary = $request->current_salary ?? $interest->current_salary;
         $interest->job_title = $request->job_title ?? $interest->job_title;
@@ -546,7 +542,7 @@ class CandidateController extends Controller
     public function jobGallery()
     {
         $auth_user = auth()->user()->id;
-        $job_gallery = Apply::with('job_post.recruiter')->where('user_id',$auth_user)->paginate(9);
+        $job_gallery = Apply::with('job_post.recruiter.user')->where('user_id',$auth_user)->paginate(9);
 
         $formatted_job_gallery = $job_gallery->map(function ($job){
             $job->job_post->education = json_decode($job->job_post->education);

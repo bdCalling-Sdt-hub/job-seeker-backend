@@ -11,6 +11,8 @@ class PopularJobController extends Controller
 {
     //
 
+
+
     public function jobDetails(Request $request)
     {
         $jobId = $request->job_id;
@@ -29,14 +31,14 @@ class PopularJobController extends Controller
         }
 
         // Decode JSON fields
-        $jobPost->education = json_decode($jobPost->education);
-        $jobPost->additional_requirement = json_decode($jobPost->additional_requirement);
-        $jobPost->compensation_other_benifits = json_decode($jobPost->compensation_other_benifits);
+//        $jobPost->education = json_decode($jobPost->education);
+//        $jobPost->additional_requirement = json_decode($jobPost->additional_requirement);
+//        $jobPost->compensation_other_benifits = json_decode($jobPost->compensation_other_benifits);
         $jobPost->key_word = json_decode($jobPost->key_word);
-        $jobPost->responsibilities = json_decode($jobPost->responsibilities);
-        if (is_string($jobPost->recruiter->company_service)) {
-            $jobPost->recruiter->company_service = json_decode($jobPost->recruiter->company_service);
-        }
+//        $jobPost->responsibilities = json_decode($jobPost->responsibilities);
+//        if (is_string($jobPost->recruiter->company_service)) {
+//            $jobPost->recruiter->company_service = json_decode($jobPost->recruiter->company_service);
+//        }
 
         return response()->json([
             'message' => 'Job Details',
@@ -46,7 +48,13 @@ class PopularJobController extends Controller
 
     public function popularJobPost()
     {
-        $user_id = auth()->user()->id; // Get authenticated user id
+//        $user_id = auth()->user()->id;
+        // Check if the user is authenticated
+        if (auth()->user()) {
+            $user_id = auth()->user()->id; // Get authenticated user id
+        } else {
+            $user_id = null; // For unauthenticated users
+        }
 
         $query = JobPost::query();
 
@@ -67,16 +75,18 @@ class PopularJobController extends Controller
             return $job;
         });
 
-        // Check if each job post is bookmarked by the user
-        $bookmarked_job_ids = Bookmark::where('user_id', $user_id)
-            ->pluck('job_post_id')
-            ->toArray();
+        if ($user_id !== null) {
+            // Check if each job post is bookmarked by the user
+            $bookmarked_job_ids = Bookmark::where('user_id', $user_id)
+                ->pluck('job_post_id')
+                ->toArray();
 
-        foreach ($job_posts as $job_post) {
-            if (in_array($job_post->id, $bookmarked_job_ids)) {
-                $job_post->is_bookmarked = true;
-            } else {
-                $job_post->is_bookmarked = false;
+            foreach ($job_posts as $job_post) {
+                if (in_array($job_post->id, $bookmarked_job_ids)) {
+                    $job_post->is_bookmarked = true;
+                } else {
+                    $job_post->is_bookmarked = false;
+                }
             }
         }
         return response()->json([

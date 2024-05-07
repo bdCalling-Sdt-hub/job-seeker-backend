@@ -33,13 +33,14 @@ class CanditedController extends Controller
             $application->interest = $request->interest;
             $application->experience = $request->experience;
             $application->salary = $request->salary;
-            if ($request->hasfile('cv')) {
-                $file = $request->file('cv');
-                $extenstion = $file->getClientOriginalExtension();
-                $filename = time() . '.' . $extenstion;
-                $file->move('images/', $filename);
-                $application->cv = $filename;
-            }
+            $application->cv = $request->cv;
+//            if ($request->hasfile('cv')) {
+//                $file = $request->file('cv');
+//                $extenstion = $file->getClientOriginalExtension();
+//                $filename = time() . '.' . $extenstion;
+//                $file->move('images/', $filename);
+//                $application->cv = $filename;
+//            }
             $application->save();
             if ($application) {
                 return response()->json([

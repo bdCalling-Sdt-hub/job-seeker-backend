@@ -176,7 +176,7 @@ class CvController extends Controller
     }
     public function showResume()
     {
-        $resume = Resume::where('id',auth()->user()->id)->get();
+        $resume = Resume::where('user_id',auth()->user()->id)->get();
         if (!empty($resume))
         {
             return response()->json([
