@@ -20,6 +20,7 @@ use App\Http\Controllers\SubscriptionController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\PopularJobController;
 use App\Http\Controllers\CvController;
+use App\Http\Middleware\GuestUser;
 
 Route::group([
     ['middleware' => 'auth:api']
@@ -53,8 +54,10 @@ Route::post('/add-package', [PackageController::class, 'addPackage']);
 Route::middleware(['user', 'auth:api'])->group(function () {
 
 
-    Route::get('/popular-job-post',[PopularJobController::class,'popularJobPost']);
+    //guest api
+//    Route::get('/popular-job-post',[PopularJobController::class,'popularJobPost']);
 
+    //guest api
     //view job post
     Route::get('/job-details',[PopularJobController::class,'jobDetails']);
 
@@ -84,13 +87,16 @@ Route::middleware(['user', 'auth:api'])->group(function () {
 
     Route::post('/cv-upload',[CvController::class,'cvUpload']);
     Route::get('/delete-resume',[CvController::class,'deleteResume']);
-    Route::get('/show-resume',[CvController::class,'cvUpload']);
+    Route::get('/show-resume',[CvController::class,'showResume']);
 
     // -----------------filter-----------------
+    //guest api
     Route::get('/job-filter', [HomeController::class, 'jobFilter']);
     // book mark job
     Route::post('toggle-bookmark', [BookMarkController::class, 'toggleBookmark']);
+    Route::post('company-toggle-bookmark', [BookMarkController::class, 'companyToggleBookmark']);
     Route::get('bookmark-data', [BookMarkController::class, 'bookmarksData']);
+    Route::get('company-bookmark-data', [BookMarkController::class, 'companyBookmarksData']);
 
     // ---------Job Gallery ----------
     Route::get('/job-gallery', [CandidateController::class, 'jobGallery']);
@@ -104,6 +110,8 @@ Route::middleware(['user', 'auth:api'])->group(function () {
     // single category wise show job list
     Route::get('category-wise-job-list', [HomeController::class, 'categoryIdWiseJobPost']);
 
+
+    //guest api
     Route::get('company-wise-job-list', [HomeController::class, 'companyWiseJobPost']);
 
     // my subscription
@@ -156,8 +164,9 @@ Route::middleware(['admin','super.admin', 'auth:api'])->group(function () {
     Route::get('company-wise-subscription', [DashboardController::class, 'companyWiseSubscription']);
     Route::get('package-wise-company-job-list', [DashboardController::class, 'packageWiseCompanyJobList']);
 
+
     // approve job post
-    Route::get('approve-job-post', [DashboardController::class, 'approveJobPost']);
+//    Route::get('approve-job-post', [DashboardController::class, 'approveJobPost']);
 
     // block recruiter
     Route::get('block-recruiter', [DashboardController::class, 'blockRecruiter']);
@@ -195,8 +204,6 @@ Route::middleware(['admin','super.admin', 'auth:api'])->group(function () {
     Route::get('/admin-notification', [NotificationController::class, 'adminNotification']);
     Route::get('/read-notification', [NotificationController::class, 'readNotificationById']);
 
-    Route::get('/admin-notification', [NotificationController::class, 'adminNotification']);
-    Route::get('/read-notification', [NotificationController::class, 'readNotificationById']);
 });
 
 Route::middleware(['super.admin', 'auth:api'])->group(function () {
@@ -214,7 +221,7 @@ Route::middleware(['recruiter', 'auth:api'])->group(function () {
 
     Route::get('/my-subscription', [SubscriptionController::class, 'mySubscription']);
     //delete recruiter
-    Route::post('delete-user', [DeleteUserController::class, 'deleteUser']);
+//    Route::post('delete-user', [DeleteUserController::class, 'deleteUser']);
     // contact with admin
     Route::post('send-message-admin', [ContactController::class, 'sendMessageToAdmin']);
 
@@ -267,9 +274,9 @@ Route::middleware(['recruiter', 'auth:api'])->group(function () {
     Route::get('/job/filter', [EmplyDashboardController::class, 'job_filter']);
 });
 
-Route::middleware(['all.user.type'])->group(function () {
+Route::middleware(['all.user.type','auth:api'])->group(function () {
     // delete user
-//    Route::get('delete-user', [DeleteUserController::class, 'deleteUser']);
+    Route::post('delete-user', [DeleteUserController::class, 'deleteUser']);
 });
 
 Route::get('/terms-condition', [RulesRegulationController::class, 'termsCondition']);
@@ -281,3 +288,15 @@ Route::get('/show-package', [PackageController::class, 'showPackage']);
 Route::get('/single-package', [PackageController::class, 'singlePackage']);
 
 
+
+
+    //public api's
+//    Route::get('/popular-job-post',[PopularJobController::class,'popularJobPost']);
+
+Route::middleware('guest_user','auth:api')->group(function (){
+    Route::get('/popular-job-post',[PopularJobController::class,'popularJobPost']);
+});
+
+//Route::get('/popular-job-post',[PopularJobController::class,'popularJobPost']);
+
+Route::get('approve-job-post', [DashboardController::class, 'approveJobPost']);

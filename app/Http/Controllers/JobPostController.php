@@ -185,7 +185,6 @@ class JobPostController extends Controller
             'message' => 'Job Created Successfully',
             'data' => 'job post',
         ]);
-
     }
 
     private function checkSubscription()
@@ -389,6 +388,7 @@ class JobPostController extends Controller
 
     public function apply_job_show()
     {
+
         $auth = auth()->user()->id;
         $recruiter = Recruiter::where('user_id', $auth)->first();
 
@@ -421,11 +421,11 @@ class JobPostController extends Controller
                 'work_shift' => $job->work_shift,
                 'category_id' => $job->category_id,
                 'area' => $job->area,
-                'education' => json_decode($job->education),
+                'education' => $job->education,
                 'experience' => $job->experience,
-                'additional_requirement' => json_decode($job->additional_requirement),
-                'responsibilities' => json_decode($job->responsibilities),
-                'compensation_other_benefits' => json_decode($job->compensation_other_benefits),
+                'additional_requirement' => $job->additional_requirement,
+                'responsibilities' => $job->responsibilities,
+                'compensation_other_benifits' => $job->compensation_other_benifits,
                 'vacancy' => $job->vacancy,
                 'status' => $job->status,
                 'key_word' => json_decode($job->key_word),
