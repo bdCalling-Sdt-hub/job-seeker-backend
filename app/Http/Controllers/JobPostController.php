@@ -141,17 +141,52 @@ class JobPostController extends Controller
 
     public function createJob(Request $request)
     {
-        $subscription = $this->checkSubscription();
+//        $subscription = $this->checkSubscription();
+//        if(empty($subscription))
+//        {
+//            return response()->json(['message' => 'You do not have subscription'],402);
+//        }
+//        $auth_user_id = auth()->user()->id;
+//
+//        if ($subscription->package->post_limit_exceeded()) {
+//            return response()->json(['message' => 'Post limit exceeded for this package.'], 400);
+//        }
+//
+//        if ($subscription->package->hasExpired()) {
+//            return response()->json(['message' => 'Subscription package has expired.'], 400);
+//        }
+//        $recruiter = Recruiter::where('user_id', $auth_user_id)->first();
         $auth_user_id = auth()->user()->id;
+        $have_subscription = Subscription::with('package')->latest()->first();
 
-        if ($subscription->package->post_limit_exceeded()) {
-            return response()->json(['message' => 'Post limit exceeded for this package.'], 400);
+        // Check if subscription exists
+        if(empty($have_subscription)){
+            return response()->json([
+                'message' => 'Purchase a subscription to post jobs.',
+            ], 403);
         }
 
-        if ($subscription->package->hasExpired()) {
-            return response()->json(['message' => 'Subscription package has expired.'], 400);
+        // Check if post limit is reached
+        $totalPosts = JobPost::where('user_id', auth()->user()->id)
+            ->where('subscription_id', $have_subscription->id)
+            ->count();
+
+        if ($have_subscription->package->post_limit <= $totalPosts) {
+            return response()->json([
+                'message' => 'You have reached the post limit for your subscription.',
+            ], 403);
         }
-        $recruiter = Recruiter::where('user_id', $auth_user_id)->first();
+
+        // Check if subscription is still valid
+        $check_package_date = Subscription::where('user_id', auth()->user()->id)
+            ->whereDate('end_date', '>', now())
+            ->first();
+
+        if (!$check_package_date) {
+            return response()->json([
+                'message' => 'Your subscription has expired. Please renew to continue posting jobs.',
+            ], 403);
+        }
         if (empty($recruiter))
         {
             return response()->json([
@@ -160,8 +195,8 @@ class JobPostController extends Controller
         }
         $recruiter_id = $recruiter->id;
         $create_job = new JobPost();
-        $create_job->package_id = $subscription->package->id;
-        $create_job->subscription_id = $subscription->id;
+        $create_job->package_id = $have_subscription->package->id;
+        $create_job->subscription_id = $have_subscription->id;
         $create_job->recruiter_id = $recruiter_id;
         $create_job->user_id = $auth_user_id;
         $create_job->job_title = $request->job_title;
@@ -184,13 +219,13 @@ class JobPostController extends Controller
         return response()->json([
             'message' => 'Job Created Successfully',
             'data' => 'job post',
-        ]);
+        ],200);
     }
 
     private function checkSubscription()
     {
         $auth_user_id = auth()->user()->id;
-        return Subscription::with('package')->where('user_id', $auth_user_id)->firstOrFail();
+        return Subscription::with('package')->where('user_id', $auth_user_id)->first();
     }
 
 
