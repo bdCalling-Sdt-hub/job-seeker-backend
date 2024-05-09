@@ -6,6 +6,7 @@ use App\Events\SendNotificationEvent;
 use App\Models\Story;
 use App\Models\User;
 use App\Notifications\AdminNotification;
+use App\Notifications\RecruiterNotification;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use App\Notifications\UserNotification;
@@ -41,6 +42,19 @@ class NotificationController extends Controller
     {
         try {
             Notification::send($data, new AdminNotification($message, $time, $name, $data));
+            return response()->json([
+                'success' => true,
+                'msg' => 'Notification Added',
+            ]);
+        } catch (\Exception $e) {
+            return response()->json(['success' => false, 'msg' => $e->getMessage()]);
+        }
+    }
+
+    function sendRecruiterNotification($message = null, $time = null,$name = null, $data = null)
+    {
+        try {
+            Notification::send($data, new RecruiterNotification($message, $time, $name, $data));
             return response()->json([
                 'success' => true,
                 'msg' => 'Notification Added',

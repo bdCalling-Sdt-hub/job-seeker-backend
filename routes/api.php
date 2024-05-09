@@ -136,7 +136,7 @@ Route::middleware(['user', 'auth:api'])->group(function () {
     Route::post('job/application', [CanditedController::class, 'apply_now']);
 });
 
-Route::middleware(['admin','super.admin', 'auth:api'])->group(function () {
+Route::middleware(['admin', 'auth:api'])->group(function () {
     // ================== Admin Api ====================//
     Route::get('package-wise-company-subscription', [DashboardController::class, 'packageWiseCompanySubscription']);
 

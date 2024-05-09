@@ -14,49 +14,44 @@ class SubscriptionController extends Controller
 {
     //
 
-    public function haveSubscription()
-    {
-        //check subscription
-        $have_subscription = Subscription::with('package')->latest()->first();
-        if(empty($have_subscription)){
-            return false;
-        }
-        return true;
-    }
-    public function havePostLimit()
-    {
-        $have_subscription = Subscription::with('package')->first();
-        $totalPosts = JobPost::where('user_id',auth()->user()->id)->where('subscription_id',$have_subscription->id)->count();
-        if($have_subscription->package->post_limit >= $totalPosts){
-            //5 >= 3
-            return true;
-        }
-        return false;
-    }
-    public function haveTimeLimit()
-    {
-        $check_package_date = Subscription::with('package')->where('user_id', auth()->user()->id)
-            ->whereDate('end_date', '>', now())
-            ->first();
-        if ($check_package_date){
-            return true;
-        }
-        return false;
-    }
     public function aliveSubscription()
     {
-        if($this->haveSubscription()){
-            return response()->json([
-                'message' => 'You already have an active subscription.',
-            ],403);
-        }
-        else
-        {
+        $have_subscription = Subscription::with('package')->latest()->first();
+
+        // Check if subscription exists
+        if(empty($have_subscription)){
             return response()->json([
                 'message' => 'Purchase a subscription to post jobs.',
-            ],200);
+            ], 403);
         }
+
+        // Check if post limit is reached
+        $totalPosts = JobPost::where('user_id', auth()->user()->id)
+            ->where('subscription_id', $have_subscription->id)
+            ->count();
+
+        if ($have_subscription->package->post_limit <= $totalPosts) {
+            return response()->json([
+                'message' => 'You have reached the post limit for your subscription.',
+            ], 403);
+        }
+
+        // Check if subscription is still valid
+        $check_package_date = Subscription::where('user_id', auth()->user()->id)
+            ->whereDate('end_date', '>', now())
+            ->first();
+
+        if (!$check_package_date) {
+            return response()->json([
+                'message' => 'Your subscription has expired. Please renew to continue posting jobs.',
+            ], 403);
+        }
+
+        return response()->json([
+            'message' => 'You already have an active subscription.',
+        ], 200);
     }
+
 
     public function recruiterSubscription(Request $request)
     {
@@ -106,7 +101,7 @@ class SubscriptionController extends Controller
             return response()->json([
                 'status' => 'cancelled',
                 'message' => 'Your transaction has been failed'
-            ]);
+            ],402);
         }
     }
 
