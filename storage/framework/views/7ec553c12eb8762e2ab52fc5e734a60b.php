@@ -18,10 +18,10 @@
     </script>
 </head>
 <body>
-<h1>Pusher Test</h1>
-<p>
-    Try publishing an event to channel <code>my-channel</code>
-    with event name <code>my-event</code>.
-</p>
+<h1>Server Running</h1>
+
+
+
+
 </body>
 <?php /**PATH D:\xampp Software\htdocs\jobs\resources\views/welcome.blade.php ENDPATH**/ ?>

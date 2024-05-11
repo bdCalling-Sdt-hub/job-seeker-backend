@@ -174,7 +174,7 @@ Route::middleware(['admin', 'auth:api'])->group(function () {
     Route::post('report-employer', [DashboardController::class, 'reportEmployer']);
     // job list
     Route::get('job-list', [DashboardController::class, 'jobList']);
-    Route::get('single-job-list', [DashboardController::class, 'jobDetails']);
+//    Route::get('single-job-list', [DashboardController::class, 'jobDetails']);
     Route::post('/update-category/{id}', [CategoryController::class, 'updateCategory']);
     // ================== Dashboard Api ====================//
 
@@ -277,6 +277,7 @@ Route::middleware(['recruiter', 'auth:api'])->group(function () {
 Route::middleware(['all.user.type','auth:api'])->group(function () {
     // delete user
     Route::post('delete-user', [DeleteUserController::class, 'deleteUser']);
+    Route::get('single-job-list', [DashboardController::class, 'jobDetails']);
 });
 
 Route::get('/terms-condition', [RulesRegulationController::class, 'termsCondition']);
