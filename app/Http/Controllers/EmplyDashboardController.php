@@ -212,12 +212,31 @@ class EmplyDashboardController extends Controller
         ]);
     }
 
+//    public function subscription_details($id)
+//    {
+//        $subscribe = Subscription::where('id', $id)->with('User', 'package')->first();
+//        $subscribe_job = Subscription::where('id', $id)->first();
+//        $package_id = $subscribe_job->package_id;
+//        $job_list = JobPost::where('package_id', $package_id)->paginate(10);
+//
+//        return response()->json([
+//            'status' => 'success',
+//            'subscribe' => $subscribe,
+//            'job_list' => $job_list
+//        ]);
+//    }
+
     public function subscription_details($id)
     {
-        $subscribe = Subscription::where('id', $id)->with('User', 'package')->first();
+        $subscribe = Subscription::where('id', $id)->with('User.recruiter', 'package')->first();
         $subscribe_job = Subscription::where('id', $id)->first();
         $package_id = $subscribe_job->package_id;
-        $job_list = JobPost::where('package_id', $package_id)->paginate(10);
+        $job_list = JobPost::where('package_id', $package_id)
+            ->with('recruiter', 'category')
+            ->paginate(10);
+
+        $package = $subscribe->package;
+        $package->feature = json_decode($package->feature);
 
         return response()->json([
             'status' => 'success',
