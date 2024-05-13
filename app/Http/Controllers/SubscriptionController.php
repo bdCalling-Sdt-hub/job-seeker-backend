@@ -19,7 +19,7 @@ class SubscriptionController extends Controller
         $have_subscription = Subscription::with('package')->latest()->first();
 
         // Check if subscription exists
-        if(empty($have_subscription)){
+        if($have_subscription == null){
             return response()->json([
                 'message' => 'Purchase a subscription to post jobs.',
             ], 403);

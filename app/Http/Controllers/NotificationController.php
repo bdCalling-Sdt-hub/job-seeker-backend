@@ -203,4 +203,13 @@ class NotificationController extends Controller
         ]);
     }
 
+    public function recruiterNotification()
+    {
+        // Retrieve the authenticated user
+        $user = Auth::user();
+
+        // Retrieve the notifications for the user
+        return $notifications = $user->notifications;
+    }
+
 }

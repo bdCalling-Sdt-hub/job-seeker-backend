@@ -376,10 +376,13 @@ class DashboardController extends Controller
         $job_info = JobPost::where('id',$job_id)->first();
         if (!empty($job_info) && $job_info->status == 'pending')
         {
+//            'notification' => Notification::send($recruiterUser, new RecruiterNotification('New application', $application))
+//                $recruiterUser = User::find($recuriterId);
+            $recruiterUser = User::where('id',$job_info->user_id)->first();
 
             $job_info->status = 'published';
             $job_info->update();
-            //$result = app('App\Http\Controllers\NotificationController')->sendRecruiterNotification('Post approved successfully',$job_info->updated_at,$job_info->recruiter->user);
+            $result = app('App\Http\Controllers\NotificationController')->sendRecruiterNotification($recruiterUser,'Post approved successfully',$job_info->updated_at,$job_info->recruiter->user);
             return response()->json([
                 'message' => 'post is published successfully',
                 'data' => $job_info,

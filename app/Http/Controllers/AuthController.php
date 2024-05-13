@@ -268,7 +268,7 @@ class AuthController extends Controller
                 $fileName = $timeStamp . '.' . $file->getClientOriginalExtension();
                 $file->storeAs('image', $fileName, 'public');
 
-                $filePath = '/storage/image/' . $fileName;
+                $filePath = 'storage/image/' . $fileName;
                 $fileUrl = $filePath;
                 $user->image = $fileUrl;
             }

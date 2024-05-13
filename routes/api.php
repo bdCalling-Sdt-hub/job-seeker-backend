@@ -21,6 +21,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\PopularJobController;
 use App\Http\Controllers\CvController;
 use App\Http\Middleware\GuestUser;
+use App\Http\Controllers\ContactController;
 
 Route::group([
     ['middleware' => 'auth:api']
@@ -151,7 +152,7 @@ Route::middleware(['admin', 'auth:api'])->group(function () {
     // update category
     Route::post('/update-category/{id}', [CategoryController::class, 'updateCategory']);
 
-    //    Route::post('send-message-admin',[ContactController::class,'sendMessageToAdmin']);
+//    Route::post('send-message-admin',[ContactController::class,'sendMessageToAdmin']);
     Route::post('send-message-user', [ContactController::class, 'sendMessageToUser']);
     Route::get('show-message', [ContactController::class, 'showAllMessage']);
     Route::get('delete-message', [ContactController::class, 'deleteMessage']);
@@ -225,6 +226,8 @@ Route::middleware(['recruiter', 'auth:api'])->group(function () {
     // contact with admin
     Route::post('send-message-admin', [ContactController::class, 'sendMessageToAdmin']);
 
+    Route::get('show-message-admin', [ContactController::class, 'showAllMessageAdmin']);
+
     Route::post('/create/recruiter', [EmployerController::class, 'create_recruiter']);
     Route::get('/show/recruiter', [EmployerController::class, 'show_recruiter']);
     Route::get('/edit/recruiter/{id}', [EmployerController::class, 'edite_recruiter']);
@@ -265,7 +268,7 @@ Route::middleware(['recruiter', 'auth:api'])->group(function () {
 
     // ==================CONTACT PAGE =============== //
     Route::post('/contact/message', [EmplyDashboardController::class, 'post_contact']);
-    Route::get('/inbox/message', [EmplyDashboardController::class, 'message_inbox']);
+    Route::get('/inbox/message', [EmplyDashboardController::class, 'msinbox']);
     Route::get('/send/message', [EmplyDashboardController::class, 'send_message']);
 
     // ===================FILTERING==========================//
