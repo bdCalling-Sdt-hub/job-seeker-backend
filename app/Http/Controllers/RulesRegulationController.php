@@ -163,7 +163,7 @@ class RulesRegulationController extends Controller
 //    public function
     public function aboutUs()
     {
-        $about = About::first();
+        $about = About::get();
         if ($about) {
             return response()->json([
                 'message' => 'about us',
@@ -172,14 +172,14 @@ class RulesRegulationController extends Controller
         } else {
             return response()->json([
                 'message' => 'no data found',
-                'data' => []
-            ], 200);
+                'data' => $about,
+            ], 404);
         }
     }
 
     public function termsCondition()
     {
-        $terms = TermsConditions::first();
+        $terms = TermsConditions::get();
         if ($terms) {
             return response()->json([
                 'message' => 'Terms and Condition',
@@ -195,7 +195,7 @@ class RulesRegulationController extends Controller
 
     public function privacyPolicy()
     {
-        $privacy = Privacy::first();
+        $privacy = Privacy::get();
         if ($privacy) {
             return response()->json([
                 'message' => 'Privacy and Policy',
