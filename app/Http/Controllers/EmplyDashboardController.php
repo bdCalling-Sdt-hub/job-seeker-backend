@@ -274,6 +274,7 @@ class EmplyDashboardController extends Controller
     {
         $auth = auth()->user()->id;
         $message = Emplyer_contact::where('reciver_id', $auth)->paginate(10);
+
         if ($message) {
             return response()->json([
                 'status' => 'success',

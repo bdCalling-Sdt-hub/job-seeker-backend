@@ -60,6 +60,24 @@ class ContactController extends Controller
             'data' => $message,
         ]);
     }
+
+    public function showAllMessageAdmin(Request $request)
+    {
+        $subject = $request->subject;
+        $query = ContactEmail::with('user')->where('user_id',auth()->user()->id);
+
+        // If a subject is provided, filter messages by that subject
+        if ($subject !== null) {
+            $query->where('subject', 'like', '%' . $subject . '%');
+        }
+
+        $message = $query->paginate(9);
+
+        return response()->json([
+            'message' => 'Message List',
+            'data' => $message,
+        ]);
+    }
     public function deleteMessage(Request $request)
     {
         $user_id = $request->user_id;

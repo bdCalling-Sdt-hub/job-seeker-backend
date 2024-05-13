@@ -18,7 +18,6 @@ class CanditedController extends Controller
         $recuriter = JobPost::where('id', $jobId)->first();
         $recuriterId = $recuriter->user_id;
         $recruiterUser = User::find($recuriterId);
-
         $check = Apply::where('user_id', $auth)->where('job_post_id', $jobId)->count();
         if ($check) {
             return response()->json([

@@ -12,8 +12,8 @@ return new class extends Migration {
     {
         Schema::create('emplyer_contacts', function (Blueprint $table) {
             $table->id();
-            $table->integer('sender_id');
-            $table->integer('reciver_id');
+            $table->integer('sender_id')->nullable();
+            $table->integer('reciver_id')->nullable();
             $table->text('body');
             $table->text('attacment')->nullable();
             $table->text('seen')->nullable();

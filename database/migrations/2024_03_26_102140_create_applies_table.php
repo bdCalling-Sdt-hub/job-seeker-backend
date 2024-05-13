@@ -19,7 +19,7 @@ return new class extends Migration {
             $table->text('interest')->nullable();
             $table->string('cv')->nullable();
             $table->text('salary');
-            $table->text('status')->default('pending');
+            $table->string('status')->default('pending');
             $table->timestamps();
         });
     }
