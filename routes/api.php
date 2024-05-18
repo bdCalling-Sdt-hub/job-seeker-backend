@@ -295,4 +295,4 @@ Route::middleware('guest_user','auth:api')->group(function (){
 Route::get('approve-job-post', [DashboardController::class, 'approveJobPost']);
 
 //guest api
-Route::get('/popular-job-post',[PopularJobController::class,'popularJobPost']);
+//Route::get('/popular-job-post',[PopularJobController::class,'popularJobPost']);
