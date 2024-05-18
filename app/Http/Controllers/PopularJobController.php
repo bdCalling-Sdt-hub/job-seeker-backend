@@ -64,14 +64,7 @@ class PopularJobController extends Controller
             ->paginate(9);
 
         $formatted_job_list = $job_posts->map(function ($job) {
-            $job->education = json_decode($job->education);
-            $job->additional_requirement = json_decode($job->additional_requirement);
-            $job->compensation_other_benifits = json_decode($job->compensation_other_benifits);
             $job->key_word = json_decode($job->key_word);
-            $job->responsibilities = json_decode($job->responsibilities);
-            if (is_string($job->recruiter->company_service)) {
-                $job->recruiter->company_service = json_decode($job->recruiter->company_service);
-            }
             return $job;
         });
 
@@ -106,5 +99,4 @@ class PopularJobController extends Controller
             'total' => $job_posts->total(),
         ]);
     }
-
 }
