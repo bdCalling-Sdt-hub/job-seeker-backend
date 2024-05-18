@@ -72,7 +72,7 @@ class NotificationController extends Controller
             $userId = $user->id;
 
             $query = DB::table('notifications')
-                ->where('notifications.type', 'App\\Notifications\\UserNotification')
+//                ->where('notifications.type', 'App\\Notifications\\UserNotification')
                 ->where(function ($query) use ($userId) {
                     $query->where(function ($query) use ($userId) {
                         $query->where('notifiable_type', 'App\Models\User')

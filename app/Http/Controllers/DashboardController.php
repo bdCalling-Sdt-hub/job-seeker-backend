@@ -382,10 +382,11 @@ class DashboardController extends Controller
 
             $job_info->status = 'published';
             $job_info->update();
-            $result = app('App\Http\Controllers\NotificationController')->sendRecruiterNotification($recruiterUser,'Post approved successfully',$job_info->updated_at,$job_info->recruiter->user);
+            $result = app('App\Http\Controllers\NotificationController')->sendRecruiterNotification($recruiterUser,'Post approved successfully',$job_info->updated_at,$recruiterUser);
             return response()->json([
                 'message' => 'post is published successfully',
                 'data' => $job_info,
+                'notification' => $result,
             ]);
         }else{
             return response()->json([
@@ -406,10 +407,13 @@ class DashboardController extends Controller
         if ($email){
             dispatch(new ReportMailJob($email,$subject,$message));
             $recruiter = Recruiter::where('user_id',$recruiter->id)->first();
+            $recruiterUser = User::where('id',$recruiter->user_id)->first();
             $recruiter->status = 'reported';
             $recruiter->update();
+            $result = app('App\Http\Controllers\NotificationController')->sendRecruiterNotification($recruiterUser,'The job has been reported',$recruiter->updated_at,$recruiterUser);
             return response()->json([
                 'message' => 'Report Employer Successfully',
+                'notification'=>$result,
             ]);
         }else {
             return response()->json([
