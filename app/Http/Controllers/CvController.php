@@ -92,7 +92,7 @@ class CvController extends Controller
     public function addPortfolio(Request $request)
     {
         $validator = Validator::make($request->all(), [
-            'portfolio_link' => 'string|url|unique:Portfolios',
+            'portfolio_link' => 'string|url',
         ]);
         if ($validator->fails()) {
             return response()->json($validator->errors(), 400);
@@ -113,7 +113,7 @@ class CvController extends Controller
     public function updatePortfolio(Request $request)
     {
         $validator = Validator::make($request->all(), [
-            'portfolio_link' => 'string|url|unique:Portfolios',
+            'portfolio_link' => 'string|url',
             'portfolio_id' => 'required',
         ]);
         if ($validator->fails()) {
