@@ -54,49 +54,6 @@ class EmplyDashboardController extends Controller
             'monthly_income' => $monthlyIncome,
         ]);
     }
-
-//    public function apply_list()
-//    {
-//        $auth = auth()->user()->id;
-//        $job_list = JobPost::where('user_id', $auth)->pluck('id');  // pluck() returns an array of ids
-//
-//        $application_list = [];
-//        foreach ($job_list as $job_id) {
-//            $applications = Apply::where('job_post_id', $job_id)
-//                ->with('job_post', 'user', 'category')
-//                ->orderBy('id', 'asc')
-//                ->paginate(10);
-//
-//            foreach ($applications as $application) {
-//                if (!is_null($application->job_post)) {
-//                    if (isset($application->job_post->education)) {
-//                        $application->job_post->education = json_decode($application->job_post->education);
-//                    }
-//                }
-//                if (!is_null($application->job_post)) {
-//                    if (isset($application->job_post->additional_requirement)) {
-//                        $application->job_post->additional_requirement = json_decode($application->job_post->additional_requirement);
-//                    }
-//                }
-//                if (!is_null($application->job_post)) {
-//                    if (isset($application->job_post->compensation_other_benifits)) {
-//                        $application->job_post->compensation_other_benifits = json_decode($application->job_post->compensation_other_benifits);
-//                    }
-//                }
-////                if (!is_null($application->job_post)) {
-////                    if (isset($application->job_post->key_word)) {
-////                        $application->job_post->key_word = json_decode($application->job_post->key_word);
-////                    }
-////                }
-//            }
-//
-//            $application_list[] = $applications;
-//        }
-//        return response()->json([
-//            'status' => 'success',
-//            'data' => $application_list
-//        ]);
-//    }
     public function apply_list()
     {
         $auth = auth()->user()->id;

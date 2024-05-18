@@ -291,16 +291,8 @@ Route::get('show-category', [CategoryController::class, 'showCategory']);
 Route::get('/show-package', [PackageController::class, 'showPackage']);
 Route::get('/single-package', [PackageController::class, 'singlePackage']);
 
-
-
-
-    //public api's
-//    Route::get('/popular-job-post',[PopularJobController::class,'popularJobPost']);
-
 Route::middleware('guest_user','auth:api')->group(function (){
     Route::get('/popular-job-post',[PopularJobController::class,'popularJobPost']);
 });
-
-//Route::get('/popular-job-post',[PopularJobController::class,'popularJobPost']);
 
 Route::get('approve-job-post', [DashboardController::class, 'approveJobPost']);
