@@ -54,10 +54,6 @@ Route::post('/add-package', [PackageController::class, 'addPackage']);
 
 Route::middleware(['user', 'auth:api'])->group(function () {
 
-
-    //guest api
-    Route::get('/popular-job-post',[PopularJobController::class,'popularJobPost']);
-
     //guest api
     //view job post
     Route::get('/job-details',[PopularJobController::class,'jobDetails']);
@@ -292,7 +288,10 @@ Route::get('/show-package', [PackageController::class, 'showPackage']);
 Route::get('/single-package', [PackageController::class, 'singlePackage']);
 
 Route::middleware('guest_user','auth:api')->group(function (){
-    Route::get('/popular-job-post',[PopularJobController::class,'popularJobPost']);
+//    Route::get('/popular-job-post',[PopularJobController::class,'popularJobPost']);
 });
 
 Route::get('approve-job-post', [DashboardController::class, 'approveJobPost']);
+
+//guest api
+Route::get('/popular-job-post',[PopularJobController::class,'popularJobPost']);

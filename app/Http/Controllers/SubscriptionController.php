@@ -5,7 +5,7 @@ namespace App\Http\Controllers;
 use App\Events\SendNotificationEvent;
 use App\Models\JobPost;
 use App\Models\Package;
-use App\Models\subscription;
+use App\Models\Subscription;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Carbon\Carbon;
@@ -16,7 +16,8 @@ class SubscriptionController extends Controller
 
     public function aliveSubscription()
     {
-        $have_subscription = Subscription::with('package')->latest()->first();
+        $auth_user_id = auth()->user()->id;
+        $have_subscription = Subscription::with('package')->where('user_id',$auth_user_id)->latest()->first();
 
         // Check if subscription exists
         if($have_subscription == null){
