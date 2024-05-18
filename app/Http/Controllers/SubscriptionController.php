@@ -76,7 +76,7 @@ class SubscriptionController extends Controller
             $subscription->name = $request->name;
             $subscription->end_date = $endDate;
             $subscription->save();
-            $subscription->save();
+           $admin_result = app('App\Http\Controllers\NotificationController')->sendAdminNotification('Recruiter Purchase a subscription',$subscription->created_at,$subscription->name,$subscription);
             if ($subscription) {
                 $user = User::find($auth_user);
                 $subscriptions = Subscription::where('user_id',$auth_user)->first();
@@ -90,6 +90,7 @@ class SubscriptionController extends Controller
                     'status' => 'success',
                     'message' => 'subscription complete',
                     'data' => $subscription,
+                    'notification' => $admin_result
                 ], 200);
             }
 
