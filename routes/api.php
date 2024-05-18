@@ -56,7 +56,7 @@ Route::middleware(['user', 'auth:api'])->group(function () {
 
 
     //guest api
-//    Route::get('/popular-job-post',[PopularJobController::class,'popularJobPost']);
+    Route::get('/popular-job-post',[PopularJobController::class,'popularJobPost']);
 
     //guest api
     //view job post
