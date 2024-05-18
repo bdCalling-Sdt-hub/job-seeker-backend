@@ -55,6 +55,8 @@ Route::post('/add-package', [PackageController::class, 'addPackage']);
 Route::middleware(['user', 'auth:api'])->group(function () {
 
     //guest api
+    Route::get('/popular-job-post',[PopularJobController::class,'popularJobPost']);
+
     //view job post
     Route::get('/job-details',[PopularJobController::class,'jobDetails']);
 
@@ -234,7 +236,6 @@ Route::middleware(['recruiter', 'auth:api'])->group(function () {
 
     // JOB POST
 
-    Route::post('/create/job', [JobPostController::class, 'create_job']);
     Route::post('/create-job', [JobPostController::class, 'createJob']);
     Route::get('/edit/job/{id}', [JobPostController::class, 'edit_job']);
     Route::post('/update/job', [JobPostController::class, 'update_job']);

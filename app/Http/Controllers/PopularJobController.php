@@ -48,8 +48,7 @@ class PopularJobController extends Controller
 
     public function popularJobPost()
     {
-//        $user_id = auth()->user()->id;
-        // Check if the user is authenticated
+
         if (auth()->user()) {
             $user_id = auth()->user()->id; // Get authenticated user id
         } else {

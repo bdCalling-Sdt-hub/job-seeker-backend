@@ -3,7 +3,6 @@
 namespace App\Http\Controllers;
 
 use App\Events\SendNotificationEvent;
-use App\Http\Controllers\NotificationController;
 use App\Mail\OtpMail;
 use App\Models\User;
 use Illuminate\Http\Request;
