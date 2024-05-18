@@ -19,6 +19,7 @@ class AuthController extends Controller
 {
     public function register(Request $request)
     {
+        return 'hi';
         $user = User::where('email', $request->email)
             ->where('verify_email', 0)
             ->first();
