@@ -2,15 +2,11 @@
 
 namespace App\Http\Controllers;
 
-use App\Events\SendNotificationEvent;
-use App\Models\Story;
-use App\Models\User;
 use App\Notifications\AdminNotification;
 use App\Notifications\RecruiterNotification;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use App\Notifications\UserNotification;
-use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Notification;
@@ -72,7 +68,6 @@ class NotificationController extends Controller
             $userId = $user->id;
 
             $query = DB::table('notifications')
-//                ->where('notifications.type', 'App\\Notifications\\UserNotification')
                 ->where(function ($query) use ($userId) {
                     $query->where(function ($query) use ($userId) {
                         $query->where('notifiable_type', 'App\Models\User')
@@ -186,21 +181,4 @@ class NotificationController extends Controller
             ], 404);
         }
     }
-
-    public function notificationEvent(){
-        event(new SendNotificationEvent('New Customer Registered','2024-01-10 05:31:57','Karim'));
-        return response()->json([
-            'message' => 'Event call successfully'
-        ]);
-    }
-
-    public function recruiterNotification()
-    {
-        // Retrieve the authenticated user
-        $user = Auth::user();
-
-        // Retrieve the notifications for the user
-        return $notifications = $user->notifications;
-    }
-
 }
