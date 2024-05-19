@@ -114,20 +114,11 @@ class NotificationController extends Controller
             $userId = $user->id;
 
             $unreadNotifications = DB::table('notifications')
-//                ->where('notifications.type', 'App\\Notifications\\UserNotification')
                 ->where(function ($query) use ($userId) {
                     $query->where(function ($query) use ($userId) {
                         $query->where('notifiable_type', 'App\Models\User')
                             ->where('notifiable_id', $userId);
-                    })
-                        ->orWhere(function ($query) use ($userId) {
-                            $query->whereJsonContains('data->user->user_id', $userId);
-                        })
-                        ->orWhere(function ($query) use ($userId) {
-                            // Add condition for Story notifications
-                            $query->where('notifiable_type', 'App\Models\Story')
-                                ->where('notifiable_id', $userId);
-                        });
+                    });
                 })
                 ->whereNull('read_at')
                 ->get();
