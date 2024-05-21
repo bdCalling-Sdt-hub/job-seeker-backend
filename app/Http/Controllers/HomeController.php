@@ -14,7 +14,9 @@ class HomeController extends Controller
 {
     public function jobFilter(Request $request)
     {
-        $user_id = auth()->user()->id; // Get authenticated user id
+//        $user_id = auth()->user()->id; // Get authenticated user id
+        $user = auth()->user();
+        $user_id = $user ? $user->id : null;
 
         $query = JobPost::query();
 
@@ -206,27 +208,45 @@ class HomeController extends Controller
 //        ]);
 //    }
 
-    public function SingleCategoryWiseJobPost(Request $request)
-    {
-        // single job details
-    }
 
     public function categoryIdWiseJobPost(Request $request)
     {
+
+        $user = auth()->user();
+        $user_id = $user ? $user->id : null;
+
         $category_id = $request->category_id;
 
-        $jobPosts = JobPost::with('recruiter', 'user', 'category')
+        $job_posts = JobPost::with('recruiter', 'user', 'category')
             ->where('category_id', $category_id)->where('status','published')
             ->get();
 
+        $formatted_job_list = $job_posts->map(function ($job) use ($user_id) {
+            $job->key_word = json_decode($job->key_word);
+
+            if ($user_id !== null) {
+                // Check if the job post is bookmarked by the user
+                $job->is_bookmarked = Bookmark::where('user_id', $user_id)
+                    ->where('job_post_id', $job->id)
+                    ->exists();
+            }else{
+                $job->is_bookmarked = null;
+            }
+
+            return $job;
+        });
+
         return response()->json([
             'message' => 'Category-wise Job List',
-            'data' => $jobPosts
+            'data' => $formatted_job_list
         ]);
     }
 
     public function companyWiseJobPost(Request $request)
     {
+        $user = auth()->user();
+        $user_id = $user ? $user->id : null;
+
         $recruiters = User::where('userType', 'RECRUITER')->paginate(9);
 
         $recruiterWiseJobPosts = [];
@@ -246,15 +266,7 @@ class HomeController extends Controller
 
             if ($jobPostCount != 0) {
                 $formatted_job_list = $job_posts->map(function ($job) {
-                    $job->education = json_decode($job->education);
-                    $job->additional_requirement = json_decode($job->additional_requirement);
-                    $job->compensation_other_benifits = json_decode($job->compensation_other_benifits);
                     $job->key_word = json_decode($job->key_word);
-                    $job->responsibilities = json_decode($job->responsibilities);
-                    if (is_string($job->recruiter->company_service)) {
-                        $job->recruiter->company_service = json_decode($job->recruiter->company_service);
-                    }
-//                $job->recruiter->company_service = json_decode($job->recruiter->company_service);
                     return $job;
                 });
 
@@ -265,7 +277,7 @@ class HomeController extends Controller
                 ];
             }
             // Check if each job post is bookmarked by the user
-            $bookmarked_job_ids = Bookmark::where('user_id', auth()->user()->id)
+            $bookmarked_job_ids = Bookmark::where('user_id', $user_id)
                 ->pluck('job_post_id')
                 ->toArray();
 

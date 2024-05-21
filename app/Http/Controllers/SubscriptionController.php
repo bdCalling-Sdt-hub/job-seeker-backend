@@ -9,6 +9,7 @@ use App\Models\Subscription;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Carbon\Carbon;
+use Illuminate\Support\Str;
 
 class SubscriptionController extends Controller
 {
@@ -189,5 +190,65 @@ class SubscriptionController extends Controller
                 'data' => $my_subscription
             ]);
         }
+    }
+
+//    public function manualSubscription(Request $request)
+//    {
+//        $status = $request->status;
+//
+//        // if subscription is successful
+//        if ($status == 'successful') {
+//            $auth_user = auth()->user();
+//            $subscription = new Subscription();
+//            $subscription->package_id = $request->package_id;
+//            $subscription->user_id = $auth_user->id;
+//            $subscription->tx_ref = $request->tx_ref;
+//            $subscription->amount = $request->amount;
+//            $subscription->currency = $request->currency;
+//            $subscription->payment_type = $request->payment_type;
+//            $subscription->status = $request->status;
+//            $subscription->email = $auth_user->email;
+//            $subscription->name = $auth_user->fullName;
+//            $subscription->save();
+//            return response()->json([
+//                'message' => 'Manual Subscription is done, Waiting for admin approval',
+//                'data' => $subscription
+//            ],200);
+//        }
+//    }
+
+    public function manualSubscription(Request $request)
+    {
+        $status = $request->status;
+
+        // if subscription is successful
+        if ($status == 'successful') {
+            $auth_user = auth()->user();
+            $subscription = new Subscription();
+            $subscription->package_id = $request->package_id;
+            $subscription->user_id = $auth_user->id;
+
+            // Generate a unique transaction reference (tx_ref)
+            $tx_ref = uniqid('HC') . '_' . Str::random(10);
+            $subscription->tx_ref = $tx_ref;
+
+            $subscription->amount = $request->amount;
+            $subscription->currency = $request->currency;
+            $subscription->payment_type = $request->payment_type;
+            $subscription->status = $request->status;
+            $subscription->email = $auth_user->email;
+            $subscription->name = $auth_user->fullName;
+            $subscription->save();
+            return response()->json([
+                'message' => 'Manual Subscription is done, Waiting for admin approval',
+                'data' => $subscription
+            ],200);
+        }
+    }
+
+
+    public function approveManualSubscription()
+    {
+        return $hand_cash_subscription = Subscription::with('package')->where('payment_type','Hand Cash')->get();
     }
 }
