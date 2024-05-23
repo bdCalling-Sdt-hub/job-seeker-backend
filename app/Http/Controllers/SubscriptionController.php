@@ -214,7 +214,7 @@ class SubscriptionController extends Controller
             $subscription->update();
             $user->user_status = 1;
             $user->update();
-            $result = app('App\Http\Controllers\NotificationController')->sendRecruiterNotification('Job Post approved successfully',$user->updated_at,$user->fullName,$user);
+            $result = app('App\Http\Controllers\NotificationController')->sendRecruiterNotification('Manual Subscription Approved Successfully',$user->updated_at,$user->fullName,$user);
             return response()->json(['message' => 'Approve manual subscription successfully']);
         }
         return response()->json(['message' => 'Subscription Does Not Exist'],404);
