@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Events\SendNotificationEvent;
+use App\Http\Requests\OtpRequest;
 use App\Mail\OtpMail;
 use App\Models\User;
 use Illuminate\Http\Request;
@@ -64,7 +65,7 @@ class AuthController extends Controller
         }
     }
 
-    public function emailVerified(Request $request)
+    public function emailVerified(OtpRequest $request)
     {
         $validator = Validator::make($request->all(), [
             'otp' => 'required',
@@ -88,7 +89,6 @@ class AuthController extends Controller
         $user->update(['verify_email' => 1]);
         $user->update(['otp' => 0]);
         $result = app('App\Http\Controllers\NotificationController')->sendNotification('Welcome to the get hired app', $user->created_at, $user);
-        event(new SendNotificationEvent('Welcome to the get hired app', $user->created_at, $user));
         return response([
             'message' => 'Email verified successfully',
             'notification' => $result,

@@ -3,12 +3,14 @@
 namespace App\Http\Controllers;
 
 use App\Events\SendNotificationEvent;
+use App\Http\Requests\ApproveSubscriptionRequest;
 use App\Models\JobPost;
 use App\Models\Package;
 use App\Models\Subscription;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Carbon\Carbon;
+use Illuminate\Support\Str;
 
 class SubscriptionController extends Controller
 {
@@ -51,6 +53,36 @@ class SubscriptionController extends Controller
         return response()->json([
             'message' => 'You already have an active subscription.',
         ], 200);
+    }
+
+    public function checkExistingSubscription ($auth_user_id)
+    {
+        $have_subscription = Subscription::with('package')->where('user_id',$auth_user_id)->latest()->first();
+
+        // Check if subscription exists
+        if($have_subscription == null){
+           return 'true';
+        }
+
+        // Check if post limit is reached
+        $totalPosts = JobPost::where('user_id', auth()->user()->id)
+            ->where('subscription_id', $have_subscription->id)
+            ->count();
+
+        if ($have_subscription->package->post_limit <= $totalPosts) {
+            return 'true';
+        }
+
+        // Check if subscription is still valid
+        $check_package_date = Subscription::where('user_id', auth()->user()->id)
+            ->whereDate('end_date', '>', now())
+            ->first();
+
+        if (!$check_package_date) {
+           return 'true';
+        }
+
+       return 'false';
     }
 
 
@@ -107,64 +139,6 @@ class SubscriptionController extends Controller
         }
     }
 
-
-    public function userSubscription(Request $request){
-        $status = $request->status;
-
-        // if subscription is successful
-        if ($status == 'successful') {
-
-            $auth_user = auth()->user()->id;
-            $user = Subscription::where('user_id', $auth_user)->latest()->first();
-
-            $subscription = new Subscription();
-            $subscription->package_id = $request->package_id;
-            $subscription->user_id = $request->user_id;
-            $subscription->tx_ref = $request->tx_ref;
-            $subscription->amount = $request->amount;
-            $subscription->currency = $request->currency;
-            $subscription->payment_type = $request->payment_type;
-            $subscription->status = $request->status;
-            $subscription->email = $request->email;
-            $subscription->name = $request->name;
-            $subscription->save();
-            if ($subscription) {
-                $user = User::find($auth_user);
-                $subscriptions = Subscription::where('user_id',$auth_user)->first();
-                if ($user) {
-                    $user->user_status = 1;
-                    $user->save();
-                }
-                if ($subscriptions){
-                    $newEndDate = Carbon::parse($subscription->end_date)->addMonth();
-                    $subscription->end_date = $newEndDate;
-                    $subscription->update();
-                    $admin_result = app('App\Http\Controllers\NotificationController')->sendAdminNotification('Purchase a subscription',$subscription->created_at,$subscription->name,$subscription);
-                    event(new SendNotificationEvent('Purchase a subscription',$subscription->created_at,auth()->user()));
-                }
-                return response()->json([
-                    'status' => 'success',
-                    'message' => 'subscription complete',
-                    'data' => $subscription,
-                ], 200);
-            }
-
-        } elseif ($status == 'cancelled') {
-            return response()->json([
-                'status' => 'cancelled',
-                'message' => 'Your subscription is canceled'
-            ]);
-            // Put desired action/code after transaction has been cancelled here
-        } else {
-            // return getMessage();
-            // Put desired action/code after transaction has failed here
-            return response()->json([
-                'status' => 'cancelled',
-                'message' => 'Your transaction has been failed'
-            ]);
-        }
-    }
-
     public function mySubscription(Request $request){
         $auth_user_id = auth()->user()->id;
         $my_subscription = Subscription::with('package')
@@ -188,6 +162,86 @@ class SubscriptionController extends Controller
                 'message' => 'success',
                 'data' => $my_subscription
             ]);
+        }
+    }
+
+    public function manualSubscription(Request $request)
+    {
+//        $checkSubscription = $this->checkExistingSubscription(auth()->user()->id);
+//        if ($checkSubscription == 'true'){
+            $status = $request->status;
+            // if subscription is successful
+            if ($status == 'successful') {
+                $auth_user = auth()->user();
+                $subscription = new Subscription();
+                $subscription->package_id = $request->package_id;
+                $subscription->user_id = $auth_user->id;
+
+                // Generate a unique transaction reference (tx_ref)
+                $tx_ref = uniqid('HC') . '_' . Str::random(10);
+                $subscription->tx_ref = $tx_ref;
+
+                $subscription->amount = $request->amount;
+                $subscription->currency = $request->currency;
+                $subscription->payment_type = $request->payment_type;
+                $subscription->status = $request->status;
+                $subscription->email = $auth_user->email;
+                $subscription->name = $auth_user->fullName;
+                $subscription->manual_status = 'pending';
+                $subscription->save();
+                $admin_result = app('App\Http\Controllers\NotificationController')->sendAdminNotification('Recruiter give request for manual subscription',$subscription->created_at,$subscription->name,$subscription);
+                return response()->json([
+                    'message' => 'Subscription request is completed, Waiting for admin approval',
+                    'data' => $subscription
+                ],200);
+            }
+//        }
+//        return response()->json([
+//            'message' => 'You already have active subscription',
+//        ],403);
+    }
+
+    public function approveManualSubscription(ApproveSubscriptionRequest $request)
+    {
+        $subscription_id = $request->subscription_id;
+        $subscription = Subscription::where('id',$subscription_id)->first();
+        if (!empty($subscription)){
+            $duration =  $subscription->package->duration;
+            $user = $subscription->User;
+            $endDate = Carbon::now()->addMonths($duration);
+            $subscription->end_date = $endDate;
+            $subscription->manual_status = 'accept';
+            $subscription->update();
+            $user->user_status = 1;
+            $user->update();
+            $result = app('App\Http\Controllers\NotificationController')->sendRecruiterNotification('Job Post approved successfully',$user->updated_at,$user->fullName,$user);
+            return response()->json(['message' => 'Approve manual subscription successfully']);
+        }
+        return response()->json(['message' => 'Subscription Does Not Exist'],404);
+    }
+    public function manualSubscriptionRequest(Request $request)
+    {
+        $name = $request->name ?? null;
+        $manual_subscription_query = Subscription::with('user.recruiter','package')->where('manual_status', 'pending')
+            ->where('payment_type', 'Hand Cash');
+
+        if ($name !== null) {
+            $manual_subscription_query->where('name', 'like', '%' . $name . '%');
+        }
+
+        $manual_subscription = $manual_subscription_query->paginate(9);
+
+        try {
+            if ($manual_subscription->isEmpty()) {
+                throw new \Exception("No pending manual subscription requests found.");
+            } else {
+                return response()->json([
+                    'message' => 'Subscription Request',
+                    'data' => $manual_subscription,
+                ]);
+            }
+        } catch (\Exception $e) {
+            return response()->json(['error' => $e->getMessage()], 404);
         }
     }
 }

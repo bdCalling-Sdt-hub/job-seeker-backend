@@ -66,17 +66,10 @@ class NotificationController extends Controller
 
         if ($user) {
             $userId = $user->id;
-
             $query = DB::table('notifications')
-                ->where(function ($query) use ($userId) {
-                    $query->where(function ($query) use ($userId) {
-                        $query->where('notifiable_type', 'App\Models\User')
-                            ->where('notifiable_id', $userId);
-                    })
-                        ->orWhere(function ($query) use ($userId) {
-                            $query->whereJsonContains('data->user->user_id', $userId);
-                        });
-                })
+                ->where('notifiable_type', 'App\Models\User')
+                ->where('notifiable_id', $userId)
+                ->where('type', '!=', 'App\\Notifications\\AdminNotification')
                 ->orderBy('created_at', 'desc')
                 ->get();
 

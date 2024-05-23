@@ -104,13 +104,8 @@ class EmplyDashboardController extends Controller
 
         // Decode serialized fields
         foreach ($jobPosts as $jobPost) {
-            $jobPost->education = json_decode($jobPost->education);
-            $jobPost->additional_requirement = json_decode($jobPost->additional_requirement);
-            $jobPost->responsibilities = json_decode($jobPost->responsibilities);
-            $jobPost->compensation_other_benifits = json_decode($jobPost->compensation_other_benifits);
             $jobPost->key_word = json_decode($jobPost->key_word);
         }
-
         return $jobPosts;
     }
 
