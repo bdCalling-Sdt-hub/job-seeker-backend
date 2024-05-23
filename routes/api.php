@@ -139,6 +139,7 @@ Route::middleware(['admin', 'auth:api'])->group(function () {
     // ================== Admin Api ====================//
 
     Route::get('approve-manual-subscription',[SubscriptionController::class,'approveManualSubscription']);
+    Route::get('manual-subscription-request',[SubscriptionController::class,'manualSubscriptionRequest']);
 
     Route::get('package-wise-company-subscription', [DashboardController::class, 'packageWiseCompanySubscription']);
 
@@ -168,7 +169,7 @@ Route::middleware(['admin', 'auth:api'])->group(function () {
 
 
     // approve job post
-//    Route::get('approve-job-post', [DashboardController::class, 'approveJobPost']);
+    Route::get('approve-job-post', [DashboardController::class, 'approveJobPost']);
 
     // block recruiter
     Route::get('block-recruiter', [DashboardController::class, 'blockRecruiter']);
@@ -176,7 +177,7 @@ Route::middleware(['admin', 'auth:api'])->group(function () {
     Route::post('report-employer', [DashboardController::class, 'reportEmployer']);
     // job list
     Route::get('job-list', [DashboardController::class, 'jobList']);
-//    Route::get('single-job-list', [DashboardController::class, 'jobDetails']);
+    Route::get('single-job-list', [DashboardController::class, 'jobDetails']);
     Route::post('/update-category/{id}', [CategoryController::class, 'updateCategory']);
     // ================== Dashboard Api ====================//
 
@@ -303,7 +304,7 @@ Route::middleware('optional_auth')->group(function (){
     Route::get('category-wise-job-list', [HomeController::class, 'categoryWiseJobPost']);
 });
 
-Route::get('approve-job-post', [DashboardController::class, 'approveJobPost']);
+
 
 /*
  * popular job post = it will work for unauthenticate user also

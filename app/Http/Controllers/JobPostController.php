@@ -80,10 +80,10 @@ class JobPostController extends Controller
         $create_job->key_word = $request->key_word;
         $create_job->status = 'pending';
         $create_job->save();
-        $result = app('App\Http\Controllers\NotificationController')->sendAdminNotification('has posted a job,needs to approve', $create_job->created_at, $recruiter->company_name, $create_job);
+        $result = app('App\Http\Controllers\NotificationController')->sendAdminNotification('posted a job,needs to approve', $create_job->created_at, $recruiter->company_name, $create_job);
         return response()->json([
             'message' => 'Job Created Successfully',
-            'data' => 'job post',
+            'data' => $create_job,
             'notification' => $result,
         ],200);
     }

@@ -354,11 +354,7 @@ class DashboardController extends Controller
 
         // Format job list
         $formatted_job_list = $job_list->map(function ($job) {
-            $job->education = json_decode($job->education);
-            $job->additional_requirement = json_decode($job->additional_requirement);
-            $job->compensation_other_benifits = json_decode($job->compensation_other_benifits);
             $job->key_word = json_decode($job->key_word);
-            $job->responsibilities = json_decode($job->responsibilities);
             return $job;
         });
 
@@ -376,13 +372,11 @@ class DashboardController extends Controller
         $job_info = JobPost::where('id',$job_id)->first();
         if (!empty($job_info) && $job_info->status == 'pending')
         {
-//            'notification' => Notification::send($recruiterUser, new RecruiterNotification('New application', $application))
-//                $recruiterUser = User::find($recuriterId);
             $recruiterUser = User::where('id',$job_info->user_id)->first();
 
             $job_info->status = 'published';
             $job_info->update();
-            $result = app('App\Http\Controllers\NotificationController')->sendRecruiterNotification($recruiterUser,'Post approved successfully',$job_info->updated_at,$recruiterUser);
+            $result = app('App\Http\Controllers\NotificationController')->sendRecruiterNotification('Job Post approved successfully',$job_info->updated_at,$recruiterUser->fullName,$recruiterUser);
             return response()->json([
                 'message' => 'post is published successfully',
                 'data' => $job_info,

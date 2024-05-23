@@ -11,13 +11,14 @@ class RecruiterNotification extends Notification
 {
     use Queueable;
 
-    public $application;
-    // public $description;
+    public $message,$time,$name,$user;
 
-    public function __construct($application)
+    public function __construct($message,$time,$name,$user)
     {
-        $this->application = $application;
-        // $this->description = $description;
+        $this->message = $message;
+        $this->time = $time;
+        $this->name = $name;
+        $this->user = $user;
     }
 
     public function via($notifiable): array
@@ -28,9 +29,10 @@ class RecruiterNotification extends Notification
     public function toArray($notifiable): array
     {
         return [
-            'application' => $this->application,
-           // 'message' => $this->message,
-            // 'description' => $this->description
+            'message' => $this->message,
+            'time' => $this->time,
+            'name'=>$this->name,
+            'user' => $this->user,
         ];
     }
 }

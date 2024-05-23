@@ -33,19 +33,13 @@ class CanditedController extends Controller
             $application->experience = $request->experience;
             $application->salary = $request->salary;
             $application->cv = $request->cv;
-//            if ($request->hasfile('cv')) {
-//                $file = $request->file('cv');
-//                $extenstion = $file->getClientOriginalExtension();
-//                $filename = time() . '.' . $extenstion;
-//                $file->move('images/', $filename);
-//                $application->cv = $filename;
-//            }
             $application->save();
+            $result = app('App\Http\Controllers\NotificationController')->sendRecruiterNotification('Candidate Applied for The Job', $recruiterUser->created_at, $recruiterUser->fullName, $recruiterUser);
             if ($application) {
                 return response()->json([
                     'status' => 'success',
                     'message' => 'You applied Successfully',
-                    'notification' => Notification::send($recruiterUser, new RecruiterNotification($application))
+                    'notification' => $result,
                 ], 200);
             } else {
                 return response()->json([

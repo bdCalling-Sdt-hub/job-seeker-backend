@@ -23,6 +23,7 @@ return new class extends Migration
             $table->text('tx_ref');
             $table->string('status');
             $table->dateTime('end_date')->nullable();
+            $table->string('manual_status')->nullable();
             $table->timestamps();
         });
     }
