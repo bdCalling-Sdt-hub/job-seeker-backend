@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Email Template</title>
+    <title></title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <style>
         body {
@@ -43,12 +43,12 @@
     <div class="content">
 
         <h2>Interview Notice!</h2>
-        <p>Dear <?php echo e($applicant_name); ?></p>
+        <p><strong>Dear <?php echo e($applicant_name); ?></strong></p>
         <p><?php echo e($description); ?></p>
         <p><strong>Job Name:</strong><?php echo e($jobName); ?></p>
         <p><strong>Date :</strong><?php echo e($date); ?></p>
         <p><strong>Time:</strong><?php echo e($time); ?></p>
-        <p><strong>Description:</strong><?php echo e($description); ?></p>
+
         <p><strong>Address:</strong><?php echo e($address); ?></p>
         <?php if($zoom_link): ?>
             <p><strong>Zoom Link:</strong><a href="<?php echo e($zoom_link); ?>">   <?php echo e($zoom_link); ?></a></p>
