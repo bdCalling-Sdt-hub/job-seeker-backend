@@ -157,13 +157,17 @@ class EmplyDashboardController extends Controller
 
     public function select_candited_send_mail(Request $request)
     {
+        $applicant_name = $request->fullName;
         $email = $request->email;
         $jobName = $request->jobTitle;
         $address = $request->address;
         $date = $request->date;
         $time = $request->time;
         $description = $request->message;
-        Mail::to($email)->send(new sendMailNotification($jobName, $address, $date, $time, $description));
+        $zoom_link = $request->zoom_link;
+        $company_email = auth()->user()->email;
+        $company_name = auth()->user()->fullName;
+        Mail::to($email)->send(new sendMailNotification($applicant_name,$jobName, $address, $date, $time, $description ,$zoom_link,$company_email,$company_name));
     }
 
     public function send_mail_data(Request $request)

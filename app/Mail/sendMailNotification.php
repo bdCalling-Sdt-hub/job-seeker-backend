@@ -13,34 +13,37 @@ class sendMailNotification extends Mailable
 {
     use Queueable, SerializesModels;
 
-    public $time = '';
-    public $date = '';
-    public $description = '';
-    public $address = '';
-    public $jobName = '';
+    public $time ;
+    public $date;
+    public $description;
+    public $address;
+    public $applicant_name;
+    public $zoom_link;
+    public $jobName;
+    public $company_email;
 
-    public function __construct($time, $date, $description, $address, $jobName)
+    public $company_name;
+
+    public function __construct($applicant_name,$jobName, $address, $date, $time, $description, $zoom_link, $company_email, $company_name)
     {
-        $this->time = $time;
-        $this->date = $date;
-        $this->description = $description;
-        $this->address = $address;
+        $this->applicant_name = $applicant_name;
         $this->jobName = $jobName;
+        $this->address = $address;
+        $this->date = $date;
+        $this->time = $time;
+        $this->description = $description;
+        $this->zoom_link = $zoom_link ?? null;
+        $this->company_email = $company_email;
+        $this->company_name = $company_name;
     }
 
-    /**
-     * Get the message envelope.
-     */
     public function envelope(): Envelope
     {
         return new Envelope(
-            subject: 'Send Mail Applications',
+            subject: 'Interview Invitation',
         );
     }
 
-    /**
-     * Get the message content definition.
-     */
     public function content(): Content
     {
         return new Content(
@@ -48,11 +51,6 @@ class sendMailNotification extends Mailable
         );
     }
 
-    /**
-     * Get the attachments for the message.
-     *
-     * @return array<int, \Illuminate\Mail\Mailables\Attachment>
-     */
     public function attachments(): array
     {
         return [];

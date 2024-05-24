@@ -1,32 +1,66 @@
-<html>
-
+<!DOCTYPE html>
+<html lang="en">
 <head>
-    <title>job content</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Email Template</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: Arial, sans-serif;
+        }
+        .email-container {
+            width: 100%;
+            max-width: 600px;
+            margin: auto;
+            border: 1px solid #e0e0e0;
+        }
+        .header {
+            background-color: #007bff;
+            color: white;
+            padding: 20px;
+            text-align: center;
+        }
+        .content {
+            padding: 20px;
+        }
+        .footer {
+            background-color: #f8f9fa;
+            padding: 10px;
+            text-align: center;
+            font-size: 12px;
+            color: #6c757d;
+        }
+    </style>
 </head>
-
 <body>
-    <h1>Interview Notice</h1>
-    <table>
-        <thead>
-            <tr>
-                <th> Job name</th>
-                <th>Interview date</th>
-                <th>interview time</th>
-                <th>Address</th>
-                <th>description</th>
-            </tr>
-        </thead>
-        <tbody>
-            <tr>
-                <td>{{ $jobName }}</td>
-                <td>{{ $date }}</td>
-                <td>{{ $time }}</td>
-                <td>{{ $address }}</td>
-                <td>{{ $description }}</td>
-            </tr>
-        </tbody>
+<div class="email-container">
+    <div class="header">
+        <h1>Find Worker</h1>
+    </div>
+    <div class="content">
 
-    </table>
+        <h2>Interview Notice!</h2>
+        <p>Dear {{ $applicant_name }}</p>
+        <p>{{ $description }}</p>
+        <p><strong>Job Name:</strong>{{ $jobName }}</p>
+        <p><strong>Date :</strong>{{ $date }}</p>
+        <p><strong>Time:</strong>{{ $time }}</p>
+{{--        <p><strong>Description:</strong>{{ $description }}</p>--}}
+        <p><strong>Address:</strong>{{ $address }}</p>
+        @if($zoom_link)
+            <p><strong>Zoom Link:</strong><a href="{{ $zoom_link }}">   {{ $zoom_link }}</a></p>
+        @endif
+        <p>If you have any questions, feel free to <a href="{{ $company_email }}">contact our support team</a>.</p>
+        <p>Best regards,</p>
+        <p>{{ $company_name }} Team</p>
+    </div>
+    <div class="footer">
+        <p>&copy; 2024 {{ $company_name }}. All rights reserved.</p>
+        <p><a href="#">Unsubscribe</a> | <a href="#">Privacy Policy</a></p>
+    </div>
+</div>
 </body>
-
 </html>
