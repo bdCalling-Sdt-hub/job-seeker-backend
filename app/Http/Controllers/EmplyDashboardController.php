@@ -19,6 +19,10 @@ class EmplyDashboardController extends Controller
     {
         $auth = auth()->user()->id;
         $job_post = JobPost::where('user_id', $auth)->first();
+        if(empty($job_post))
+        {
+            return response()->json(['message' => 'Job Does not Exist']);
+        }
         $job_post_id = $job_post->id;
         $totala_apply = Apply::where('job_post_id', $job_post_id)->count();
         $total_job_post = JobPost::where('user_id', $auth)->count();
