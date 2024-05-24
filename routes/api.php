@@ -303,12 +303,3 @@ Route::middleware('optional_auth')->group(function (){
     Route::get('/category-job-post-count', [HomeController::class, 'showCategoryandCount']);
     Route::get('category-wise-job-list', [HomeController::class, 'categoryWiseJobPost']);
 });
-
-
-
-/*
- * popular job post = it will work for unauthenticate user also
- * job details = also works for unauthenticate user
- *
- *
- */
