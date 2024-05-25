@@ -18,6 +18,7 @@ class CanditedController extends Controller
         $recuriter = JobPost::where('id', $jobId)->first();
         $recuriterId = $recuriter->user_id;
         $recruiterUser = User::find($recuriterId);
+        $user = auth()->user();
         $check = Apply::where('user_id', $auth)->where('job_post_id', $jobId)->count();
         if ($check) {
             return response()->json([
@@ -34,7 +35,7 @@ class CanditedController extends Controller
             $application->salary = $request->salary;
             $application->cv = $request->cv;
             $application->save();
-            $result = app('App\Http\Controllers\NotificationController')->sendRecruiterNotification('Candidate Applied for The Job', $recruiterUser->created_at, $recruiterUser->fullName, $recruiterUser);
+            $result = app('App\Http\Controllers\NotificationController')->sendRecruiterNotification('Candidate Applied for The Job', $user->created_at, $user->fullName, $recruiterUser);
             if ($application) {
                 return response()->json([
                     'status' => 'success',
