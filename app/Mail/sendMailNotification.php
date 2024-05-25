@@ -28,9 +28,9 @@ class sendMailNotification extends Mailable
     {
         $this->applicant_name = $applicant_name;
         $this->jobName = $jobName;
-        $this->address = $address;
-        $this->date = $date;
-        $this->time = $time;
+        $this->address = $address ?? null;
+        $this->date = $date ?? null;
+        $this->time = $time ?? null;
         $this->description = $description;
         $this->zoom_link = $zoom_link ?? null;
         $this->company_email = $company_email;
