@@ -46,10 +46,18 @@
         <p><strong>Dear {{ $applicant_name }}</strong></p>
         <p>{{ $description }}</p>
         <p><strong>Job Name:</strong>{{ $jobName }}</p>
-        <p><strong>Date :</strong>{{ $date }}</p>
-        <p><strong>Time:</strong>{{ $time }}</p>
-{{--        <p><strong>Description:</strong>{{ $description }}</p>--}}
-        <p><strong>Address:</strong>{{ $address }}</p>
+        @if($date)
+            <p><strong>Date :</strong>{{ $date }}</p>
+        @endif
+
+        @if($time)
+            <p><strong>Time:</strong>{{ $time }}</p>
+        @endif
+
+        @if($address)
+            <p><strong>Address:</strong>{{ $address }}</p>
+        @endif
+
         @if($zoom_link)
             <p><strong>Zoom Link:</strong><a href="{{ $zoom_link }}">   {{ $zoom_link }}</a></p>
         @endif

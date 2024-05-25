@@ -46,10 +46,18 @@
         <p><strong>Dear <?php echo e($applicant_name); ?></strong></p>
         <p><?php echo e($description); ?></p>
         <p><strong>Job Name:</strong><?php echo e($jobName); ?></p>
-        <p><strong>Date :</strong><?php echo e($date); ?></p>
-        <p><strong>Time:</strong><?php echo e($time); ?></p>
+        <?php if($date): ?>
+            <p><strong>Date :</strong><?php echo e($date); ?></p>
+        <?php endif; ?>
 
-        <p><strong>Address:</strong><?php echo e($address); ?></p>
+        <?php if($time): ?>
+            <p><strong>Time:</strong><?php echo e($time); ?></p>
+        <?php endif; ?>
+
+        <?php if($address): ?>
+            <p><strong>Address:</strong><?php echo e($address); ?></p>
+        <?php endif; ?>
+
         <?php if($zoom_link): ?>
             <p><strong>Zoom Link:</strong><a href="<?php echo e($zoom_link); ?>">   <?php echo e($zoom_link); ?></a></p>
         <?php endif; ?>
