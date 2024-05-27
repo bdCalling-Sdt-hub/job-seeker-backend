@@ -2,11 +2,15 @@
 
 namespace App\Http\Controllers;
 
+use App\Mail\ApplyApplicationMail;
+use App\Mail\SendMail;
+use App\Mail\sendMailNotification;
 use App\Models\Apply;
 use App\Models\JobPost;
 use App\Models\User;
 use App\Notifications\RecruiterNotification;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Notification;
 
 class CanditedController extends Controller
@@ -35,6 +39,12 @@ class CanditedController extends Controller
             $application->salary = $request->salary;
             $application->cv = $request->cv;
             $application->save();
+            $subject = 'Job Application';
+            $description = 'You have been successfully applied for the job post. Later on we will give the email template according to your concern';
+            $user_email = auth()->user()->email;
+
+            Mail::to($user_email)->send(new ApplyApplicationMail($subject,$description));
+
             $result = app('App\Http\Controllers\NotificationController')->sendRecruiterNotification('Candidate Applied for The Job', $user->created_at, $user->fullName, $recruiterUser);
             if ($application) {
                 return response()->json([

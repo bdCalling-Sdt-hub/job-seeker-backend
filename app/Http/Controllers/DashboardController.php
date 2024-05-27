@@ -127,7 +127,7 @@ class DashboardController extends Controller
         $total_employers = User::where('userType','RECRUITER')->where('verify_email','1')->count();
         $total_job_post = JobPost::count();
         $total_apply_count = Apply::count();
-        $subscriptions = Subscription::all();
+        $subscriptions = Subscription::where('manual_status','accept')->get();
         $total_amount = 0;
         foreach ($subscriptions as $subscription) {
             $total_amount += $subscription->amount;
