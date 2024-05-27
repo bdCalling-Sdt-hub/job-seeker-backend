@@ -22,9 +22,6 @@ class ApplyApplicationMail extends Mailable
         $this->description = $description;
     }
 
-    /**
-     * Get the message envelope.
-     */
     public function envelope(): Envelope
     {
         return new Envelope(
