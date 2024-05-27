@@ -28,7 +28,7 @@ class SendMail extends Mailable
     public function envelope(): Envelope
     {
         return new Envelope(
-            subject: 'Ask your anser',
+            subject: '',
         );
     }
 

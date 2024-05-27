@@ -106,6 +106,7 @@ class SubscriptionController extends Controller
             $subscription->status = $request->status;
             $subscription->email = $request->email;
             $subscription->name = $request->name;
+            $subscription->manual_status = 'accept';
             $subscription->end_date = $endDate;
             $subscription->save();
            $admin_result = app('App\Http\Controllers\NotificationController')->sendAdminNotification('Recruiter Purchase a subscription',$subscription->created_at,$subscription->name,$subscription);
