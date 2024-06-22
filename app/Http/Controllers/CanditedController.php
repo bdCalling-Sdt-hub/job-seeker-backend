@@ -4,15 +4,12 @@ namespace App\Http\Controllers;
 
 use App\Mail\ApplicantApplyEmail;
 use App\Mail\ApplyApplicationMail;
-use App\Mail\SendMail;
-use App\Mail\sendMailNotification;
+use App\Mail\SendMailToEmployer;
 use App\Models\Apply;
 use App\Models\JobPost;
 use App\Models\User;
-use App\Notifications\RecruiterNotification;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Mail;
-use Illuminate\Support\Facades\Notification;
 
 class CanditedController extends Controller
 {
@@ -22,6 +19,7 @@ class CanditedController extends Controller
         $jobId = $request->jobPostId;
         $recuriter = JobPost::with('user')->where('id', $jobId)->first();
         $recuriterId = $recuriter->user_id;
+        $recuriter->user->email;
         $recruiterUser = User::find($recuriterId);
         $user = auth()->user();
         $check = Apply::where('user_id', $auth)->where('job_post_id', $jobId)->count();
@@ -47,7 +45,7 @@ class CanditedController extends Controller
             $recruiter_email = $recuriter->user->email;
             Mail::to($user_email)->send(new ApplyApplicationMail($subject,$description));
             if ($recruiter_email){
-                Mail::to($recruiter_email)->send(new ApplicantApplyEmail($message));
+                Mail::to($recruiter_email)->send(new SendMailToEmployer($message));
             }
             $result = app('App\Http\Controllers\NotificationController')->sendRecruiterNotification('Candidate Applied for The Job', $user->created_at, $user->fullName, $recruiterUser);
             if ($application) {
