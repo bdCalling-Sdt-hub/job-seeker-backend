@@ -404,7 +404,7 @@ class DashboardController extends Controller
             $recruiterUser = User::where('id',$recruiter->user_id)->first();
             $recruiter->status = 'reported';
             $recruiter->update();
-            $result = app('App\Http\Controllers\NotificationController')->sendRecruiterNotification('The job has been reported',$recruiter->updated_at,$recruiterUser->name ,$recruiterUser);
+            $result = app('App\Http\Controllers\NotificationController')->sendRecruiterNotification('The job has been reported',$recruiter->updated_at,$recruiterUser->fullName ,$recruiterUser);
             return response()->json([
                 'message' => 'Report Employer Successfully',
                 'notification'=>$result,
