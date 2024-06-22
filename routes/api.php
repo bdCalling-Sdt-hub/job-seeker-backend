@@ -22,6 +22,7 @@ use App\Http\Controllers\PopularJobController;
 use App\Http\Controllers\CvController;
 use App\Http\Middleware\GuestUser;
 use App\Http\Controllers\ContactController;
+use App\Http\Controllers\SocialIntegrationController;
 
 Route::group([
     ['middleware' => 'auth:api']
@@ -303,3 +304,5 @@ Route::middleware('optional_auth')->group(function (){
     Route::get('/category-job-post-count', [HomeController::class, 'showCategoryandCount']);
     Route::get('category-wise-job-list', [HomeController::class, 'categoryWiseJobPost']);
 });
+
+Route::get('job-share/{id}', [SocialIntegrationController::class,'socialShare'])->name('job.show');

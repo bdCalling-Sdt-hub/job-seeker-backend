@@ -41,8 +41,8 @@
         <h1>Find Worker</h1>
     </div>
     <div class="content">
-        <h2>New Employee Applied For Your Job</h2>
-        <p>{{$message}}</p>
+
+        <h2>New Applicant</h2>
     </div>
     <div class="footer">
         <p>&copy; 2024 . All rights reserved.</p>
